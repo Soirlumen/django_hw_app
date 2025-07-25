@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Odevzdat úkol{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>{{ hwdetail.title }}</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Předmět:</strong> {{ hwdetail.subject }}</p>
+            <p><strong>Učitel:</strong> {{ hwdetail.teacher }}</p>
+            <p><strong>Popis:</strong> {{ hwdetail.description }}</p>
+            <p><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</p>
+            <p><strong>Zveřejněno:</strong> {{ hwdetail.release }}</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h6>Odevzdej řešení</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-success mt-2">Odevzdat</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

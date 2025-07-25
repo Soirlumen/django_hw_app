@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Seznam úkolů{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+
+    {% if user.is_authenticated %}
+        <div class="alert alert-info">
+            Ahoj, <strong>{{ user.username }}</strong> :>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Seznam úkolů</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Název úkolu</th>
+                                <th>Termín</th>
+                                <th>Předmět</th>
+                                <th>Učitel</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ass in assignment_list %}
+                                <tr>
+                                    <td><a href="{% url 'hw_detail' ass.pk %}">{{ ass.title }}</a></td>
+                                    <td>{{ ass.deadline }}</td>
+                                    <td>{{ ass.subject }}</td>
+                                    <td>{{ ass.teacher }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="alert alert-warning">
+            Buuu... nejsi přihlášen :<
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

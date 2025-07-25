@@ -1,0 +1,32 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django specific
+*.log
+*.pot
+*.pyc
+db.sqlite3
+*.sqlite3
+
+# Environment files
+.env
+*.env
+
+# Virtual environment
+env/
+venv/
+ENV/
+.venv/
+
+# VSCode settings (pokud používáš)
+.vscode/
+
+# Mac/Windows
+.DS_Store
+Thumbs.db
+
+# Migrations (volitelné – jen pokud nechceš trackovat)
+**/migrations/*.py
+!**/migrations/__init__.py
