@@ -6,7 +6,7 @@
 
     {% if user.is_authenticated %}
         <div class="alert alert-info">
-            Ahoj, <strong>{{ user.username }}</strong> :>
+            Ahoj, <strong>{{ user.username }}</strong> :>, role je <strong>{{user.role}}</strong>
         </div>
 
         <div class="card">

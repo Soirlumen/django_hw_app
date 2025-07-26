@@ -24,9 +24,21 @@ id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
 {{ user.username }}
 </a>
 <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-<li><a class="dropdown-item" href="{% url 'password_change'%}">
-Change password</a></li>
-<li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
+  <li>
+    <a class="dropdown-item" href="{% url 'password_change' %}">Change password</a>
+  </li>
+  <li>
+    <form action="{% url 'logout' %}" method="post" style="display: block; margin: 0; padding: 0;">
+      {% csrf_token %}
+     <button type="submit"
+  class="dropdown-item"
+  style="background: none; border: none; width: 100%; text-align: left; padding: 0.25rem 1rem;"
+  onmouseover="this.style.backgroundColor='#f8f9fa';"
+  onmouseout="this.style.backgroundColor='';">
+  Log out
+</button>
+    </form>
+  </li>
 </ul>
 </div>
 {% else %}

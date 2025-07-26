@@ -4,7 +4,6 @@ import datetime
 from django.db.models import Q,UniqueConstraint
 from django.conf import settings
 
-
 YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
     YEAR_CHOICES.append((r, r))
@@ -42,9 +41,10 @@ class Key(models.Model):
 class Homework(models.Model):
     key=models.OneToOneField(Key,on_delete=models.CASCADE,null=False)
     engrossment=models.TextField() # solution ale hustští
-    submitted=models.DateTimeField(null=False==False)
+    submitted=models.DateTimeField(null=(False==False))
     def __str__(self):
         return f"{self.key}"
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.pk})
     
+
