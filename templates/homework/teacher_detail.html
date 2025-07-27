@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Detail úkolu pro učitele</h1>
+  <p>Název: {{ assignment.title }}</p>
+  <p>Předmět: {{ assignment.subject }}</p>
+
+  <h2>Odevzdané úkoly</h2>
+  <ul>
+    {% for hw in homeworks %}
+      <li>{{ hw.key.student.username }} — {{ hw.submitted }}</li>
+    {% empty %}
+      <li>Zatím nikdo neodevzdal.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -6,6 +6,7 @@ from .forms import HomeworkForm,AssignmentForm
 from django.shortcuts import render,redirect
 import datetime
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseForbidden
 from django.contrib.auth.models import User
 
 
@@ -30,23 +31,46 @@ class HwListView(ListView):
     template_name="hw_create.html"
     """
 def HwDetailView(request, pk):
-    detail = get_object_or_404(Assignment, pk=pk)
-    already_submitted = False
+    assignment = get_object_or_404(Assignment, pk=pk)
 
-    if request.user.is_authenticated:
-        key = Key.objects.filter(student=request.user, assignment=detail).first()
+    if hasattr(request.user, 'teacher_profile'):
+        # Učitel: chceme tabulku odevzdaných
+        homeworks = Homework.objects.filter(key__assignment=assignment)
+        return render(request, "homework/teacher_detail.html", {
+            "assignment": assignment,
+            "homeworks": homeworks
+        })
+
+    elif hasattr(request.user, 'student_profile'):
+        # Student: detail + možnost odevzdání
+        already_submitted = False
+        submitted_homework = None
+        key = Key.objects.filter(student=request.user, assignment=assignment).first()
         if key:
-            already_submitted = Homework.objects.filter(key=key).exists()
+            submitted_homework = Homework.objects.filter(key=key).first()
+            already_submitted = submitted_homework is not None
 
-    return render(request, "homework/hw_detail.html", {
-        'hwdetail': detail,
-        'already_submitted': already_submitted
-    })
+        return render(request, "homework/hw_detail.html", {
+            "hwdetail": assignment,
+            "already_submitted": already_submitted,
+            "submitted_homework": submitted_homework,
+        })
+
+    return HttpResponseForbidden("Nemáš přístup.")
+    
+    
 def AssignmentCreateView(request):
+    if not request.user.is_authenticated or not hasattr(request.user, 'teacher_profile'):
+        return HttpResponseForbidden("Nelze vytvářet úkoly.")
+
     if request.method=="POST":
         form=AssignmentForm(request.POST)
         if form.is_valid():
-            ass=form.save()
+            ass=form.save(commit=False)
+            if ass.subject not in request.user.teacher_profile.subjects.all():
+                return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
+            ass.teacher = request.user
+            ass.save() 
             return redirect("hw_detail",pk=ass.id)
     else:
         form=AssignmentForm()
@@ -55,6 +79,9 @@ def AssignmentCreateView(request):
 def HwCreateView(request):
     assgn_id=request.GET.get("assgn_id")
     assignment=get_object_or_404(Assignment,pk=assgn_id)
+    if not hasattr(request.user, 'student_profile') or assignment.subject not in request.user.student_profile.subjects.all():
+        return HttpResponseForbidden("Nemáš přístup k tomuto předmětu.")
+
     if request.method=="POST":
         form=HomeworkForm(request.POST)
         if form.is_valid():

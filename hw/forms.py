@@ -10,7 +10,7 @@ class HomeworkForm(forms.ModelForm):
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model=Assignment
-        fields=("title","subject","description","release","deadline","teacher")
+        fields=("title","subject","description","release","deadline",)
         widgets = {
             'deadline': forms.DateTimeInput(attrs={
                 'type': 'datetime-local'
