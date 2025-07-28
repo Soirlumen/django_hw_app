@@ -18,6 +18,8 @@ justify-content-lg-start">
 mb-md-0">
 {% if user.is_authenticated %}
 <li><a href="{% url 'ass_create' %}" class="nav-link px-2 link-dark">+ New</a></li>
+{%if user.is_admin %}
+<li><a href="{% url 'admin:index' %}" class="nav-link px-2 link-dark">admin</a></li>{%endif%}
 </ul>
 <div class="dropdown text-end">
 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle"
