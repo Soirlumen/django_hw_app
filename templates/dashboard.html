@@ -1,47 +1,53 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Dashboard{% endblock title %}
+{% block title %}
+  Dashboard
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Vítej, {{ user.username }}, jsi ještě stále {{user.role}}</h2>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Seznam úkolů</h5>
-                    <p class="card-text">Jukni co za questy se nabízí</p>
-                    <a href="{% url 'list' %}" class="btn btn-primary">Přejít na úkoly</a>
-                </div>
-            </div>
+  <div class="container mt-5">
+    <h2 class="mb-4">Vítej, {{ user.username }}, jsi ještě stále {{ user.role }}</h2>
+    <div class="row align-items-stretch">
+      <div class="col-md-6">
+        <div class="card shadow-sm mb-4 h-100">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">Seznam úkolů</h5>
+            <p class="card-text">Jukni co za questy se nabízí</p>
+            <a href="{% url 'list' %}" class="btn btn-primary mt-auto">Přejít na úkoly</a>
+          </div>
         </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Akce</h5>
-                    <ul class="list-unstyled">
-                        {% if user.teacher_profile %}
-                            <li><a href="{% url 'ass_create' %}">Zadat nový úkol</a></li>
-                        {% endif %}
-                        {% if user.student_profile %}
-                            <li><a href="#">Idk hoď hrách na zeď</a></li>
-                        {% endif %}
-                        <li><a href="#">Profil</a></li>
-                    </ul>
-                </div>
-            </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card shadow-sm mb-4 h-100">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">Akce</h5>
+            <ul class="list-unstyled flex-grow-1">
+              {% if user.teacher_profile %}
+                <li>
+                  <a href="{% url 'ass_create' %}">Zadat nový úkol</a>
+                </li>
+              {% endif %}
+              {% if user.student_profile %}
+                <li>
+                  <a href="#">Idk hoď hrách na zeď</a>
+                </li>
+              {% endif %}
+              <li>
+                <a href="#">Profil</a>
+              </li>
+            </ul>
+          </div>
         </div>
+      </div>
     </div>
 
     <div class="card shadow-sm mb-4">
-        <div class="card-body text-center">
-            <h4 class="card-title">Pinned</h4>
-            <p class="card-text">KVÁK řekla rohatka. I když asi ne. Je moc líná</p>
-            <img src="{% static 'accounts/pixtop.png' %}" class="img-fluid rounded" alt="Nástěnka obrázek">
-        </div>
+      <div class="card-body text-center">
+        <h4 class="card-title">Pinned</h4>
+        <p class="card-text">KVÁK řekla rohatka. I když asi ne. Je moc líná</p>
+        <img src="{% static 'accounts/pixtop.png' %}" class="img-fluid rounded" alt="Nástěnka obrázek" />
+      </div>
     </div>
-
-</div>
-{% endblock content %}
+  </div>
+{% endblock %}

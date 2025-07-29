@@ -14,12 +14,12 @@
 <div class="d-flex flex-wrap align-items-center justify-content-center
 justify-content-lg-start">
 <a class="navbar-brand" href="{% url 'list' %}">Domácí úkolky</a>
-<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center
-mb-md-0">
+<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
 {% if user.is_authenticated %}
 <li><a href="{% url 'ass_create' %}" class="nav-link px-2 link-dark">+ New</a></li>
 {%if user.is_admin %}
-<li><a href="{% url 'admin:index' %}" class="nav-link px-2 link-dark">admin</a></li>{%endif%}
+<li><a href="{% url 'admin:index' %}" class="nav-link px-2 link-dark">admin</a></li>
+{%endif%}
 </ul>
 <div class="dropdown text-end">
 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle"
