@@ -1,16 +1,45 @@
 {% extends "base.html" %}
+{% block title %}Detail úkolu pro učitele{% endblock title %}
 
 {% block content %}
-  <h1>Detail úkolu pro učitele</h1>
-  <p>Název: {{ assignment.title }}</p>
-  <p>Předmět: {{ assignment.subject }}</p>
+<h2>Detail úkolu: {{ assignment.title }}</h2>
 
-  <h2>Odevzdané úkoly</h2>
-  <ul>
-    {% for hw in homeworks %}
-      <li>{{ hw.key.student.username }} — {{ hw.submitted }}</li>
-    {% empty %}
-      <li>Zatím nikdo neodevzdal.</li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4>{{ assignment.title }}</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Předmět:</strong> {{ assignment.subject }}</p>
+            <p><strong>Popis:</strong> {{ assignment.description }}</p>
+            <p><strong>Učitel:</strong> {{ assignment.teacher }}</p>
+            <p><strong>Zveřejněno:</strong> {{ assignment.release }}</p>
+            <p><strong>Termín odevzdání:</strong> {{ assignment.deadline }}</p>
+
+            <a href="{% url 'assignment_delete' assignment.pk %}" class="btn btn-danger mt-3">Smazat zadání</a>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Odevzdané úkoly</h5>
+        </div>
+        <div class="card-body">
+            {% if homeworks %}
+                <ul class="list-group">
+                    {% for hw in homeworks %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ hw.key.student.username }}
+                            <span class="badge bg-success">
+                                {{ hw.submitted|date:"d.m.Y H:i" }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-info">Zatím nikdo neodevzdal úkol.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -14,6 +14,11 @@
                 <h5>Seznam úkolů</h5>
             </div>
             <div class="card-body">
+                {% if message %}
+                
+                    <p>{{message}}</p>
+                {%else%}
+                
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover align-middle">
                         <thead class="table-light">
@@ -25,17 +30,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for ass in assignment_list %}
+                            {% for assi in assign %}
                                 <tr>
-                                    <td><a href="{% url 'hw_detail' ass.pk %}">{{ ass.title }}</a></td>
-                                    <td>{{ ass.deadline }}</td>
-                                    <td>{{ ass.subject }}</td>
-                                    <td>{{ ass.teacher }}</td>
+                                    <td><a href="{% url 'hw_detail' assi.pk %}">{{ assi.title }}</a></td>
+                                    <td>{{ assi.deadline }}</td>
+                                    <td>{{ assi.subject }}</td>
+                                    <td>{{ assi.teacher }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {%endif %}
             </div>
         </div>
 

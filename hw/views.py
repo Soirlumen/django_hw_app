@@ -1,5 +1,3 @@
-from django.views.generic import ListView, DetailView,CreateView,UpdateView
-
 from .models import Homework, Assignment, Key
 from .forms import HomeworkForm,AssignmentForm
 
@@ -7,34 +5,18 @@ from django.shortcuts import render,redirect
 import datetime
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
-from django.contrib.auth.models import User
 
 
-class HwListView(ListView):
-    model=Assignment
-    template_name="list.html"
-    
-"""class HwDetailView(DetailView):
-    model=Assignment
-    template_name="hw_detail.html"
-    """
-    
-"""class AssignmentCreateView(CreateView):
-    model=Assignment
-    form_class=AssignmentForm
-    template_name="ass_create.html"
-    """
-    
-"""class HwCreateView(CreateView):
-    model=Homework
-    form_class=HomeworkForm
-    template_name="hw_create.html"
-    """
-def HwDetailView(request, pk):
+def hw_list_view(request):
+    assign=Assignment.objects.all()
+    if not assign.exists():
+        return render(request,"list.html",{"message":"...nic tu zatím není..."})
+    return render(request,"list.html",{"assign":assign})
+
+def hw_detail_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
 
     if hasattr(request.user, 'teacher_profile'):
-        # Učitel: chceme tabulku odevzdaných
         homeworks = Homework.objects.filter(key__assignment=assignment)
         return render(request, "homework/teacher_detail.html", {
             "assignment": assignment,
@@ -42,7 +24,6 @@ def HwDetailView(request, pk):
         })
 
     elif hasattr(request.user, 'student_profile'):
-        # Student: detail + možnost odevzdání
         already_submitted = False
         submitted_homework = None
         key = Key.objects.filter(student=request.user, assignment=assignment).first()
@@ -50,7 +31,7 @@ def HwDetailView(request, pk):
             submitted_homework = Homework.objects.filter(key=key).first()
             already_submitted = submitted_homework is not None
 
-        return render(request, "homework/hw_detail.html", {
+        return render(request, "homework/student_detail.html", {
             "hwdetail": assignment,
             "already_submitted": already_submitted,
             "submitted_homework": submitted_homework,
@@ -58,8 +39,7 @@ def HwDetailView(request, pk):
 
     return HttpResponseForbidden("Nemáš přístup.")
     
-    
-def AssignmentCreateView(request):
+def assignment_create_view(request):
     if not request.user.is_authenticated or not hasattr(request.user, 'teacher_profile'):
         return HttpResponseForbidden("Nelze vytvářet úkoly.")
 
@@ -76,7 +56,7 @@ def AssignmentCreateView(request):
         form=AssignmentForm()
     return render(request,"homework/ass_create.html",{"form":form})
 
-def HwCreateView(request):
+def hw_create_view(request):
     assgn_id=request.GET.get("assgn_id")
     assignment=get_object_or_404(Assignment,pk=assgn_id)
     if not hasattr(request.user, 'student_profile') or assignment.subject not in request.user.student_profile.subjects.all():
@@ -97,3 +77,26 @@ def HwCreateView(request):
 
     return render(request,"homework/hw_create.html",{"form":form,"hwdetail":assignment})
     
+def hw_update_view(request,pk):
+    hw=get_object_or_404(Homework,pk=pk)
+    if hw.key.student!=request.user:
+        return HttpResponseForbidden("Nemáte oprávnění upravovat tento úkol.")
+    if request.method=="POST":
+        form=HomeworkForm(request.POST,instance=hw)
+        if form.is_valid():
+            edit_hw=form.save(commit=False)
+            edit_hw.submitted=datetime.datetime.now()
+            edit_hw.save()
+            return redirect("hw_detail",pk=hw.key.assignment.pk)
+    else:
+        form=HomeworkForm(instance=hw)
+    return render(request,'homework/hw_update.html',{'form':form,'hw':hw})
+
+def assgn_delete_view(request,pk):
+    assgn=get_object_or_404(Assignment,pk=pk)
+    if assgn.teacher!=request.user:
+        return HttpResponseForbidden("Nemáte oprávnění odstranit tento úkol.")
+    if request.method=="POST":
+        assgn.delete()
+        return redirect("list")
+    return render(request,"homework/ass_delete_confirm.html",{"assgn":assgn})

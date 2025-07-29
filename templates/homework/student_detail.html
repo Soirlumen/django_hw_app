@@ -2,6 +2,7 @@
 {% block title %}Detail úkolu{% endblock title %}
 
 {% block content %}
+<h2>Test: {{ hwdetail.title }}</h2>
 <div class="container mt-4">
     <div class="card">
         <div class="card-header">
@@ -14,23 +15,28 @@
             <p><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</p>
             <p><strong>Zveřejněno:</strong> {{ hwdetail.release }}</p>
 
-            {% if already_submitted %}
-                <div class="alert alert-success mt-4">
-                    Úkol už byl odevzdán.
-             {% if submitted_homework %}
-                </div>
-                <div class="card mt-3">
-                    <div class="card-header">Odevzdaný úkol</div>
-                    <div class="card-body">
-                        <p>{{submitted_homework.engrossment|linebreaks}} </p>
-                   </div>
-                </div>
-                {% endif %}
-            {% else %}
-                <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary mt-4">
-                    Odevzdat úkol
-                </a>
-            {% endif %}
+           {% if already_submitted %}
+    <div class="alert alert-success mt-4">
+        Úkol už byl odevzdán.
+    </div>
+
+    {% if submitted_homework %}
+        <div class="card mt-3">
+            <div class="card-header">Odevzdaný úkol - {{submitted_homework.submitted}}</div>
+            <div class="card-body">
+                <p>{{ submitted_homework.engrossment|linebreaks }}</p>
+            </div>
+        </div>
+    {% endif %}
+
+{% else %}
+    <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary mt-4">Odevzdat úkol</a>
+{% endif %}
+{% if submitted_homework %}
+    <div class="mt-3">
+        <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-warning">Upravit odevzdaný úkol</a>
+    </div>
+{% endif %}
         </div>
     </div>
 </div>
