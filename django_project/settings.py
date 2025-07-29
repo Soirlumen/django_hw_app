@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "crispy_forms", # new
-    "crispy_bootstrap5", # new
+    "crispy_forms", 
+    "crispy_bootstrap5", 
     'hw',
     'accounts'
 ]
@@ -129,7 +130,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-LOGIN_REDIRECT_URL = "list"
+LOGIN_REDIRECT_URL = reverse_lazy("dashboard")
 LOGOUT_REDIRECT_URL = "login"
 SIGNUP_REDIRECT_URL = "login"
 

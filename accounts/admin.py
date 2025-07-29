@@ -7,14 +7,14 @@ from .models import CustomUser, StudentProfile, TeacherProfile
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "department")
-    filter_horizontal = ("subjects",)  # Použití filter_horizontal pro subjects
-    autocomplete_fields = ['user']  # Pro lepší vyhledávání uživatelů
+    filter_horizontal = ("subjects",) 
+    autocomplete_fields = ['user']  
 
 @admin.register(StudentProfile)
 class StudentProfileAdmin(admin.ModelAdmin):
     list_display = ("user",)
     filter_horizontal= ("subjects",)
-    autocomplete_fields = ['user']  # Pro lepší vyhledávání uživatelů
+    autocomplete_fields = ['user'] 
 
     def get_subjects(self, obj):
         return ", ".join([s.name for s in obj.subjects.all()])
@@ -29,21 +29,19 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ("username", "email")
     ordering = ("email",)
 
-    # Vytvoření uživatele
+  
     add_fieldsets = (
         (None, {
-            "classes": ("wide",),
-            "fields": ("username", "email", "role", "password1", "password2"),
+            "classes":("wide",),
+            "fields":("username","email","role","password1","password2"),
         }),
     )
 
-    # Úprava uživatele
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         ("Personal info", {"fields": ("email",)}),
         ("Permissions", {
-            "fields": (
-                "is_active",
+            "fields": ("is_active",
                 "is_staff",
                 "is_superuser",
                 "groups",
