@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Upravit hodnocení k úkolu{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h5>Upravit hodnocení k úkolu: {{ hw.key }}</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Uložit změny</button>
+                <a href="{% url 'hw_detail' hw.pk %}" class="btn btn-secondary">Zrušit</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

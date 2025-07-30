@@ -1,43 +1,63 @@
 {% extends "base.html" %}
-{% block title %}Detail úkolu{% endblock title %}
+{% block title %}Úkol: {{ hwdetail.title }}{% endblock title %}
 
 {% block content %}
-<h2>Test: {{ hwdetail.title }}</h2>
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h4>{{ hwdetail.title }}</h4>
-        </div>
-        <div class="card-body">
-            <p><strong>Předmět:</strong> {{ hwdetail.subject }}</p>
-            <p><strong>Učitel:</strong> {{ hwdetail.teacher }}</p>
-            <p><strong>Popis:</strong> {{ hwdetail.description }}</p>
-            <p><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</p>
-            <p><strong>Zveřejněno:</strong> {{ hwdetail.release }}</p>
+<div class="container mt-5" style="max-width: 800px;">
 
-           {% if already_submitted %}
-    <div class="alert alert-success mt-4">
-        Úkol už byl odevzdán.
+    <div class="mb-4">
+        <h2 class="mb-3">{{ hwdetail.title }}</h2>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>Předmět:</strong> {{ hwdetail.subject }}</li>
+            <li class="list-group-item"><strong>Učitel:</strong> {{ hwdetail.teacher }}</li>
+            <li class="list-group-item"><strong>Popis:</strong><br>{{ hwdetail.description }}</li>
+            <li class="list-group-item"><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</li>
+            <li class="list-group-item"><strong>Max score: </strong>{{hwdetail.max_score}}</li>
+            <li class="list-group-item"><strong>Zveřejněno:</strong> {{ hwdetail.release }}</li>
+        </ul>
     </div>
 
-    {% if submitted_homework %}
-        <div class="card mt-3">
-            <div class="card-header">Odevzdaný úkol - {{submitted_homework.submitted}}</div>
-            <div class="card-body">
-                <p>{{ submitted_homework.engrossment|linebreaks }}</p>
+    {% if already_submitted %}
+        <div class="alert alert-success">
+            Úkol byl odevzdán {{ submitted_homework.submitted }}.
+        </div>
+
+        {% if submitted_homework %}
+            <div class="mb-4">
+                <h5>Tvůj odevzdaný text:</h5>
+                <div class="border rounded p-3 bg-light">
+                    {{ submitted_homework.engrossment|linebreaks }}
+                </div>
             </div>
+                        <div class="mt-3">
+                <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-outline-primary">
+                    Upravit odevzdání
+                </a>
+            </div>
+
+            {% if submitted_homework.text_evaluation %}
+                <div class="mb-3">
+                    <h6>Hodnocení od učitele:</h6>
+                    <div class="border rounded p-2 bg-white">
+                        {{ submitted_homework.text_evaluation|linebreaks }}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if submitted_homework.score %}
+                <div class="mb-3">
+                    <strong>Skóre:</strong> {{ submitted_homework.score }} / {{ hwdetail.max_score }}
+                </div>
+            {% endif %}
+
+        {% endif %}
+
+    {% else %}
+        <div class="mt-3">
+            <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
+                Odevzdat úkol
+            </a>
         </div>
     {% endif %}
 
-{% else %}
-    <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary mt-4">Odevzdat úkol</a>
-{% endif %}
-{% if submitted_homework %}
-    <div class="mt-3">
-        <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-warning">Upravit odevzdaný úkol</a>
-    </div>
-{% endif %}
-        </div>
-    </div>
 </div>
 {% endblock content %}

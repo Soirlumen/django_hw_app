@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 import datetime
-from django.db.models import Q,UniqueConstraint
+from django.db.models import UniqueConstraint, CheckConstraint, Q, F 
 from django.conf import settings
 
 YEAR_CHOICES = []
@@ -19,6 +19,7 @@ class Assignment(models.Model):
     subject=models.ForeignKey(Subject,null=True,on_delete=models.SET_NULL)
     teacher=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     description=models.TextField()
+    max_score=models.SmallIntegerField(null=True)
     deadline=models.DateTimeField(null=True)
     release=models.DateTimeField(null=True)
     def __str__(self):
@@ -39,12 +40,14 @@ class Key(models.Model):
         ]
     
 class Homework(models.Model):
+    ## část pro studenta
     key=models.OneToOneField(Key,on_delete=models.CASCADE,null=False)
     engrossment=models.TextField() # solution ale hustští
     submitted=models.DateTimeField(null=(False==False))
+    ## část pro učitele 
+    score=models.SmallIntegerField(null=True)
+    text_evaluation=models.TextField(null=True)
     def __str__(self):
-        return f"{self.key}"
+        return f"homework-{self.key}"
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.pk})
-    
-

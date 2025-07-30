@@ -1,5 +1,5 @@
 from .models import Homework, Assignment, Key
-from .forms import HomeworkForm,AssignmentForm
+from .forms import HomeworkForm,AssignmentForm,EvaluationForm
 
 from django.shortcuts import render,redirect
 import datetime
@@ -13,20 +13,20 @@ def hw_list_view(request):
         return render(request,"list.html",{"message":"...nic tu zatím není..."})
     return render(request,"list.html",{"assign":assign})
 
-def hw_detail_view(request, pk):
+def assgn_detail_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
 
     if hasattr(request.user, 'teacher_profile'):
         homeworks = Homework.objects.filter(key__assignment=assignment)
         return render(request, "homework/teacher_detail.html", {
             "assignment": assignment,
-            "homeworks": homeworks
+            "homeworks": homeworks,
         })
 
     elif hasattr(request.user, 'student_profile'):
         already_submitted = False
         submitted_homework = None
-        key = Key.objects.filter(student=request.user, assignment=assignment).first()
+        key = Key.objects.filter(student=request.user, assignment=assignment).first() # nebo get, je to divný
         if key:
             submitted_homework = Homework.objects.filter(key=key).first()
             already_submitted = submitted_homework is not None
@@ -100,3 +100,58 @@ def assgn_delete_view(request,pk):
         assgn.delete()
         return redirect("list")
     return render(request,"homework/ass_delete_confirm.html",{"assgn":assgn})
+
+def hw_detail_view(request, pk):
+    hw = get_object_or_404(Homework, pk=pk)
+
+    if not (request.user == hw.key.student or request.user == hw.key.assignment.teacher):
+        return HttpResponseForbidden("Nemáš přístup k tomuto domácímu úkolu.")
+
+    return render(request, "homework/hw_detail.html", {"hw": hw})
+
+
+def create_evaluation_view(request, pk):
+    hw = get_object_or_404(Homework, pk=pk)
+
+    if hw.key.assignment.teacher != request.user:
+        return HttpResponseForbidden("Nemáš oprávnění hodnotit tento úkol.")
+
+    if request.method == "POST":
+        form = EvaluationForm(request.POST, instance=hw)
+        if form.is_valid():
+            form.save()
+            return redirect("hw_detail", pk=hw.pk)
+    else:
+        form = EvaluationForm(instance=hw)
+
+    return render(request, "homework/hw_evaluate.html", {"form": form, "hw": hw})
+
+
+
+def edit_evaluation_view(request,pk):
+    hw=get_object_or_404(Homework,pk=pk)
+    if hw.key.assignment.teacher != request.user:
+        return HttpResponseForbidden("Nemáš oprávnění upravit hodnocení tohoto úkolu.")
+    if request.method=="POST":
+        form=EvaluationForm(request.POST,instance=hw)
+        if form.is_valid():
+            edit_hw=form.save(commit=False)
+            edit_hw.save()
+            return redirect("hw_detail",pk=hw.key.assignment.pk)
+    else:
+        form=EvaluationForm(instance=hw)
+    return render(request,'homework/hw_evaluation_update.html',{'form':form,'hw':hw})
+    
+    
+def delete_evaluation_view(request,pk):
+    hw=get_object_or_404(Homework, pk = pk)
+    if hw.key.assignment.teacher != request.user:
+        return HttpResponseForbidden("Nemáš oprávnění upravit hodnocení tohoto úkolu.")
+    if request.method=="POST":
+        hw.score = None
+        hw.text_evaluation = None
+        hw.save()
+        return redirect("hw_detail",pk=hw.key.assignment.pk)
+    return render(request,"homework/hw_evaluation_delete_confirm.html",{"hw":hw})
+    
+    

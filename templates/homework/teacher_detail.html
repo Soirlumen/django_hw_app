@@ -29,7 +29,7 @@
                 <ul class="list-group">
                     {% for hw in homeworks %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ hw.key.student.username }}
+                            <a href="{% url 'hw_detail' hw.pk %}">{{ hw.key.student.username }}</a>
                             <span class="badge bg-success">
                                 {{ hw.submitted|date:"d.m.Y H:i" }}
                             </span>

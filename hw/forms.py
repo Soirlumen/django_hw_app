@@ -19,3 +19,8 @@ class AssignmentForm(forms.ModelForm):
                 'type': 'datetime-local'
             })
         }
+
+class EvaluationForm(forms.ModelForm):
+    class Meta:
+        model=Homework
+        fields=("text_evaluation","score")

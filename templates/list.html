@@ -29,7 +29,7 @@
                         <tbody>
                             {% for assi in assign %}
                                 <tr>
-                                    <td><a href="{% url 'hw_detail' assi.pk %}">{{ assi.title }}</a></td>
+                                    <td><a href="{% url 'assgn_detail' assi.pk %}">{{ assi.title }}</a></td>
                                     <td>{{ assi.deadline }}</td>
                                     <td>{{ assi.subject }}</td>
                                     <td>{{ assi.teacher }}</td>
