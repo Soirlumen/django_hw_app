@@ -19,7 +19,7 @@ class Assignment(models.Model):
     subject=models.ForeignKey(Subject,null=True,on_delete=models.SET_NULL)
     teacher=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     description=models.TextField()
-    max_score=models.SmallIntegerField(null=True)
+    max_score=models.PositiveSmallIntegerField(null=True)
     deadline=models.DateTimeField(null=True)
     release=models.DateTimeField(null=True)
     def __str__(self):
@@ -45,7 +45,7 @@ class Homework(models.Model):
     engrossment=models.TextField() # solution ale hustští
     submitted=models.DateTimeField(null=(False==False))
     ## část pro učitele 
-    score=models.SmallIntegerField(null=True)
+    score=models.PositiveSmallIntegerField(null=True)
     text_evaluation=models.TextField(null=True)
     def __str__(self):
         return f"homework-{self.key}"

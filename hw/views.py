@@ -6,10 +6,30 @@ import datetime
 from django.http import HttpResponseForbidden
 
 def hw_list_view(request):
+    assignments_teacher = []
+    assignments_student = []
+
+    if hasattr(request.user, 'teacher_profile'):
+        assignments_teacher = Assignment.objects.filter(teacher=request.user)
+
+    if hasattr(request.user, 'student_profile'):
+        subjects = request.user.student_profile.subjects.all()
+        assignments_student = Assignment.objects.filter(subject__in=subjects)
+
+    if not assignments_teacher and not assignments_student:
+        return render(request, "list.html", {"message": "...nic tu zatím není..."})
+
+    return render(request, "list.html", {
+        "assignments_teacher": assignments_teacher,
+        "assignments_student": assignments_student,
+    })
+
+""" 
+def hw_list_view(request):
     assign=Assignment.objects.all()
     if not assign.exists():
         return render(request,"list.html",{"message":"...nic tu zatím není..."})
-    return render(request,"list.html",{"assign":assign})
+    return render(request,"list.html",{"assign":assign}) """
 
 def assgn_detail_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
@@ -42,16 +62,16 @@ def assignment_create_view(request):
         return HttpResponseForbidden("Nelze vytvářet úkoly.")
 
     if request.method=="POST":
-        form=AssignmentForm(request.POST)
+        form=AssignmentForm(request.POST,user=request.user)
         if form.is_valid():
             ass=form.save(commit=False)
             if ass.subject not in request.user.teacher_profile.subjects.all():
                 return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
             ass.teacher = request.user
             ass.save() 
-            return redirect("hw_detail",pk=ass.id)
+            return redirect("assgn_detail",pk=ass.pk)
     else:
-        form=AssignmentForm()
+        form=AssignmentForm(user=request.user)
     return render(request,"homework/ass_create.html",{"form":form})
 
 def hw_create_view(request):
@@ -69,7 +89,7 @@ def hw_create_view(request):
             hw.key=key
             hw.submitted=datetime.datetime.now()
             hw.save()
-            return redirect("hw_detail", pk=assignment.pk)
+            return redirect("hw_detail", pk=hw.pk)
     else:
             form=HomeworkForm()
 
@@ -85,7 +105,7 @@ def hw_update_view(request,pk):
             edit_hw=form.save(commit=False)
             edit_hw.submitted=datetime.datetime.now()
             edit_hw.save()
-            return redirect("hw_detail",pk=hw.key.assignment.pk)
+            return redirect("hw_detail",pk=hw.pk)
     else:
         form=HomeworkForm(instance=hw)
     return render(request,'homework/hw_update.html',{'form':form,'hw':hw})
@@ -121,9 +141,7 @@ def create_evaluation_view(request, pk):
             return redirect("hw_detail", pk=hw.pk)
     else:
         form = EvaluationForm(instance=hw)
-
     return render(request, "homework/hw_evaluate.html", {"form": form, "hw": hw})
-
 
 
 def edit_evaluation_view(request,pk):

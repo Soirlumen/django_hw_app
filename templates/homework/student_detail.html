@@ -4,16 +4,16 @@
 {% block content %}
 <div class="container mt-5" style="max-width: 800px;">
 
-    <div class="mb-4">
-        <h2 class="mb-3">{{ hwdetail.title }}</h2>
-        <ul class="list-group">
-            <li class="list-group-item"><strong>Předmět:</strong> {{ hwdetail.subject }}</li>
-            <li class="list-group-item"><strong>Učitel:</strong> {{ hwdetail.teacher }}</li>
-            <li class="list-group-item"><strong>Popis:</strong><br>{{ hwdetail.description }}</li>
-            <li class="list-group-item"><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</li>
-            <li class="list-group-item"><strong>Max score: </strong>{{hwdetail.max_score}}</li>
-            <li class="list-group-item"><strong>Zveřejněno:</strong> {{ hwdetail.release }}</li>
-        </ul>
+    <div class="card">
+        <div class="card-header">{{ hwdetail.title }}</div>
+        <div class="card-body">
+            <p><strong>Předmět:</strong> {{ hwdetail.subject }}</p>
+            <p><strong>Učitel:</strong> {{ hwdetail.teacher }}</p>
+            <p><strong>Popis:</strong><br>{{ hwdetail.description }}</p>
+            <p><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</p>
+            <p><strong>Max score: </strong>{{hwdetail.max_score}}</p>
+            <p><strong>Zveřejněno:</strong> {{ hwdetail.release }}</p>
+            </div>
     </div>
 
     {% if already_submitted %}
@@ -22,9 +22,9 @@
         </div>
 
         {% if submitted_homework %}
-            <div class="mb-4">
-                <h5>Tvůj odevzdaný text:</h5>
-                <div class="border rounded p-3 bg-light">
+            <div class="card">
+                <div class="card-header">Tvůj odevzdaný text:</div>
+                <div class="card-body">
                     {{ submitted_homework.engrossment|linebreaks }}
                 </div>
             </div>
@@ -35,9 +35,9 @@
             </div>
 
             {% if submitted_homework.text_evaluation %}
-                <div class="mb-3">
-                    <h6>Hodnocení od učitele:</h6>
-                    <div class="border rounded p-2 bg-white">
+                <div class="dard mb-3">
+                    <div class="card-header">Hodnocení od učitele:</h6>
+                    <div class="card-body">
                         {{ submitted_homework.text_evaluation|linebreaks }}</div>
                 </div>
             {% endif %}

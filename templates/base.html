@@ -16,7 +16,9 @@ justify-content-lg-start">
 <a class="navbar-brand" href="{% url 'dashboard' %}">Domácí úkolky</a>
 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
 {% if user.is_authenticated %}
+{% if user.is_teacher %}
 <li><a href="{% url 'ass_create' %}" class="nav-link px-2 link-dark">+ New</a></li>
+{% endif %}
 {%if user.is_admin %}
 <li><a href="{% url 'admin:index' %}" class="nav-link px-2 link-dark">admin</a></li>
 {%endif%}

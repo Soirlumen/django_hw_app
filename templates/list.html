@@ -5,42 +5,81 @@
 <div class="container mt-4">
 
     {% if user.is_authenticated %}
-        <div class="alert alert-info">
-        <div class="card">
+        {% if message %}
+            <div class="alert alert-info">
+                {{ message }}
+            </div>
+        {% endif %}
+
+        {% if assignments_teacher %}
+        <div class="card mb-4">
             <div class="card-header">
-                <h5>Seznam úkolů</h5>
+                <h5 class="mb-0">Zadání</h5>
             </div>
             <div class="card-body">
-                {% if message %}
-                
-                    <p>{{message}}</p>
-                {%else%}
-                
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th>Název úkolu</th>
-                                <th>Termín</th>
+                                <th>Název</th>
+                                <th>Deadline</th>
                                 <th>Předmět</th>
-                                <th>Učitel</th>
+                                <th>Zobrazit řešení</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for assi in assign %}
+                            {% for a in assignments_teacher %}
                                 <tr>
-                                    <td><a href="{% url 'assgn_detail' assi.pk %}">{{ assi.title }}</a></td>
-                                    <td>{{ assi.deadline }}</td>
-                                    <td>{{ assi.subject }}</td>
-                                    <td>{{ assi.teacher }}</td>
+                                    <td>{{ a.title }}</td>
+                                    <td>{{ a.deadline }}</td>
+                                    <td>{{ a.subject.name }}</td>
+                                    <td><a href="{% url 'assgn_detail' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                {%endif %}
             </div>
         </div>
+        {% else %}
+            <div class="alert alert-primary">Žádná vytvořená zadání...</div>
+        {% endif %}
+
+        {% if assignments_student %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Zadané úkoly</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Název</th>
+                                <th>Termín</th>
+                                <th>Předmět</th>
+                                <th>Učitel</th>
+                                <th>Přidat řešení</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assgn in assignments_student %}
+                                <tr>
+                                    <td>{{ assgn.title }}</td>
+                                    <td>{{ assgn.deadline }}</td>
+                                    <td>{{ assgn.subject.name }}</td>
+                                    <td>{{ assgn.teacher }}</td>
+                                    <td><a href="{% url 'assgn_detail' pk=assgn.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="alert alert-primary">Žádné zadané úkoly</div>
+        {% endif %}
 
     {% else %}
         <div class="alert alert-warning">

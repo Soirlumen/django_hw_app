@@ -15,6 +15,8 @@
             <p><strong>Učitel:</strong> {{ assignment.teacher }}</p>
             <p><strong>Zveřejněno:</strong> {{ assignment.release }}</p>
             <p><strong>Termín odevzdání:</strong> {{ assignment.deadline }}</p>
+            <p><strong>Max skóre: </strong>{{ assignment.max_score }}</p>
+
 
             <a href="{% url 'assignment_delete' assignment.pk %}" class="btn btn-danger mt-3">Smazat zadání</a>
         </div>
