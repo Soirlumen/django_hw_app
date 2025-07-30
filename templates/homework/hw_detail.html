@@ -5,10 +5,10 @@
 <h2>Odevzdaný úkol: {{ hw.key.assignment.title }}</h2>
 
 <div class="card mt-4">
-    <div class="card-header">
-        <strong>Student:</strong> {{ hw.key.student.username }}<br>
-        <strong>Odevzdáno:</strong> {{ hw.submitted|date:"d.m.Y H:i" }}
-    </div>
+<div class="card-header d-flex justify-content-between align-items-center">
+  <div><strong>Student:</strong> {{ hw.key.student.username }}</div>
+  <div><strong>Odevzdáno:</strong> {{ hw.submitted|date:"d.m.Y H:i" }}</div>
+</div>
     <div class="card-body">
         <p>{{ hw.engrossment|linebreaks }}</p>
     </div>

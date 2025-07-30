@@ -135,7 +135,7 @@ def edit_evaluation_view(request,pk):
         if form.is_valid():
             edit_hw=form.save(commit=False)
             edit_hw.save()
-            return redirect("hw_detail",pk=hw.key.assignment.pk)
+            return redirect("hw_detail",pk=hw.pk)
     else:
         form=EvaluationForm(instance=hw)
     return render(request,'homework/hw_evaluation_update.html',{'form':form,'hw':hw})
@@ -149,7 +149,7 @@ def delete_evaluation_view(request,pk):
         hw.score = None
         hw.text_evaluation = None
         hw.save()
-        return redirect("hw_detail",pk=hw.key.assignment.pk)
+        return redirect("hw_detail",pk=hw.pk)
     return render(request,"homework/hw_evaluation_delete_confirm.html",{"hw":hw})
     
     

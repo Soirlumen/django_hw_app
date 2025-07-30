@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Uživatelský profil{% endblock title %}
+
+{% block content %}
+<h2>Profil uživatele {{user.username}}</h2>
+<div class="container mt-4">
+    <p>mail: {{user.email}}</p>
+    {% if user_stus_info %}
+    <div class="card">
+    <div class="card-header">Studentský profil</div>
+    <div class="card-body">
+        <p><strong>Ročník: </strong>{{ user_stus_info.year }}</p>
+            <p><strong>Obor: </strong>{{ user_stus_info.field_of_study }}</p>
+            <p><strong>Zapsané předměty:</strong></p>
+            <ul>
+                {% for subject in user_stus_info.subjects.all %}
+                    <li>{{ subject.name }}</li>
+                {% empty %}
+                    <li>Žádné zapsané předměty.</li>
+            {% endfor %}
+            </ul>
+    </div></div>
+    {% endif %}
+        {% if user_teac_info %}
+    <div class="card">
+    <div class="card-header">Učitelský profil</div>
+    <div class="card-body">
+            <p><strong>Katedra: </strong>{{ user_teac_info.department }}</p>
+            <p><strong>Vyučované předměty:</strong></p>
+                        <ul>
+                {% for subject in user_teac_info.subjects.all %}
+                    <li>{{ subject.name }}</li>
+                {% empty %}
+                    <li>Žádné zapsané předměty.</li>
+            {% endfor %}
+            </ul>
+    </div>
+    </div>
+    {% endif %}
+</div>
+    
+{% endblock content %}

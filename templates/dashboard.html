@@ -10,18 +10,22 @@
     <h2 class="mb-4">Vítej, {{ user.username }}, jsi ještě stále {{ user.role }}</h2>
     <div class="row align-items-stretch">
       <div class="col-md-6">
+
+
         <div class="card shadow-sm mb-4 h-100">
+          <div class="card-header">Úkolky</div>
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Seznam úkolů</h5>
             <p class="card-text">Jukni co za questy se nabízí</p>
             <a href="{% url 'list' %}" class="btn btn-primary mt-auto">Přejít na úkoly</a>
           </div>
         </div>
       </div>
       <div class="col-md-6">
+
+
         <div class="card shadow-sm mb-4 h-100">
+          <div class="card-header">Akcičky</div>
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Akce</h5>
             <ul class="list-unstyled flex-grow-1">
               {% if user.teacher_profile %}
                 <li>
@@ -34,7 +38,7 @@
                 </li>
               {% endif %}
               <li>
-                <a href="#">Profil</a>
+                <a href="{% url 'profile' %}">Profil</a>
               </li>
             </ul>
           </div>
@@ -42,12 +46,23 @@
       </div>
     </div>
 
-    <div class="card shadow-sm mb-4">
-      <div class="card-body text-center">
-        <h4 class="card-title">Pinned</h4>
-        <p class="card-text">KVÁK řekla rohatka. I když asi ne. Je moc líná</p>
-        <img src="{% static 'accounts/pixtop.png' %}" class="img-fluid rounded" alt="Nástěnka obrázek" />
-      </div>
+<div class="card shadow-sm mb-4 mt-5">
+  <div class="card-header fs-4">Novinky!</div>
+  <div class="card-body">
+    <p class="card-text">Nějaké info, které by se mohlo řešit v budoucnu přes samostatnou app. Přehled změn, oprava broučků atd...</p>
+    <h5 class="mt-4 mb-2">Náhodné TODO:</h5>
+    <ul class="ps-3 mb-4">
+      <li>navigační lišta</li>
+      <li>vylepšit zobrazení úkolů</li>
+      <li>méně divného textu</li>
+    </ul>
+    <div class="text-end">
+      <img src="{% static 'accounts/pixtop.png' %}" class="img-fluid rounded shadow-sm" alt="Nástěnkový obrázek"  style="max-width: 250px; height: auto;" />
     </div>
+  </div>
+</div>
+
+
+
   </div>
 {% endblock %}

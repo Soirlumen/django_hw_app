@@ -31,6 +31,9 @@ id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
     <a class="dropdown-item" href="{% url 'password_change' %}">Change password</a>
   </li>
   <li>
+    <a class="dropdown-item" href="{% url 'profile' %}">Profil</a>
+  </li>
+  <li>
     <form action="{% url 'logout' %}" method="post" style="display: block; margin: 0; padding: 0;">
       {% csrf_token %}
      <button type="submit"
