@@ -1,11 +1,9 @@
 from .models import Homework, Assignment, Key
 from .forms import HomeworkForm,AssignmentForm,EvaluationForm
 
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 import datetime
-from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
-
 
 def hw_list_view(request):
     assign=Assignment.objects.all()
