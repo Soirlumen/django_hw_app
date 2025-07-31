@@ -7,7 +7,10 @@ from .models import CustomUser, StudentProfile, TeacherProfile
 
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "department")
+    list_display = (
+        "user",
+        "department",
+    )
     filter_horizontal = ("subjects",)
     autocomplete_fields = ["user"]
 
@@ -63,7 +66,6 @@ class CustomUserAdmin(UserAdmin):
     )
 
     def save_model(self, request, obj, form, change):
-        """Automaticky vytvoří profil při vytvoření nového uživatele"""
         is_new = obj.pk is None
         super().save_model(request, obj, form, change)
 

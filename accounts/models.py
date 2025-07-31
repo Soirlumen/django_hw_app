@@ -6,7 +6,6 @@ class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ("student", "Student"),
         ("teacher", "Teacher"),
-        ("admin", "Admin"),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="student")
 
@@ -16,8 +15,6 @@ class CustomUser(AbstractUser):
     def is_student(self):
         return self.role == "student"
 
-    def is_admin(self):
-        return self.role == "admin"
 
 
 class StudentProfile(models.Model):
