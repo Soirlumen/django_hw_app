@@ -3,8 +3,16 @@
 
 {% block content %}
 <h2>Profil uživatele {{user.username}}</h2>
-<div class="container mt-4">
-    <p>mail: {{user.email}}</p>
+<div class="container mt-4 gap-3">
+    <div class="card">
+        <div class="card-header">Osobní info</div>
+    <div class="card-body">
+    <p><strong>Jméno:</strong> {{user.first_name}}</p>
+    <p><strong>Příjmení:</strong> {{user.surname}}</p>
+    <p><strong>Telefon:</strong> {{user.tel}}</p>
+    <p><strong>Email:</strong> {{user.email}}</p>
+</div>
+</div>
     {% if user_stus_info %}
     <div class="card">
     <div class="card-header">Studentský profil</div>

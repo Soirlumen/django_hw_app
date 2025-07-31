@@ -8,7 +8,9 @@ class CustomUser(AbstractUser):
         ("teacher", "Teacher"),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="student")
-
+    first_name=models.CharField(max_length=50,null=True)
+    surname=models.CharField(max_length=50,null=True)
+    tel=models.PositiveIntegerField(null=True)
     def is_teacher(self):
         return self.role == "teacher"
 

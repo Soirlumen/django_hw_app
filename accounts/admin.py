@@ -41,14 +41,14 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "email", "role", "password1", "password2"),
+                "fields": ("username", "first_name","surname","tel","email", "role", "password1", "password2"),
             },
         ),
     )
 
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("email",)}),
+        ("Personal info", {"fields": ("email","first_name","surname","tel")}),
         (
             "Permissions",
             {
@@ -75,6 +75,4 @@ class CustomUserAdmin(UserAdmin):
             elif obj.role == "teacher":
                 TeacherProfile.objects.get_or_create(user=obj)
 
-
-# Registrace modelů
 admin.site.register(CustomUser, CustomUserAdmin)
