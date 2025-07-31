@@ -2,6 +2,13 @@
 {% block title %}Odevzdaný úkol{% endblock title %}
 
 {% block content %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
 <h2>Odevzdaný úkol: {{ hw.key.assignment.title }}</h2>
 
 <div class="card mt-4">

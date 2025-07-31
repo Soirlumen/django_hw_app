@@ -3,8 +3,8 @@ from .forms import HomeworkForm, AssignmentForm, EvaluationForm
 
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
-from django.http import HttpResponseForbidden
-
+from django.http import HttpResponseForbidden,HttpResponseBadRequest
+from django.contrib import messages
 
 def hw_list_view(request):
     assignments_teacher = []
@@ -96,23 +96,25 @@ def assignment_create_view(request):
         form = AssignmentForm(user=request.user)
     return render(request, "homework/ass_create.html", {"form": form})
 
-
 def hw_create_view(request):
     assgn_id = request.GET.get("assgn_id")
+    if not assgn_id:
+        return HttpResponseBadRequest("Chybí ID úkolu!!")
     assignment = get_object_or_404(Assignment, pk=assgn_id)
     if (
         not hasattr(request.user, "student_profile")
         or assignment.subject not in request.user.student_profile.subjects.all()
     ):
         return HttpResponseForbidden("Nemáš přístup k tomuto předmětu.")
+    key, created = Key.objects.get_or_create(assignment=assignment,student=request.user)
+    if Homework.objects.filter(key=key).exists():
+        hw=Homework.objects.get(key=key)
+        messages.warning(request, "Úkol už byl odevzdán, nelze ho odeslat znovu.")
+        return redirect("hw_detail", pk=hw.pk)
 
     if request.method == "POST":
-        form = HomeworkForm(request.POST)
+        form = HomeworkForm(request.POST) 
         if form.is_valid():
-            student = request.user
-            key, created = Key.objects.get_or_create(
-                student=student, assignment=assignment
-            )
             hw = form.save(commit=False)
             hw.key = key
             hw.submitted = datetime.datetime.now()
@@ -120,11 +122,11 @@ def hw_create_view(request):
             return redirect("hw_detail", pk=hw.pk)
     else:
         form = HomeworkForm()
-
     return render(
-        request, "homework/hw_create.html", {"form": form, "hwdetail": assignment}
+        request,
+        "homework/hw_create.html",
+        {"form": form, "hwdetail": assignment}
     )
-
 
 def hw_update_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
