@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    ## dodatečně instalované appky
     "crispy_forms",
     "crispy_bootstrap5",
+    'django_bootstrap_icons',
+    ## moje appky
     "hw",
     "accounts",
 ]

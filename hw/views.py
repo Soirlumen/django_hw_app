@@ -11,7 +11,8 @@ def hw_list_view(request):
     assignments_student = []
 
     if hasattr(request.user, "teacher_profile"):
-        assignments_teacher = Assignment.objects.filter(teacher=request.user)
+        subjects=request.user.teacher_profile.subjects.all()
+        assignments_teacher = Assignment.objects.filter(subject__in=subjects)
 
     if hasattr(request.user, "student_profile"):
         subjects = request.user.student_profile.subjects.all()

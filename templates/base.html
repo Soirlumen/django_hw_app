@@ -1,4 +1,5 @@
 {%load static %}
+{% load bootstrap_icons %}
 <html>
 <head>
     <title>{%block title%}{%endblock title%}
@@ -35,14 +36,10 @@ id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
   <li>
     <a class="dropdown-item" href="{% url 'profile' %}">Profil</a>
   </li>
-  <li>
-    <form action="{% url 'logout' %}" method="post" style="display: block; margin: 0; padding: 0;">
+  <li >
+    <form action="{% url 'logout' %}" method="post">
       {% csrf_token %}
-     <button type="submit"
-  class="dropdown-item"
-  style="background: none; border: none; width: 100%; text-align: left; padding: 0.25rem 1rem;"
-  onmouseover="this.style.backgroundColor='#f8f9fa';"
-  onmouseout="this.style.backgroundColor='';">
+     <button class="dropdown-item" type="submit">
   Log out
 </button>
     </form>
@@ -64,6 +61,13 @@ Log In</a>
 {% block content %}
 {% endblock content %}
 </main>
+<footer class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
+<p class="fs-5 ms-2" >© Soirlumem 2025</p>
+               <div class="d-flex gap-3 me-2"><a target="_blank" href="https://github.com/Soirlumen/django_hw_app" class="text-reset">
+      {% bs_icon "github" size="1.5em" %} </a>
+    {% comment %} <a target="_blank" href="https://www.deviantart.com/soirlumen" class="text-reset">{% bs_icon "heart-half" size="1.5em" %}</a> {% endcomment %}
+  </div>
+</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
