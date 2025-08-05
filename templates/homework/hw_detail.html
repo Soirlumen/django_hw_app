@@ -35,7 +35,7 @@
 
             {% if hw.score %}
                 <div class="mb-3">
-                    <strong>Skóre:</strong> {{ hw.score }} / {{ hwdetail.max_score }}
+                    <strong>Skóre:</strong> {{ hw.score }} / {{ hw.key.assignment.max_score }}
                 </div>
             {% endif %}
             <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-primary mt-3">upravit hodnocení</a>

@@ -157,10 +157,14 @@ def assgn_delete_view(request, pk):
 
 def hw_detail_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
+    teacher_subjects = []
+    if hasattr(request.user, "teacher_profile"):
+        teacher_subjects = request.user.teacher_profile.subjects.all()
+    ## docasne reseni :')
+    is_student = request.user == hw.key.student
+    is_subject_teacher = hw.key.assignment.subject in teacher_subjects
 
-    if not (
-        request.user == hw.key.student or request.user == hw.key.assignment.teacher
-    ):
+    if not (is_student or is_subject_teacher):
         return HttpResponseForbidden("Nemáš přístup k tomuto domácímu úkolu.")
 
     return render(request, "homework/hw_detail.html", {"hw": hw})
