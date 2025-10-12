@@ -2,46 +2,41 @@ from django.contrib import admin
 from hw.models import Subject
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, StudentProfile, TeacherProfile
+from .models import CustomUser, SubjectType
 
-
-@admin.register(TeacherProfile)
-class TeacherProfileAdmin(admin.ModelAdmin):
-    list_display = (
-        "user",
-        "department",
-    )
-    filter_horizontal = ("subjects",)
-    autocomplete_fields = ["user"]
-
-
-@admin.register(StudentProfile)
-class StudentProfileAdmin(admin.ModelAdmin):
-    list_display = ("user",)
-    filter_horizontal = ("subjects",)
-    autocomplete_fields = ["user"]
-
-    def get_subjects(self, obj):
-        return ", ".join([s.name for s in obj.subjects.all()])
-
-    get_subjects.short_description = "Subjects"
-
+class SubjectTypeInline(admin.TabularInline):
+    model = SubjectType
+    extra = 1
+    autocomplete_fields = ["subject"] 
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ["email", "username", "role", "is_staff"]
-    list_filter = ("role", "is_staff", "is_superuser", "is_active")
-    search_fields = ("username", "email")
-    ordering = ("email",)
+    inlines = [SubjectTypeInline]
+
+    list_display = (
+        "username",
+        "email",
+        "is_staff",
+        "student_subjects_count",
+        "teacher_subjects_count",
+    )
+    list_filter = (
+        "is_staff",
+        "is_superuser",
+        "is_active",
+        "groups",
+    )
+    search_fields = ("username", "email", "first_name", "surname")
+    ordering = ("username",)
 
     add_fieldsets = (
         (
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "first_name","surname","tel","email", "role", "password1", "password2"),
+                "fields": ("username", "first_name","surname","tel","email", "password1", "password2"),
             },
         ),
     )
@@ -62,17 +57,20 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
-        ("Role info", {"fields": ("role",)}),
     )
+    def student_subjects_count(self, obj):
+        return obj.subject_type.filter(role="student").count()
+    student_subjects_count.short_description = "Předmětů (student)"
 
-    def save_model(self, request, obj, form, change):
-        is_new = obj.pk is None
-        super().save_model(request, obj, form, change)
+    def teacher_subjects_count(self, obj):
+        return obj.subject_type.filter(role="teacher").count()
+    teacher_subjects_count.short_description = "Předmětů (učitel)"
 
-        if is_new:
-            if obj.role == "student":
-                StudentProfile.objects.get_or_create(user=obj)
-            elif obj.role == "teacher":
-                TeacherProfile.objects.get_or_create(user=obj)
+@admin.register(SubjectType)
+class SubjectTypeAdmin(admin.ModelAdmin):
+    list_display = ("user", "subject", "role")
+    list_filter = ("role",)
+    search_fields = ("user__username", "user__email", "subject__name")
+    autocomplete_fields = ("user", "subject")
 
 admin.site.register(CustomUser, CustomUserAdmin)

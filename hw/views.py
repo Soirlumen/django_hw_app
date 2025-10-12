@@ -1,11 +1,15 @@
 from .models import Homework, Assignment, Key
+from accounts.models import SubjectType
 from .forms import HomeworkForm, AssignmentForm, EvaluationForm
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
+from django.utils import timezone
 from django.http import HttpResponseForbidden,HttpResponseBadRequest
 from django.contrib import messages
 
+
+@login_required
 def hw_list_view(request):
     assignments_teacher = []
     assignments_student = []

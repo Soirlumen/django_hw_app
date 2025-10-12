@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 import datetime
+from django.core.exceptions import ValidationError
 from django.db.models import UniqueConstraint, CheckConstraint, Q, F
 from django.conf import settings
 
@@ -46,6 +47,14 @@ class Key(models.Model):
 
     def __str__(self):
         return f"{self.student}-{self.assignment}"
+    def clean(self):
+        subj = self.assignment.subject
+        if not subj.subject_type.filter(user=self.student, role="student").exists():
+            raise ValidationError("Uživatel není studentem tohoto předmětu.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
     class Meta:
         constraints = [

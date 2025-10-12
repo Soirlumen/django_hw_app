@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     'django_bootstrap_icons',
+    "phonenumber_field",
     ## moje appky
     "hw",
     "accounts",
@@ -139,3 +140,4 @@ SIGNUP_REDIRECT_URL = "login"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "all"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+PHONENUMBER_DEFAULT_REGION = "CZ" 
