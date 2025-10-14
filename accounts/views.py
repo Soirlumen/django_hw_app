@@ -12,30 +12,19 @@ class SignUpView(CreateView):
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
 
-
 @login_required
 def profile_view(request):
-    teacher_links = (
-        SubjectType.objects
-        .select_related("subject")
-        .filter(user=request.user, role="teacher")
-    )
-    student_links = (
-        SubjectType.objects
-        .select_related("subject")
-        .filter(user=request.user, role="student")
-    )
-
-    teacher_subjects = [st.subject for st in teacher_links]
-    student_subjects = [st.subject for st in student_links]
-
     return render(
         request,
         "accounts/profile.html",
         {
-            "teacher_subjects": teacher_subjects,
-            "student_subjects": student_subjects,
-            "is_teacher": getattr(request.user, "is_teacher", False),
-            "is_student": getattr(request.user, "is_student", False),
+            "teacher_subjects": request.user.teacher_subjects,
+            "student_subjects": request.user.student_subjects,
+            "is_teacher": request.user.is_teacher,
+            "is_student": request.user.is_student,
         },
     )
+
+@login_required
+def dashboard_view(request):
+    return render(request, "dashboard.html")

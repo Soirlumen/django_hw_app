@@ -74,3 +74,4 @@ class SubjectTypeAdmin(admin.ModelAdmin):
     autocomplete_fields = ("user", "subject")
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
