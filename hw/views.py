@@ -4,7 +4,7 @@ from .forms import HomeworkForm, AssignmentForm, EvaluationForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
-
+from accounts.decorators import teacher_required, student_required
 from django.http import HttpResponseForbidden,HttpResponseBadRequest
 from django.contrib import messages
 
@@ -36,14 +36,16 @@ def hw_list_view(request):
         },
     )
 
-
-""" 
-def hw_list_view(request):
-    assign=Assignment.objects.all()
-    if not assign.exists():
-        return render(request,"list.html",{"message":"...nic tu zatím není..."})
-    return render(request,"list.html",{"assign":assign}) """
-
+@teacher_required
+def assgn_detail_teacher(request,pk):
+    assignm=get_object_or_404(Assignment,pk=pk)
+    homeworks = Homework.objects.filter(key__assignment=assignm)
+    return render(
+            request,
+            "homework/teacher_detail.html",
+            {"assignment": assignm, "homeworks": homeworks},
+        )
+'''
 def assgn_detail_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
 
@@ -71,6 +73,24 @@ def assgn_detail_view(request, pk):
         )
 
     return HttpResponseForbidden("Nemáš přístup.")
+'''
+
+@student_required
+def assgn_detail_stud(request, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+
+    key, created = Key.objects.get_or_create(student=request.user, assignment=assignment)
+    submitted_homework = Homework.objects.filter(key=key).first()
+    already_submitted = submitted_homework is not None
+    return render(
+        request,
+        "homework/student_detail.html",
+        {
+            "hwdetail": assignment,
+            "already_submitted": already_submitted,
+            "submitted_homework": submitted_homework,
+        },
+        )
 
 def assignment_create_view(request):
     if not request.user.is_authenticated or not request.user.is_teacher:
@@ -84,11 +104,10 @@ def assignment_create_view(request):
                 return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
             ass.teacher = request.user
             ass.save()
-            return redirect("assgn_detail", pk=ass.pk)
+            return redirect("assgn_detail_teacher", pk=ass.pk)
     else:
         form = AssignmentForm(user=request.user)
     return render(request, "homework/ass_create.html", {"form": form})
-
 
 def hw_create_view(request):
     assgn_id = request.GET.get("assgn_id")
@@ -171,7 +190,6 @@ def create_evaluation_view(request, pk):
         form = EvaluationForm(instance=hw)
     return render(request, "homework/hw_evaluate.html", {"form": form, "hw": hw})
 
-
 def edit_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     if hw.key.assignment.teacher != request.user:
@@ -187,7 +205,6 @@ def edit_evaluation_view(request, pk):
     return render(
         request, "homework/hw_evaluation_update.html", {"form": form, "hw": hw}
     )
-
 
 def delete_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)

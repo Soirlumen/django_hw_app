@@ -33,7 +33,7 @@
                                     <td>{{ a.title }}</td>
                                     <td>{{ a.deadline }}</td>
                                     <td>{{ a.subject.name }}</td>
-                                    <td><a href="{% url 'assgn_detail' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
+                                    <td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -69,7 +69,7 @@
                                     <td>{{ assgn.deadline }}</td>
                                     <td>{{ assgn.subject.name }}</td>
                                     <td>{{ assgn.teacher }}</td>
-                                    <td><a href="{% url 'assgn_detail' pk=assgn.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
+                                    <td><a href="{% url 'assgn_detail_student' pk=assgn.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
