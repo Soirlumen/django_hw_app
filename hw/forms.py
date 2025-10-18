@@ -12,8 +12,14 @@ class AssignmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super(AssignmentForm, self).__init__(*args, **kwargs)
-        if self.user and hasattr(self.user, "teacher_profile"):
-            self.fields["subject"].queryset = self.user.teacher_profile.subjects.all()
+        if self.user:
+            self.fields["subject"].queryset = self.user.teacher_subjects
+        
+    def clean_subject(self):
+        subject = self.cleaned_data["subject"]
+        if self.user and not subject.subject_type.filter(user=self.user, role="teacher").exists():
+            raise forms.ValidationError("Na tomto předmětu nejsi veden jako učitel.")
+        return subject
 
     class Meta:
         model = Assignment
