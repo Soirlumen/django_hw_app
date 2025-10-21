@@ -4,6 +4,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db.models import UniqueConstraint, CheckConstraint, Q, F
 from django.conf import settings
+from django.utils import timezone
 
 YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
@@ -26,8 +27,18 @@ class Assignment(models.Model):
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField()
     max_score = models.PositiveSmallIntegerField(null=True)
-    deadline = models.DateTimeField(null=True)
-    release = models.DateTimeField(null=True)
+    deadline = models.DateTimeField()
+    release = models.DateTimeField()
+    
+    @property
+    def after_deadline(self)->bool:
+        return self.deadline>timezone.now()
+    @property
+    def before_release(self)->bool:
+        return self.release<timezone.now()
+    @property
+    def active(self)->bool:
+        return (not self.before_release and not self.after_deadline)
 
     def __str__(self):
         return self.title
@@ -39,7 +50,6 @@ class Assignment(models.Model):
         ordering = [
             "release",
         ]
-
 
 class Key(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -60,7 +70,6 @@ class Key(models.Model):
         constraints = [
             UniqueConstraint(fields=["student", "assignment"], name="student_assgn")
         ]
-
 
 class Homework(models.Model):
     ## část pro studenta
