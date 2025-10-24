@@ -2,6 +2,9 @@ from django.urls import path
 from .views import (
     assgn_delete_view,
     hw_list_view,
+    hw_list_active_view,
+    hw_list_after_deadline_view,
+    hw_teacher_list_before_release_view,
     hw_update_view,
     #assgn_detail_view,
     assgn_detail_stud,
@@ -16,6 +19,9 @@ from .views import (
 
 urlpatterns = [
     path("", hw_list_view, name="list"),
+    path("list/active/", hw_list_active_view, name="list_active"),
+    path("list/before_release/", hw_teacher_list_before_release_view, name="list_before_release"),
+    path("list/after_deadline", hw_list_after_deadline_view, name="list_after_deadline"),
     #path("assignment/<int:pk>/", assgn_detail_view, name="assgn_detail"),
     path("homework/<int:pk>/", hw_detail_view, name="hw_detail"),
     path("homework/createass/", assignment_create_view, name="ass_create"),

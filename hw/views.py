@@ -7,6 +7,59 @@ import datetime
 from accounts.decorators import teacher_required, student_required, own_required
 from django.http import HttpResponseForbidden,HttpResponseBadRequest
 from django.contrib import messages
+from django.utils import timezone
+
+
+@teacher_required
+def hw_teacher_list_before_release_view(request):
+    now = timezone.now()
+    subjects=request.user.teacher_subjects
+    filtered_subjc=Assignment.objects.filter(subject__in=subjects,release__gt=now)
+    return render(request, "list/before_release.html", {"filtered_subjc": filtered_subjc})
+
+@login_required
+def hw_list_active_view(request):
+    assignments_teacher = []
+    assignments_student = []
+    now = timezone.now()
+    if request.user.is_teacher:
+        subjects = request.user.teacher_subjects
+        assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
+        
+    # student
+    if request.user.is_student:
+        subjects = request.user.student_subjects
+        assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
+    
+    return render(request, "list/active.html",
+        {
+            "assignments_teacher": assignments_teacher,
+            "assignments_student": assignments_student,
+        },
+    )
+
+@login_required
+def hw_list_after_deadline_view(request):
+    assignments_teacher = []
+    assignments_student = []
+    now = timezone.now()
+    if request.user.is_teacher:
+        subjects = request.user.teacher_subjects
+        assignments_teacher = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
+        
+    # student
+    if request.user.is_student:
+        subjects = request.user.student_subjects
+        assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
+    return render(request, "list/after_deadline.html",
+        {
+            "assignments_teacher": assignments_teacher,
+            "assignments_student": assignments_student,
+        },
+    )    
+
+
+
 
 @login_required
 def hw_list_view(request):
@@ -17,7 +70,7 @@ def hw_list_view(request):
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
         assignments_teacher = Assignment.objects.filter(subject__in=subjects)
-        #assignments_teacher_before_release=Assignment.objects.filter(subject__in=subjects and subjects.before_release)
+    
         
     # student
     if request.user.is_student:
@@ -35,6 +88,9 @@ def hw_list_view(request):
             "assignments_student": assignments_student,
         },
     )
+    
+    
+    
 
 @teacher_required
 def assgn_detail_teacher(request,pk):

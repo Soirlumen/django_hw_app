@@ -11,19 +11,22 @@
             </div>
         {% endif %}
 
-        {% if assignments_teacher %}
 
 <ul class="nav nav-tabs">
+
+  {% if user.is_teacher %}   
   <li class="nav-item">
-    <a class="nav-link active" href="{% url 'password_change' %}">kvak</a>
+    <a class="nav-link" href="{% url 'list_before_release' %}">Před releasem</a>
+  </li>
+     {% endif %}
+  <li class="nav-item">
+    <a class="nav-link active" href="{% url 'list_active' %}">Aktivní úkoly</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{% url 'password_change' %}">Zadání</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{% url 'password_change' %}">Hodnocení</a>
+    <a class="nav-link" href="{% url 'list_after_deadline' %}">Po deadlinu</a>
   </li>
 </ul>
+{% if assignments_teacher %}
 
         <div class="card mb-4">
             <div class="card-header">
