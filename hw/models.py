@@ -32,6 +32,11 @@ class Assignment(models.Model):
 
     def __str__(self):
         return self.title
+    def clean(self):
+        if self.deadline < self.release:
+            raise ValidationError({
+                'deadline': "Deadline nemůže být dříve než release."
+            })
 
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.key.assignment.pk})
