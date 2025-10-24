@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     assgn_delete_view,
-    hw_list_view,
+    #hw_list_view,
     hw_list_active_view,
     hw_list_after_deadline_view,
     hw_teacher_list_before_release_view,
@@ -18,7 +18,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path("", hw_list_view, name="list"),
+    #path("", hw_list_view, name="list"),
     path("list/active/", hw_list_active_view, name="list_active"),
     path("list/before_release/", hw_teacher_list_before_release_view, name="list_before_release"),
     path("list/after_deadline", hw_list_after_deadline_view, name="list_after_deadline"),

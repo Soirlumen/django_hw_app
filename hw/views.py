@@ -58,9 +58,7 @@ def hw_list_after_deadline_view(request):
         },
     )    
 
-
-
-
+""" 
 @login_required
 def hw_list_view(request):
     assignments_teacher = []
@@ -88,7 +86,7 @@ def hw_list_view(request):
             "assignments_student": assignments_student,
         },
     )
-    
+     """
     
     
 
