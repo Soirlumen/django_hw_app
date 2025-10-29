@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import UniqueConstraint, CheckConstraint, Q, F
 from django.conf import settings
 
+
 YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
     YEAR_CHOICES.append((r, r))
@@ -26,11 +27,16 @@ class Assignment(models.Model):
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField()
     max_score = models.PositiveSmallIntegerField(null=True)
-    deadline = models.DateTimeField(null=True)
-    release = models.DateTimeField(null=True)
+    deadline = models.DateTimeField()
+    release = models.DateTimeField()
 
     def __str__(self):
         return self.title
+    def clean(self):
+        if self.deadline < self.release:
+            raise ValidationError({
+                'deadline': "Deadline nemůže být dříve než release."
+            })
 
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.key.assignment.pk})
@@ -39,7 +45,6 @@ class Assignment(models.Model):
         ordering = [
             "release",
         ]
-
 
 class Key(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -60,7 +65,6 @@ class Key(models.Model):
         constraints = [
             UniqueConstraint(fields=["student", "assignment"], name="student_assgn")
         ]
-
 
 class Homework(models.Model):
     ## část pro studenta

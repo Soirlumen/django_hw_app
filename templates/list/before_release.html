@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Seznam úkolů{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+
+    {% if user.is_authenticated %}
+        {% if message %}
+            <div class="alert alert-info">
+                {{ message }}
+            </div>
+        {% endif %}
+        
+<ul class="nav nav-tabs">
+  {% if user.is_teacher %}   
+  <li class="nav-item">
+    <a class="nav-link active" href="{% url 'list_before_release' %}">Před releasem</a>
+  </li>
+     {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'list_active' %}">Aktivní úkoly</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'list_after_deadline' %}">Po deadlinu</a>
+          </li>
+        </ul>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Zadání</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Název</th>
+                                <th>Deadline</th>
+                                <th>Předmět</th>
+                                <th>Zobrazit řešení</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in filtered_subjc %}
+                                <tr>
+                                    <td>{{ a.title }}</td>
+                                    <td>{{ a.deadline }}</td>
+                                    <td>{{ a.subject.name }}</td>
+                                    <td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+</div>
+{% endblock content %}

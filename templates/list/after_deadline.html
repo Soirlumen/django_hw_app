@@ -11,7 +11,22 @@
             </div>
         {% endif %}
 
-        {% if assignments_teacher %}
+
+<ul class="nav nav-tabs"> 
+  {% if user.is_teacher %}   
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'list_before_release' %}">Před releasem</a>
+  </li>
+     {% endif %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'list_active' %}">Aktivní úkoly</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="{% url 'list_after_deadline' %}">Po deadlinu</a>
+  </li>
+</ul>
+{% if assignments_teacher %}
+
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Zadání</h5>
@@ -33,7 +48,7 @@
                                     <td>{{ a.title }}</td>
                                     <td>{{ a.deadline }}</td>
                                     <td>{{ a.subject.name }}</td>
-                                    <td><a href="{% url 'assgn_detail' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
+                                    <td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -69,7 +84,7 @@
                                     <td>{{ assgn.deadline }}</td>
                                     <td>{{ assgn.subject.name }}</td>
                                     <td>{{ assgn.teacher }}</td>
-                                    <td><a href="{% url 'assgn_detail' pk=assgn.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
+                                    <td><a href="{% url 'assgn_detail_student' pk=assgn.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
