@@ -104,7 +104,7 @@ def assgn_detail_teacher(request,pk):
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
 
-    key, created = Key.objects.get_or_create(student=request.user, assignment=assignment)
+    key, created = Key.objects.get(student=request.user, assignment=assignment)
     submitted_homework = Homework.objects.filter(key=key).first()
     already_submitted = submitted_homework is not None
     return render(
