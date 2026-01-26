@@ -39,7 +39,7 @@ class Assignment(models.Model):
             })
 
     def get_absolute_url(self):
-        return reverse("hw_detail", kwargs={"pk": self.key.assignment.pk})
+        return reverse("assgn_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = [
@@ -54,8 +54,12 @@ class Key(models.Model):
         return f"{self.student}-{self.assignment}"
     def clean(self):
         subj = self.assignment.subject
+        if subj is None:
+            raise ValidationError("Úkol nemá přiřazený předmět.")
+
         if not subj.subject_type.filter(user=self.student, role="student").exists():
             raise ValidationError("Uživatel není studentem tohoto předmětu.")
+
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -80,3 +84,28 @@ class Homework(models.Model):
 
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.pk})
+
+
+
+from django.core.exceptions import ValidationError
+
+class ReviewHomework(models.Model):
+    hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
+    reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comment = models.TextField()
+
+    def clean(self):
+        if self.hw.key.student_id == self.reviewer_id:
+            raise ValidationError("Reviewer nemůže být autor domácího úkolu.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["hw", "reviewer"],
+                name="unique_hw_reviewer"
+            )
+        ]

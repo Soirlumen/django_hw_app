@@ -1,4 +1,4 @@
-from .models import Homework, Assignment, Key
+from .models import Homework, Assignment, Key, ReviewHomework
 from accounts.models import SubjectType
 from .forms import HomeworkForm, AssignmentForm, EvaluationForm
 from django.contrib.auth.decorators import login_required
@@ -103,10 +103,13 @@ def assgn_detail_teacher(request,pk):
 @student_required
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
-
-    key, created = Key.objects.get(student=request.user, assignment=assignment)
+    key, created = Key.objects.get_or_create(
+        student=request.user,
+        assignment=assignment
+    )
     submitted_homework = Homework.objects.filter(key=key).first()
     already_submitted = submitted_homework is not None
+
     return render(
         request,
         "homework/student_detail.html",
@@ -115,7 +118,9 @@ def assgn_detail_stud(request, pk):
             "already_submitted": already_submitted,
             "submitted_homework": submitted_homework,
         },
-        )
+    )
+
+    
 @teacher_required
 def assignment_create_view(request):
     if request.method == "POST":
@@ -231,32 +236,7 @@ def delete_evaluation_view(request, pk):
     return render(request, "homework/hw_evaluation_delete_confirm.html", {"hw": hw})
 
 
-'''
-def assgn_detail_view(request, pk):
-    assignment = get_object_or_404(Assignment, pk=pk)
+def nevim_pak_prejmenuju(ReviewHomework):
+    pass
+    #neco=    
 
-    if request.user.is_teacher and assignment.subject in request.user.teacher_subjects:
-        homeworks = Homework.objects.filter(key__assignment=assignment)
-        return render(
-            request,
-            "homework/teacher_detail.html",
-            {"assignment": assignment, "homeworks": homeworks},
-        )
-
-    elif request.user.is_student and assignment.subject in request.user.student_subjects:
-        key, created = Key.objects.get_or_create(student=request.user, assignment=assignment)
-        submitted_homework = Homework.objects.filter(key=key).first()
-        already_submitted = submitted_homework is not None
-
-        return render(
-            request,
-            "homework/student_detail.html",
-            {
-                "hwdetail": assignment,
-                "already_submitted": already_submitted,
-                "submitted_homework": submitted_homework,
-            },
-        )
-
-    return HttpResponseForbidden("Nemáš přístup.")
-'''
