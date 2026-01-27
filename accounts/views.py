@@ -1,7 +1,6 @@
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import CustomUserCreationForm
-from .models import SubjectType
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
