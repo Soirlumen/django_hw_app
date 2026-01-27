@@ -58,38 +58,6 @@ def hw_list_after_deadline_view(request):
         },
     )    
 
-""" 
-@login_required
-def hw_list_view(request):
-    assignments_teacher = []
-    assignments_student = []
-
-    # učitel
-    if request.user.is_teacher:
-        subjects = request.user.teacher_subjects
-        assignments_teacher = Assignment.objects.filter(subject__in=subjects)
-    
-        
-    # student
-    if request.user.is_student:
-        subjects = request.user.student_subjects
-        assignments_student = Assignment.objects.filter(subject__in=subjects)
-
-    if not assignments_teacher and not assignments_student:
-        return render(request, "list.html", {"message": "...nic tu zatím není..."})
-
-    return render(
-        request,
-        "list.html",
-        {
-            "assignments_teacher": assignments_teacher,
-            "assignments_student": assignments_student,
-        },
-    )
-     """
-    
-    
-
 @teacher_required
 def assgn_detail_teacher(request,pk):
     assignm=get_object_or_404(Assignment,pk=pk)

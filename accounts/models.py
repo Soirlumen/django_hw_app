@@ -32,8 +32,7 @@ class SubjectType(models.Model):
         ("teacher", "Teacher"),
     ]
 
-    user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="subject_type"
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="subject_type"
     )
     subject = models.ForeignKey(
         "hw.Subject", on_delete=models.CASCADE, related_name="subject_type"
@@ -46,7 +45,7 @@ class SubjectType(models.Model):
                 fields=["user", "subject"], name="unique_user_subject"
             ),
             models.CheckConstraint(
-                check=models.Q(role__in=["student", "teacher"]),
+                condition=models.Q(role__in=["student", "teacher"]),
                 name="role_valid",
             ),
         ]

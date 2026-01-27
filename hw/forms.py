@@ -1,6 +1,6 @@
 from django import forms
 from .models import Homework, Assignment
-
+from django.core.exceptions import ValidationError
 
 class HomeworkForm(forms.ModelForm):
     class Meta:
@@ -34,3 +34,9 @@ class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Homework
         fields = ("text_evaluation", "score")
+        def clean(self):
+            cleaned_data = super().clean()
+            maxscore=cleaned_data.get("key__assignment__max_score")
+            if self.score > maxscore:
+                raise ValidationError({"score":f"tupče, max score je {maxscore}"})
+    

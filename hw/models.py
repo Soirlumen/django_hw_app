@@ -79,15 +79,18 @@ class Homework(models.Model):
     score = models.PositiveSmallIntegerField(null=True)
     text_evaluation = models.TextField(null=True)
 
+    def clean(self):
+        maxscore=self.key.assignment.max_score
+        if self.score > maxscore:
+            raise ValidationError({"score":f"tupče, max score je {maxscore}"})
+        if self.score is None:
+            raise ValidationError("doplň skóre.")
+    
     def __str__(self):
         return f"homework-{self.key}"
 
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.pk})
-
-
-
-from django.core.exceptions import ValidationError
 
 class ReviewHomework(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
