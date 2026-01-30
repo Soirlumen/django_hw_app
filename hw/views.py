@@ -5,23 +5,29 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
 from accounts.decorators import teacher_required, student_required, own_required
-from django.http import HttpResponseForbidden,HttpResponseBadRequest
+from django.http import HttpResponseForbidden,HttpResponseBadRequest, HttpResponse
 from django.contrib import messages
 from django.utils import timezone
+from django.template import loader
 
 
 @teacher_required
 def hw_teacher_list_before_release_view(request):
     now = timezone.now()
+    template=loader.get_template("list/before_release.html")
     subjects=request.user.teacher_subjects
-    filtered_subjc=Assignment.objects.filter(subject__in=subjects,release__gt=now)
-    return render(request, "list/before_release.html", {"filtered_subjc": filtered_subjc})
+    filtered_subjects=Assignment.objects.filter(subject__in=subjects,release__gt=now)
+    context={
+        "filtered_subjects": filtered_subjects
+    }
+    return HttpResponse(template.render(context,request))
 
 @login_required
 def hw_list_active_view(request):
     assignments_teacher = []
     assignments_student = []
     now = timezone.now()
+    template=loader.get_template("list/active.html")
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
         assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
@@ -30,13 +36,11 @@ def hw_list_active_view(request):
     if request.user.is_student:
         subjects = request.user.student_subjects
         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
-    
-    return render(request, "list/active.html",
-        {
+    context={
             "assignments_teacher": assignments_teacher,
             "assignments_student": assignments_student,
-        },
-    )
+    }
+    return HttpResponse(template.render(context,request))
 
 @login_required
 def hw_list_after_deadline_view(request):

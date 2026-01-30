@@ -37,10 +37,6 @@ class Assignment(models.Model):
             raise ValidationError({
                 'deadline': "Deadline nemůže být dříve než release."
             })
-
-    def get_absolute_url(self):
-        return reverse("assgn_detail", kwargs={"pk": self.pk})
-
     class Meta:
         ordering = [
             "release",
