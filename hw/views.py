@@ -47,6 +47,7 @@ def hw_list_after_deadline_view(request):
     assignments_teacher = []
     assignments_student = []
     now = timezone.now()
+    template=loader.get_template("list/after_deadline.html")
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
         assignments_teacher = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
@@ -55,58 +56,56 @@ def hw_list_after_deadline_view(request):
     if request.user.is_student:
         subjects = request.user.student_subjects
         assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
-    return render(request, "list/after_deadline.html",
-        {
-            "assignments_teacher": assignments_teacher,
-            "assignments_student": assignments_student,
-        },
-    )    
+    context={
+        "assignments_teacher": assignments_teacher,
+        "assignments_student": assignments_student,
+            }
+    return HttpResponse(template.render(context,request))
 
 @teacher_required
-def assgn_detail_teacher(request,pk):
-    assignm=get_object_or_404(Assignment,pk=pk)
-    homeworks = Homework.objects.filter(key__assignment=assignm)
-    return render(
-            request,
-            "homework/teacher_detail.html",
-            {"assignment": assignm, "homeworks": homeworks},
-        )
+def assgn_detail_teacher(request, pk):
+    assignment=get_object_or_404(Assignment,pk=pk)
+    template=loader.get_template("homework/teacher_detail.html")
+    homeworks = Homework.objects.filter(key__assignment=assignment)
+    context={
+        "assignment": assignment,"homeworks": homeworks}
+    
+    return HttpResponse(template.render(context,request))
 
 @student_required
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
+    template =loader.get_template("homework/student_detail.html")
     key, created = Key.objects.get_or_create(
         student=request.user,
         assignment=assignment
     )
     submitted_homework = Homework.objects.filter(key=key).first()
     already_submitted = submitted_homework is not None
-
-    return render(
-        request,
-        "homework/student_detail.html",
-        {
+    context={
             "hwdetail": assignment,
             "already_submitted": already_submitted,
             "submitted_homework": submitted_homework,
-        },
-    )
+            }
+    return HttpResponse(template.render(context,request))
 
     
 @teacher_required
 def assignment_create_view(request):
+    template=loader.get_template("homework/ass_create.html")
     if request.method == "POST":
         form = AssignmentForm(request.POST, user=request.user)
         if form.is_valid():
-            ass = form.save(commit=False)
-            if ass.subject not in request.user.teacher_subjects:
+            assignment = form.save(commit=False)
+            if assignment.subject not in request.user.teacher_subjects:
                 return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
-            ass.teacher = request.user
-            ass.save()
-            return redirect("assgn_detail_teacher", pk=ass.pk)
+            assignment.teacher = request.user
+            assignment.save()
+            return redirect("assgn_detail_teacher", pk=assignment.pk)
     else:
         form = AssignmentForm(user=request.user)
-    return render(request, "homework/ass_create.html", {"form": form})
+        context={"form": form}
+    return HttpResponse(template.render(context,request))
 
 @student_required
 def hw_create_view(request):
@@ -134,7 +133,9 @@ def hw_create_view(request):
             return redirect("hw_detail", pk=hw.pk)
     else:
         form = HomeworkForm()
-    return render(request, "homework/hw_create.html", {"form": form, "hwdetail": assignment})
+    template=loader.get_template("homework/hw_create.html")
+    context={"form": form, "hwdetail": assignment}
+    return HttpResponse(template.render(context,request))
 
 # @student_required
 @own_required(Homework,'key__student')
@@ -149,30 +150,35 @@ def hw_update_view(request, pk):
             return redirect("hw_detail", pk=hw.pk)
     else:
         form = HomeworkForm(instance=hw)
-    return render(request, "homework/hw_update.html", {"form": form, "hw": hw})
+    template=loader.get_template("homework/hw_update.html")
+    context={"form": form, "hw": hw}
+    return HttpResponse(template.render(context,request))
 
 @own_required(Assignment,'teacher')
 def assgn_delete_view(request, pk):
     assgn = get_object_or_404(Assignment, pk=pk)
+    template=loader.get_template("homework/ass_delete_confirm.html")
     if request.method == "POST":
         assgn.delete()
         return redirect("list")
-    return render(request, "homework/ass_delete_confirm.html", {"assgn": assgn})
+    context={"assgn": assgn}
+    return HttpResponse(template.render(context,request))
 
 @login_required
 def hw_detail_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     is_student = request.user == hw.key.student
     is_subject_teacher = request.user.is_teacher and hw.key.assignment.subject in request.user.teacher_subjects
-
+    template=loader.get_template("homework/hw_detail.html")
     if not (is_student or is_subject_teacher):
         return HttpResponseForbidden("Nemáš přístup k tomuto domácímu úkolu.")
-
-    return render(request, "homework/hw_detail.html", {"hw": hw})
+    context={"hw": hw}
+    return HttpResponse(template.render(context,request))
 
 @own_required(Homework,'key__assignment__teacher')
 def create_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
+    template=loader.get_template("homework/hw_evaluate.html")
     if request.method == "POST":
         form = EvaluationForm(request.POST, instance=hw)
         if form.is_valid():
@@ -180,11 +186,13 @@ def create_evaluation_view(request, pk):
             return redirect("hw_detail", pk=hw.pk)
     else:
         form = EvaluationForm(instance=hw)
-    return render(request, "homework/hw_evaluate.html", {"form": form, "hw": hw})
+    context={"form": form, "hw": hw}
+    return HttpResponse(template.render(context,request))
 
 @own_required(Homework,'key__assignment__teacher')
 def edit_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
+    template=loader.get_template("homework/hw_evaluation_update.html")
     if request.method == "POST":
         form = EvaluationForm(request.POST, instance=hw)
         if form.is_valid():
@@ -193,19 +201,20 @@ def edit_evaluation_view(request, pk):
             return redirect("hw_detail", pk=hw.pk)
     else:
         form = EvaluationForm(instance=hw)
-    return render(
-        request, "homework/hw_evaluation_update.html", {"form": form, "hw": hw}
-    )
+    context={"form": form, "hw": hw}
+    return HttpResponse(template.render(context,request))
 
 @own_required(Homework,'key__assignment__teacher')
 def delete_evaluation_view(request, pk):
+    template=loader.get_template("homework/hw_evaluation_delete_confirm.html")
     hw = get_object_or_404(Homework, pk=pk)
     if request.method == "POST":
         hw.score = None
         hw.text_evaluation = None
         hw.save()
         return redirect("hw_detail", pk=hw.pk)
-    return render(request, "homework/hw_evaluation_delete_confirm.html", {"hw": hw})
+    context={"hw": hw}
+    return HttpResponse(template.render(context,request))
 
 
 def nevim_pak_prejmenuju(ReviewHomework):

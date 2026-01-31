@@ -16,3 +16,8 @@ class TestPages(BaseHWTestCase):
       self.assertTrue(self.client.login(username="teacher", password="pass"))
       response=self.client.get("/hw/list/active/")
       self.assertEqual(response.status_code,200)
+   def test_after_deadline(self):
+      self.assertTrue(self.client.login(username="teacher", password="pass"))
+      response=self.client.get("/hw/list/after_deadline/")
+      self.assertEqual(response.status_code,200)
+      
