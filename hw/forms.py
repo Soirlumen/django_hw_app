@@ -38,5 +38,5 @@ class EvaluationForm(forms.ModelForm):
             cleaned_data = super().clean()
             maxscore=cleaned_data.get("key__assignment__max_score")
             if self.score > maxscore:
-                raise ValidationError({"score":f"tupče, max score je {maxscore}"})
+                raise ValidationError({"score":f"max score je {maxscore}"})
     
