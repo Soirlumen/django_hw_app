@@ -199,8 +199,3 @@ def delete_evaluation_view(request, pk):
         return redirect("hw_detail", pk=hw.pk)
     context={"hw": hw}
     return render(request,"homework/hw_evaluation_delete_confirm.html",context)
-
-
-def nevim_pak_prejmenuju(request):
-    pass
-    #neco=

@@ -2,7 +2,6 @@ from .setUp import BaseHWTestCase
 from django.urls import reverse
 
 class TestPages(BaseHWTestCase):
-   """
    def test_homepage_status_code(self):
       self.assertTrue(self.client.login(username="teacher", password="pass"))
       response=self.client.get('/')
@@ -22,7 +21,6 @@ class TestPages(BaseHWTestCase):
       self.assertTrue(self.client.login(username="teacher", password="pass"))
       response=self.client.get("/hw/list/after_deadline/")
       self.assertEqual(response.status_code,200) 
-      """
    def test_assignment_detail_teacher(self):
       self.assertTrue(self.client.login(username="teacher", password="pass"))
       response=self.client.get(reverse("assgn_detail_teacher", kwargs={"pk":self.assignment.pk}))
@@ -31,4 +29,12 @@ class TestPages(BaseHWTestCase):
       self.assertTrue(self.client.login(username="student", password="pass"))
       response=self.client.get(reverse('assgn_detail_student', kwargs={'pk': self.assignment.pk}))
       self.assertEqual(response.status_code,200)      
+   def test_create_assignment(self):
+      self.assertTrue(self.client.login(username="teacher", password="pass"))
+      response=self.client.get("/hw/homework/createass/")
+      self.assertEqual(response.status_code,200)      
+   def test_show_homework(self):
+      self.assertTrue(self.client.login(username="student", password="pass"))
+      response=self.client.get(reverse("hw_detail",kwargs={"pk":self.homework.pk}))
+      self.assertEqual(response.status_code,200)  
       

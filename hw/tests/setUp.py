@@ -40,7 +40,7 @@ class BaseHWTestCase(TestCase):
                title="Domácí úkol 1",
                subject=self.subject,
                teacher=self.teacher,
-               description="Testovací úkol",
+               description="Testovací zadání",
                max_score=10,
                release=now - timedelta(days=1),
                deadline=now + timedelta(days=1),
@@ -49,4 +49,9 @@ class BaseHWTestCase(TestCase):
           self.key = Key.objects.create(
                student=self.student,
                assignment=self.assignment
+          )
+          self.homework=Homework.objects.create(
+               key = self.key,
+               engrossment = "Testovací odevzdaný úkol",
+               submitted = now,
           )
