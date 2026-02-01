@@ -35,7 +35,6 @@ class BaseHWTestCase(TestCase):
           )
 
           now = timezone.now()
-
           # assignment
           self.assignment = Assignment.objects.create(
                title="Domácí úkol 1",

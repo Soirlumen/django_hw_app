@@ -17,7 +17,7 @@ def student_required(view_func):
      def _wrapped_view(request,*args,**kwargs):
           if request.user.is_authenticated and request.user.is_student:
                return view_func(request,*args,**kwargs)
-          return HttpResponseForbidden("K této stránce mají přístup pouze studenti")
+          return HttpResponseForbidden("K této stránce mají přístup pouze studenti.")
      return _wrapped_view
 
 

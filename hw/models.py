@@ -56,7 +56,6 @@ class Key(models.Model):
         if not subj.subject_type.filter(user=self.student, role="student").exists():
             raise ValidationError("Uživatel není studentem tohoto předmětu.")
 
-
     def save(self, *args, **kwargs):
         self.full_clean()
         return super().save(*args, **kwargs)
@@ -96,6 +95,8 @@ class ReviewHomework(models.Model):
     def clean(self):
         if self.hw.key.student_id == self.reviewer_id:
             raise ValidationError("Reviewer nemůže být autor domácího úkolu.")
+        if self.hw.key.assignment.teacher_id==self.reviewer_id:
+            raise ValidationError("Reviewer nemůže být autor zadání úkolu.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
