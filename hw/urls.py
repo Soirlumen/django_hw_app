@@ -15,6 +15,7 @@ from .views import (
     create_evaluation_view,
     edit_evaluation_view,
     delete_evaluation_view,
+    student_evaluation_detail_view,
 )
 
 urlpatterns = [
@@ -33,4 +34,5 @@ urlpatterns = [
     path("homework/<int:pk>/delete_evaluation/",delete_evaluation_view,name="evaluate_delete",),
     path("assignmentt/<int:pk>/",assgn_detail_teacher,name="assgn_detail_teacher",),
     path("assignments/<int:pk>/",assgn_detail_stud,name="assgn_detail_student",),
+    path("evaluate/<int:pk>/",student_evaluation_detail_view,name="student_eval"),
 ]

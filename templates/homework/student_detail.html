@@ -47,6 +47,11 @@
                     <strong>Skóre:</strong> {{ submitted_homework.score }} / {{ hwdetail.max_score }}
                 </div>
             {% endif %}
+{% for comment in comments %}
+    <a href="{% url 'student_eval' comment.pk %}">
+        Zobrazit komentář od {{ comment.reviewer }}
+    </a>
+{% endfor %}
 
         {% endif %}
 

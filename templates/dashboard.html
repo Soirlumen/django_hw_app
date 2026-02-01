@@ -1,68 +1,71 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}
-  Dashboard
-{% endblock %}
-
+{% extends 'base.html' %} {% load static %} 
+{% block title %} 
+Dashboard {% endblock title %} 
 {% block content %}
-  <div class="container mt-5">
-    <h2 class="mb-4">Vítej, {{ user.username }}</h2>
-    <div class="row align-items-stretch">
-      <div class="col-md-6">
-        <div class="card shadow-sm mb-4 h-100">
-          <div class="card-header">Úkolky</div>
-          <div class="card-body d-flex flex-column">
-            <p class="card-text">Jukni co za questy se nabízí</p>
-            <a href="{% url 'list_active' %}" class="btn btn-primary mt-auto">Přejít na úkoly</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-
-
-        <div class="card shadow-sm mb-4 h-100">
-          <div class="card-header">Akcičky</div>
-          <div class="card-body d-flex flex-column">
-            <ul class="list-unstyled flex-grow-1">
-              {% if user.teacher_profile %}
-                <li>
-                  <a href="{% url 'ass_create' %}">Zadat nový úkol</a>
-                </li>
-              {% endif %}
-              {% if user.student_profile %}
-                <li>
-                  <a href="#">Idk hoď hrách na zeď</a>
-                </li>
-              {% endif %}
-              <li>
-                <a href="{% url 'profile' %}">Profil</a>
-              </li>
-            </ul>
-          </div>
+<div class="container mt-5">
+  <h2 class="mb-4">Vítej, {{ user.username }}</h2>
+  <div class="row align-items-stretch">
+    <div class="col-md-6">
+      <div class="card shadow-sm mb-4 h-100">
+        <div class="card-header">Úkolky</div>
+        <div class="card-body d-flex flex-column">
+          <p class="card-text">Jukni co za questy se nabízí</p>
+          <a href="{% url 'list_active' %}" class="btn btn-primary mt-auto"
+            >Přejít na úkoly</a
+          >
         </div>
       </div>
     </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm mb-4 h-100">
+        <div class="card-header">Akcičky</div>
+        <div class="card-body d-flex flex-column">
+          <ul class="list-unstyled flex-grow-1">
+            {% if user.teacher_profile %}
+            <li>
+              <a href="{% url 'ass_create' %}">Zadat nový úkol</a>
+            </li>
+            {% endif %} {% if user.student_profile %}
+            <li>
+              <a href="#">Idk hoď hrách na zeď</a>
+            </li>
+            {% endif %}
+            <li>
+              <a href="{% url 'profile' %}">Profil</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div class="card shadow-sm mb-4 mt-5">
-  <div class="card-header fs-4">Novinky!</div>
-  <div class="card-body">
-    <p class="card-text">Nějaké info, které by se mohlo řešit v budoucnu přes samostatnou app. Přehled změn, oprava broučků atd...</p>
-    <h5 class="mt-4 mb-2">Vedlejší TODO:</h5>
-    <ul class="ps-3 mb-4">
-      <li>navigační lišta</li>
-      <li>rozdělit úkoly a zadání úkolů, pro extrémy co mají i teacher i student profile</li>
-      <li>oznamovací okénka</li>
-      <li>udělat template na zobrazení zadání</li>
-      <li style="text-decoration:line-through">méně divného textu</li>
-    </ul>
-    <div class="text-end">
-      <img src="{% static 'accounts/pixelkaghar.png' %}" class="img-fluid rounded shadow-sm" alt="Nástěnkový obrázek"  style="max-width: 250px; height: auto;" />
+  <div class="card shadow-sm mb-4 mt-5">
+    <div class="card-header fs-4">Novinky!</div>
+    <div class="card-body">
+      <p class="card-text">
+        Nějaké info, které by se mohlo řešit v budoucnu přes samostatnou app.
+        Přehled změn, oprava broučků atd...
+      </p>
+      <h5 class="mt-4 mb-2">Vedlejší TODO:</h5>
+      <ul class="ps-3 mb-4">
+        <li>navigační lišta</li>
+        <li>
+          rozdělit úkoly a zadání úkolů, pro extrémy co mají i teacher i student
+          profile
+        </li>
+        <li>oznamovací okénka</li>
+        <li>udělat template na zobrazení zadání</li>
+        <li style="text-decoration: line-through">méně divného textu</li>
+      </ul>
+      <div class="text-end">
+        <img
+          src="{% static 'accounts/pixelkaghar.png' %}"
+          class="img-fluid rounded shadow-sm"
+          alt="Nástěnkový obrázek"
+          style="max-width: 250px; height: auto"
+        />
+      </div>
     </div>
   </div>
 </div>
-
-
-
-  </div>
-{% endblock %}
+{% endblock content %}

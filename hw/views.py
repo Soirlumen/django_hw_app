@@ -1,4 +1,4 @@
-from .models import Homework, Assignment, Key, ReviewHomework
+from .models import Homework, Assignment, Key, HomeworkStudentComment
 from .forms import HomeworkForm, AssignmentForm, EvaluationForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -74,10 +74,15 @@ def assgn_detail_stud(request, pk):
     )
     submitted_homework = Homework.objects.filter(key=key).first()
     already_submitted = submitted_homework is not None
+    comments = None
+    if submitted_homework:
+        comments = HomeworkStudentComment.objects.filter(hw=submitted_homework)
+
     context={
             "hwdetail": assignment,
             "already_submitted": already_submitted,
             "submitted_homework": submitted_homework,
+            "comments":comments,
             }
     return render(request,"homework/student_detail.html",context)
 
@@ -119,9 +124,11 @@ def hw_create_view(request):
         if form.is_valid():
             hw = form.save(commit=False)
             hw.key = key
-            hw.submitted = datetime.datetime.now()
+            hw.submitted = timezone.now()
+            hw.full_clean()  # teď full_clean() už bude bezpečný
             hw.save()
             return redirect("hw_detail", pk=hw.pk)
+
     else:
         form = HomeworkForm()
     context={"form": form, "hwdetail": assignment}
@@ -199,3 +206,10 @@ def delete_evaluation_view(request, pk):
         return redirect("hw_detail", pk=hw.pk)
     context={"hw": hw}
     return render(request,"homework/hw_evaluation_delete_confirm.html",context)
+
+@login_required
+def student_evaluation_detail_view(request, pk):
+    comment = get_object_or_404(HomeworkStudentComment, pk=pk)
+    return render(request, "student_evaluation/evaluate.html", {
+        "comment": comment
+    })

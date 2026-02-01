@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 import datetime
 from django.core.exceptions import ValidationError
-from django.db.models import UniqueConstraint, CheckConstraint, Q, F
+from django.db.models import UniqueConstraint
 from django.conf import settings
 
 
@@ -71,23 +71,15 @@ class Homework(models.Model):
     engrossment = models.TextField()  # solution ale hustští
     submitted = models.DateTimeField(null=(False == False))
     ## část pro učitele
-    score = models.PositiveSmallIntegerField(null=True)
-    text_evaluation = models.TextField(null=True)
-
-    def clean(self):
-        maxscore=self.key.assignment.max_score
-        if self.score > maxscore:
-            raise ValidationError({"score":f"tupče, max score je {maxscore}"})
-        if self.score is None:
-            raise ValidationError("doplň skóre.")
-    
+    score = models.PositiveSmallIntegerField(null=True, blank=True)
+    text_evaluation = models.TextField(null=True, blank=True)
     def __str__(self):
         return f"homework-{self.key}"
 
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.pk})
 
-class ReviewHomework(models.Model):
+class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     comment = models.TextField()

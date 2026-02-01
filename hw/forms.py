@@ -1,5 +1,5 @@
 from django import forms
-from .models import Homework, Assignment
+from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 
 class HomeworkForm(forms.ModelForm):
@@ -34,9 +34,17 @@ class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Homework
         fields = ("text_evaluation", "score")
-        def clean(self):
-            cleaned_data = super().clean()
-            maxscore=cleaned_data.get("key__assignment__max_score")
-            if self.score > maxscore:
-                raise ValidationError({"score":f"max score je {maxscore}"})
+
+    def clean_score(self):
+        score = self.cleaned_data.get("score")
+        maxscore = self.instance.key.assignment.max_score
+
+        if score is not None and score > maxscore:
+            raise ValidationError(f"max score je {maxscore}")
+        return score
     
+class HomeworkStudentCommentForm(forms.ModelForm):
+    class Meta:
+        model=HomeworkStudentComment
+        fields=("comment",)
+        
