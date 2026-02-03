@@ -1,5 +1,5 @@
 from .setUp import BaseHWTestCase
-from hw.models import Homework, Assignment, ReviewHomework, Key
+from hw.models import Homework, Assignment, HomeworkStudentComment, Key
 from django.utils import timezone
 from datetime import timedelta
 from django.core.exceptions import ValidationError
@@ -59,10 +59,10 @@ def test_unique_hw_reviewer(self):
         score=5,
     )
 
-    ReviewHomework.objects.create(hw=hw, reviewer=self.teacher, comment="ok")
+    HomeworkStudentComment.objects.create(hw=hw, reviewer=self.teacher, comment="ok")
 
     with self.assertRaises(Exception):
-        ReviewHomework.objects.create(hw=hw, reviewer=self.teacher, comment="dup")
+        HomeworkStudentComment.objects.create(hw=hw, reviewer=self.teacher, comment="dup")
 
 
 class ScoreEvaluationTest(BaseHWTestCase):
