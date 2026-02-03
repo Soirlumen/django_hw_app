@@ -2,66 +2,134 @@
 {% block title %}Úkol: {{ hwdetail.title }}{% endblock title %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 800px;">
-
-    <div class="card">
-        <div class="card-header">{{ hwdetail.title }}</div>
-        <div class="card-body">
-            <p><strong>Předmět:</strong> {{ hwdetail.subject }}</p>
-            <p><strong>Učitel:</strong> {{ hwdetail.teacher }}</p>
-            <p><strong>Popis:</strong><br>{{ hwdetail.description }}</p>
-            <p><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</p>
-            <p><strong>Max score: </strong>{{hwdetail.max_score}}</p>
-            <p><strong>Zveřejněno:</strong> {{ hwdetail.release }}</p>
-            </div>
+<div class="container mt-4" style="max-width: 900px;">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <h2 class="mb-1">{{ hwdetail.title }}</h2>
+      <div class="text-muted">
+        {{ hwdetail.subject }} • {{ hwdetail.teacher }}
+      </div>
     </div>
 
-    {% if already_submitted %}
-        <div class="alert alert-success">
-            Úkol byl odevzdán {{ submitted_homework.submitted }}.
+    <div class="text-end">
+      <div class="mb-2">
+        <span class="badge bg-secondary me-1">Max: {{ hwdetail.max_score }}</span>
+        <span class="badge bg-light text-dark border">Zveřejněno: {{ hwdetail.release }}</span>
+      </div>
+      <div>
+        <span class="badge bg-warning text-dark border">
+          Termín: {{ hwdetail.deadline }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      <strong>Zadání</strong>
+    </div>
+    <div class="card-body">
+      <div class="mb-2">
+        <strong>Předmět:</strong> {{ hwdetail.subject }}
+      </div>
+      <div class="mb-2">
+        <strong>Učitel:</strong> {{ hwdetail.teacher }}
+      </div>
+      <div class="mb-3">
+        <strong>Popis:</strong>
+        <div class="mt-1">
+          {{ hwdetail.description|linebreaks }}
         </div>
+      </div>
 
-        {% if submitted_homework %}
-            <div class="card">
-                <div class="card-header">Tvůj odevzdaný text:</div>
-                <div class="card-body">
-                    {{ submitted_homework.engrossment|linebreaks }}
-                </div>
-            </div>
-                        <div class="mt-3">
-                <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-outline-primary">
-                    Upravit odevzdání
-                </a>
-            </div>
-
-            {% if submitted_homework.text_evaluation %}
-                <div class="dard mb-3">
-                    <div class="card-header">Hodnocení od učitele:</h6>
-                    <div class="card-body">
-                        {{ submitted_homework.text_evaluation|linebreaks }}</div>
-                </div>
-            {% endif %}
-
-            {% if submitted_homework.score %}
-                <div class="mb-3">
-                    <strong>Skóre:</strong> {{ submitted_homework.score }} / {{ hwdetail.max_score }}
-                </div>
-            {% endif %}
-{% for comment in comments %}
-    <a href="{% url 'student_eval' comment.pk %}">
-        Zobrazit komentář od {{ comment.reviewer }}
-    </a>
-{% endfor %}
-
-        {% endif %}
-
-    {% else %}
-        <div class="mt-3">
-            <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
-                Odevzdat úkol
-            </a>
+      {% if not already_submitted %}
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
+            Odevzdat úkol
+          </a>
+          <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
+            Zpět na seznam
+          </a>
         </div>
+      {% endif %}
+    </div>
+  </div>
+  {% if already_submitted %}
+    <div class="alert alert-success d-flex flex-wrap justify-content-between align-items-center gap-2" role="alert">
+      <div>
+        <strong>Odevzdáno:</strong> {{ submitted_homework.submitted }}
+      </div>
+      {% if submitted_homework %}
+        <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-sm btn-outline-primary">
+          Upravit odevzdání
+        </a>
+      {% endif %}
+    </div>
+
+    {% if submitted_homework %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <strong>Tvůj odevzdaný text</strong>
+          {% if submitted_homework.score %}
+            <span class="badge bg-success">
+              Skóre: {{ submitted_homework.score }} / {{ hwdetail.max_score }}
+            </span>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <div class="border rounded p-3 bg-white">
+            {{ submitted_homework.engrossment|linebreaks }}
+          </div>
+        </div>
+      </div>
+      {% if submitted_homework.text_evaluation %}
+        <div class="card shadow-sm mb-4">
+          <div class="card-header">
+            <strong>Hodnocení od učitele</strong>
+          </div>
+          <div class="card-body">
+            <div class="border rounded p-3 bg-white">
+              {{ submitted_homework.text_evaluation|linebreaks }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if comments %}
+        <div class="card shadow-sm mb-4">
+          <div class="card-header">
+            <strong>Komentáře</strong>
+          </div>
+          <div class="card-body">
+            <ul class="list-group">
+              {% for comment in comments %}
+                <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div>
+                    <strong>{{ comment.reviewer }}</strong>
+                    <div class="text-muted small">Klikni pro zobrazení detailu</div>
+                  </div>
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'student_eval' comment.pk %}">
+                    Zobrazit
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
+          Zpět na seznam
+        </a>
+      </div>
     {% endif %}
+  {% endif %}
 
 </div>
 {% endblock content %}

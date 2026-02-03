@@ -1,47 +1,110 @@
 {% extends "base.html" %}
-{% block title %}Detail úkolu pro učitele{% endblock title %}
+{% block title %}Detail zadání: {{ assignment.title }}{% endblock title %}
 
 {% block content %}
-<h2>Detail úkolu: {{ assignment.title }}</h2>
+<div class="container mt-4" style="max-width: 1000px;">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
 
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h4>{{ assignment.title }}</h4>
-        </div>
-        <div class="card-body">
-            <p><strong>Předmět:</strong> {{ assignment.subject }}</p>
-            <p><strong>Popis:</strong> {{ assignment.description }}</p>
-            <p><strong>Učitel:</strong> {{ assignment.teacher }}</p>
-            <p><strong>Zveřejněno:</strong> {{ assignment.release }}</p>
-            <p><strong>Termín odevzdání:</strong> {{ assignment.deadline }}</p>
-            <p><strong>Max skóre: </strong>{{ assignment.max_score }}</p>
-
-
-            <a href="{% url 'assignment_delete' assignment.pk %}" class="btn btn-danger mt-3">Smazat zadání</a>
-        </div>
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <h2 class="mb-1">{{ assignment.title }}</h2>
+      <div class="text-muted">
+        {{ assignment.subject }} • {{ assignment.teacher }}
+      </div>
     </div>
 
-    <div class="card mt-4">
-        <div class="card-header">
-            <h5>Odevzdané úkoly</h5>
-        </div>
-        <div class="card-body">
-            {% if homeworks %}
-                <ul class="list-group">
-                    {% for hw in homeworks %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="{% url 'hw_detail' hw.pk %}">{{ hw.key.student.username }}</a>
-                            <span class="badge bg-success">
-                                {{ hw.submitted|date:"d.m.Y H:i" }}
-                            </span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="alert alert-primary">Zatím nikdo neodevzdal úkol.</div>
-            {% endif %}
-        </div>
+    <div class="text-end">
+      <div class="mb-2">
+        <span class="badge bg-secondary me-1">Max: {{ assignment.max_score }}</span>
+        <span class="badge bg-light text-dark border">Zveřejněno: {{ assignment.release }}</span>
+      </div>
+      <div>
+        <span class="badge bg-warning text-dark border">
+          Termín: {{ assignment.deadline }}
+        </span>
+      </div>
     </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <strong>Detail zadání</strong>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'assignment_delete' assignment.pk %}" class="btn btn-sm btn-danger">
+          Smazat zadání
+        </a>
+        <a href="{% url 'list_active' %}" class="btn btn-sm btn-outline-secondary">
+          Zpět na seznam
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="mb-2"><strong>Předmět:</strong> {{ assignment.subject }}</div>
+      <div class="mb-2"><strong>Učitel:</strong> {{ assignment.teacher }}</div>
+      <div class="mb-2"><strong>Zveřejněno:</strong> {{ assignment.release }}</div>
+      <div class="mb-2"><strong>Termín odevzdání:</strong> {{ assignment.deadline }}</div>
+      <div class="mb-3"><strong>Max skóre:</strong> {{ assignment.max_score }}</div>
+
+      <div class="mb-2"><strong>Popis:</strong></div>
+      <div class="border rounded p-3 bg-white">
+        {{ assignment.description|linebreaks }}
+      </div>
+    </div>
+  </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <strong>Odevzdané úkoly</strong>
+      {% if homeworks %}
+        <span class="badge bg-primary">Celkem: {{ homeworks|length }}</span>
+      {% endif %}
+    </div>
+
+    <div class="card-body">
+      {% if homeworks %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Student</th>
+                <th>Odevzdáno</th>
+                <th class="text-end">Akce</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for hw in homeworks %}
+                <tr>
+                  <td>
+                    <strong>{{ hw.key.student.username }}</strong>
+                  </td>
+                  <td>
+                    <span class="badge bg-success">
+                      {{ hw.submitted|date:"d.m.Y H:i" }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <a href="{% url 'hw_detail' hw.pk %}" class="btn btn-sm btn-outline-primary">
+                      Zobrazit řešení
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="alert alert-primary mb-0" role="alert">
+          Zatím nikdo neodevzdal úkol.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
 </div>
 {% endblock content %}

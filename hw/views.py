@@ -1,5 +1,5 @@
 from .models import Homework, Assignment, Key, HomeworkStudentComment
-from .forms import HomeworkForm, AssignmentForm, EvaluationForm
+from .forms import HomeworkForm, AssignmentForm, EvaluationForm, HomeworkStudentCommentForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
@@ -213,3 +213,7 @@ def student_evaluation_detail_view(request, pk):
     return render(request, "student_evaluation/evaluate.html", {
         "comment": comment
     })
+
+@teacher_required
+def make_students_duples_thingy_kms_form_view(request):
+    form=HomeworkStudentCommentForm(request.POST)

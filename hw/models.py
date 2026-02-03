@@ -79,6 +79,8 @@ class Homework(models.Model):
     def get_absolute_url(self):
         return reverse("hw_detail", kwargs={"pk": self.pk})
 
+ #jeden ukol může mít víc komentující
+ #podmínky, kolik komentů může člověk dostat budu řešit ve forms
 class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -101,3 +103,4 @@ class HomeworkStudentComment(models.Model):
                 name="unique_hw_reviewer"
             )
         ]
+  
