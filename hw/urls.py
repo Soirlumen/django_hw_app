@@ -15,7 +15,10 @@ from .views import (
     create_evaluation_view,
     edit_evaluation_view,
     delete_evaluation_view,
-    student_evaluation_detail_view,
+    assignment_make_comments_view,
+    student_comment_list_view, 
+    student_comment_detail_view,
+    student_received_comment_detail_view,
 )
 
 urlpatterns = [
@@ -34,5 +37,8 @@ urlpatterns = [
     path("homework/<int:pk>/delete_evaluation/",delete_evaluation_view,name="evaluate_delete",),
     path("assignmentt/<int:pk>/",assgn_detail_teacher,name="assgn_detail_teacher",),
     path("assignments/<int:pk>/",assgn_detail_stud,name="assgn_detail_student",),
-    path("evaluate/<int:pk>/",student_evaluation_detail_view,name="student_eval"),
+    path("assignment/<int:pk>/make-comments/", assignment_make_comments_view, name="assgn_make_comments"),
+    path("my-comments/", student_comment_list_view, name="student_comment_list"),
+    path("my-comments/<int:pk>/", student_comment_detail_view, name="student_comment_detail"),
+    path("received-comment/<int:pk>/", student_received_comment_detail_view, name="received_comment_detail"),
 ]

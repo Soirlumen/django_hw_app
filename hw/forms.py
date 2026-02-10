@@ -47,16 +47,11 @@ class HomeworkStudentCommentForm(forms.ModelForm):
     class Meta:
         model=HomeworkStudentComment
         fields=("comment",)
+        widgets = {
+            "comment": forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": "Napiš zpětnou vazbu..."}),
+        }
 
-'''dobře takže,
-form se zeptá, kolik člověk dostane úkolů na opravení
-form provede funkci míchání a přidělení lidí k úkolu
-ve views se vyberou jen ti lidi, kdo v daný moment budou mít odevzdaný úkol, ten se passne do form(?)
-ve for cyklu bude vytvářet recordy
-pokud bude chtít učitel víc commentů na úkol, než n-1, vyhodí validation error a nic se nevytvoří
-chci se zabít
-'''
-class MakeComments(forms.ModelForm):
-    number_of_reviewer=forms.IntegerField(min_value=1)
+class MakeCommentsForm(forms.Form):
+    k=forms.IntegerField(min_value=1)
         
         

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Komentář – {{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1000px;">
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+      <h2 class="mb-0">{{ assignment.title }}</h2>
+      <div class="text-muted">Anonymní řešení spolužáka • termín {{ assignment.deadline|date:"d.m.Y H:i" }}</div>
+    </div>
+    <a href="{% url 'student_comment_list' %}" class="btn btn-sm btn-outline-secondary">
+      Zpět na seznam
+    </a>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><strong>Řešení (anonymně)</strong></div>
+    <div class="card-body">
+      <div class="border rounded p-3 bg-white">
+        {{ hw.engrossment|linebreaks }}
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header"><strong>Tvůj komentář</strong></div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.comment.label_tag }}
+          {{ form.comment }}
+          {% if form.comment.errors %}
+            <div class="text-danger small mt-1">{{ form.comment.errors }}</div>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-success">Uložit komentář</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

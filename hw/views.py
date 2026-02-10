@@ -1,12 +1,14 @@
 from .models import Homework, Assignment, Key, HomeworkStudentComment
-from .forms import HomeworkForm, AssignmentForm, EvaluationForm, HomeworkStudentCommentForm
+from .forms import HomeworkForm, AssignmentForm, EvaluationForm,MakeCommentsForm,HomeworkStudentCommentForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
 from accounts.decorators import teacher_required, student_required, own_required
-from django.http import HttpResponseForbidden,HttpResponseBadRequest
+from django.http import HttpResponseForbidden,HttpResponseBadRequest,Http404
 from django.contrib import messages
 from django.utils import timezone
+from django.db import transaction
+from .shuffle import get_the_houmwrk
 
 
 @teacher_required
@@ -207,13 +209,106 @@ def delete_evaluation_view(request, pk):
     context={"hw": hw}
     return render(request,"homework/hw_evaluation_delete_confirm.html",context)
 
-@login_required
-def student_evaluation_detail_view(request, pk):
-    comment = get_object_or_404(HomeworkStudentComment, pk=pk)
-    return render(request, "student_evaluation/evaluate.html", {
-        "comment": comment
+@own_required(Assignment, "teacher")
+def assignment_make_comments_view(request, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+
+    # GET: na /make-comments/ se vůbec nezdržuj, pošli učitele na detail
+    if request.method != "POST":
+        return redirect("assgn_detail_teacher", pk=assignment.pk)
+
+    submitted_hws = list(
+        Homework.objects.filter(key__assignment=assignment).select_related("key__student")
+    )
+    n = len(submitted_hws)
+
+    form = MakeCommentsForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Neplatná hodnota k.")
+        return redirect("assgn_detail_teacher", pk=assignment.pk)
+
+    k = form.cleaned_data["k"]
+
+    if n < 2:
+        messages.error(request, "Musí existovat alespoň 2 odevzdané domácí úkoly.")
+        return redirect("assgn_detail_teacher", pk=assignment.pk)
+
+    if k > n - 1:
+        messages.error(request, f"k je moc velké. Maximum je {n-1} (odevzdaných je {n}).")
+        return redirect("assgn_detail_teacher", pk=assignment.pk)
+
+    pairs = get_the_houmwrk(submitted_hws, k)
+
+    to_create = []
+    for reviewer_hw, hws_to_review in pairs:
+        reviewer_id = reviewer_hw.key.student_id
+        for hw in hws_to_review:
+            to_create.append(
+                HomeworkStudentComment(hw=hw, reviewer_id=reviewer_id, comment="")
+            )
+
+    with transaction.atomic():
+        HomeworkStudentComment.objects.bulk_create(to_create, ignore_conflicts=True)
+
+    messages.success(request, "Komentáře byly vygenerovány.")
+    return redirect("assgn_detail_teacher", pk=assignment.pk)
+
+@student_required
+def student_comment_list_view(request):
+    comments = (
+        HomeworkStudentComment.objects
+        .filter(reviewer=request.user)
+        .select_related("hw__key__assignment")
+        .order_by("hw__key__assignment__deadline", "id")
+    )
+
+    pending_count = comments.filter(comment="").count()
+
+    return render(request, "student_comments/list.html", {
+        "comments": comments,
+        "pending_count": pending_count,
     })
 
-@teacher_required
-def make_students_duples_thingy_kms_form_view(request):
-    form=HomeworkStudentCommentForm(request.POST)
+
+@student_required
+def student_comment_detail_view(request, pk):
+    comment_obj = get_object_or_404(
+        HomeworkStudentComment.objects.select_related("hw__key__assignment"),
+        pk=pk,
+        reviewer=request.user,   # <- zásadní: jen svoje přiřazení
+    )
+
+    if request.method == "POST":
+        form = HomeworkStudentCommentForm(request.POST, instance=comment_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Komentář uložen.")
+            return redirect("student_comment_detail", pk=comment_obj.pk)
+        else:
+            messages.error(request, "Formulář obsahuje chyby.")
+    else:
+        form = HomeworkStudentCommentForm(instance=comment_obj)
+
+    return render(request, "student_comments/detail.html", {
+        "comment_obj": comment_obj,
+        "hw": comment_obj.hw,
+        "assignment": comment_obj.hw.key.assignment,
+        "form": form,
+    })
+
+@student_required
+def student_received_comment_detail_view(request, pk):
+    comment_obj = get_object_or_404(
+        HomeworkStudentComment.objects.select_related("hw__key__student", "hw__key__assignment"),
+        pk=pk,
+    )
+
+    # povol jen autorovi daného HW
+    if comment_obj.hw.key.student_id != request.user.id:
+        # klidně dej 404, ať to neprozrazuje existenci
+        raise Http404()
+
+    return render(request, "student_comments/received_detail.html", {
+        "comment_obj": comment_obj,
+        "assignment": comment_obj.hw.key.assignment,
+    })

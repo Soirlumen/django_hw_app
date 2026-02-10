@@ -84,7 +84,7 @@ class Homework(models.Model):
 class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    comment = models.TextField()
+    comment = models.TextField(blank=True, default="")
 
     def clean(self):
         if self.hw.key.student_id == self.reviewer_id:

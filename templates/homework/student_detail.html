@@ -88,7 +88,7 @@
           </div>
         </div>
       </div>
-      {% if submitted_homework.text_evaluation %}
+            {% if submitted_homework.text_evaluation %}
         <div class="card shadow-sm mb-4">
           <div class="card-header">
             <strong>Hodnocení od učitele</strong>
@@ -99,23 +99,35 @@
             </div>
           </div>
         </div>
-      {% endif %}
+      {% endif %}   {# ← TADY CHYBĚLO #}
+
       {% if comments %}
         <div class="card shadow-sm mb-4">
-          <div class="card-header">
-            <strong>Komentáře</strong>
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Komentáře od spolužáků</strong>
+            <span class="badge bg-primary">Celkem: {{ comments|length }}</span>
           </div>
           <div class="card-body">
             <ul class="list-group">
-              {% for comment in comments %}
+              {% for c in comments %}
                 <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
                   <div>
-                    <strong>{{ comment.reviewer }}</strong>
-                    <div class="text-muted small">Klikni pro zobrazení detailu</div>
+                    <strong>Komentář #{{ forloop.counter }}</strong>
+                    <div class="text-muted small">
+                      {% if c.comment %}Vyplněno{% else %}Čeká na vyplnění{% endif %}
+                    </div>
                   </div>
-                  <a class="btn btn-sm btn-outline-primary" href="{% url 'student_eval' comment.pk %}">
-                    Zobrazit
-                  </a>
+
+                  <div class="d-flex align-items-center gap-2">
+                    {% if c.comment %}
+                      <span class="badge bg-success">✓</span>
+                    {% else %}
+                      <span class="badge bg-secondary">⏳</span>
+                    {% endif %}
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'received_comment_detail' c.pk %}">
+                      Zobrazit
+                    </a>
+                  </div>
                 </li>
               {% endfor %}
             </ul>
