@@ -37,4 +37,18 @@ class TestPages(BaseHWTestCase):
       self.assertTrue(self.client.login(username="student", password="pass"))
       response=self.client.get(reverse("hw_detail",kwargs={"pk":self.homework.pk}))
       self.assertEqual(response.status_code,200)  
+   def test_student_comment_list_view(self):
+      self.assertTrue(self.client.login(username="student", password="pass"))
+      response=self.client.get(reverse("student_comment_list"))
+      self.assertTrue(response.status_code,200)
+   def test_student_comment_detail_view(self):
+      self.assertTrue(self.client.login(username="student", password="pass"))
+      response=self.client.get(reverse("student_comment_detail",kwargs={"pk":self.studentComment2.pk}))
+      self.assertTrue(response.status_code,200)
+      self.assertTemplateUsed(response,"student_comments/detail.html")
+   def test_student_received_comment_detail_view(self):
+      self.assertTrue(self.client.login(username="student2", password="pass"))
+      response=self.client.get(reverse("received_comment_detail",kwargs={"pk":self.studentComment2.pk}))
+      self.assertEqual(response.status_code,200)
+      self.assertTemplateUsed(response,"student_comments/received_detail.html")
       

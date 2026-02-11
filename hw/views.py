@@ -213,7 +213,6 @@ def delete_evaluation_view(request, pk):
 def assignment_make_comments_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
 
-    # GET: na /make-comments/ se vůbec nezdržuj, pošli učitele na detail
     if request.method != "POST":
         return redirect("assgn_detail_teacher", pk=assignment.pk)
 
@@ -275,7 +274,7 @@ def student_comment_detail_view(request, pk):
     comment_obj = get_object_or_404(
         HomeworkStudentComment.objects.select_related("hw__key__assignment"),
         pk=pk,
-        reviewer=request.user,   # <- zásadní: jen svoje přiřazení
+        reviewer=request.user,  
     )
 
     if request.method == "POST":
@@ -302,10 +301,8 @@ def student_received_comment_detail_view(request, pk):
         HomeworkStudentComment.objects.select_related("hw__key__student", "hw__key__assignment"),
         pk=pk,
     )
-
-    # povol jen autorovi daného HW
     if comment_obj.hw.key.student_id != request.user.id:
-        # klidně dej 404, ať to neprozrazuje existenci
+
         raise Http404()
 
     return render(request, "student_comments/received_detail.html", {
