@@ -81,5 +81,5 @@ class BaseHWTestCase(TestCase):
           self.studentComment2=HomeworkStudentComment.objects.create(
                hw=self.homework2,
                reviewer=self.student,
-               comment="ahojg",
+               comment="",
           )

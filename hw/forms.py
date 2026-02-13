@@ -7,7 +7,6 @@ class HomeworkForm(forms.ModelForm):
         model = Homework
         fields = ("engrossment",)
 
-
 class AssignmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -29,7 +28,6 @@ class AssignmentForm(forms.ModelForm):
             "release": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
 
-
 class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Homework
@@ -43,6 +41,7 @@ class EvaluationForm(forms.ModelForm):
             raise ValidationError(f"max score je {maxscore}")
         return score
     
+# pro vyplnění komentu
 class HomeworkStudentCommentForm(forms.ModelForm):
     class Meta:
         model=HomeworkStudentComment
@@ -51,7 +50,6 @@ class HomeworkStudentCommentForm(forms.ModelForm):
             "comment": forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": "Napiš zpětnou vazbu..."}),
         }
 
+# generování k-tic hodnotících k úkolu
 class MakeCommentsForm(forms.Form):
     k=forms.IntegerField(min_value=1)
-        
-        
