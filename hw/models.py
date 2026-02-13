@@ -29,6 +29,7 @@ class Assignment(models.Model):
     max_score = models.PositiveSmallIntegerField(null=True)
     deadline = models.DateTimeField()
     release = models.DateTimeField()
+    # comments_generated=models.BooleanField(null=False,blank=False,default=False)
 
     def __str__(self):
         return self.title
@@ -37,6 +38,10 @@ class Assignment(models.Model):
             raise ValidationError({
                 'deadline': "Deadline nemůže být dříve než release."
             })
+    @property
+    def is_comments_generated(self)->bool:
+        return HomeworkStudentComment.objects.filter(hw__key__assignment=self).exists()
+    
     class Meta:
         ordering = [
             "release",

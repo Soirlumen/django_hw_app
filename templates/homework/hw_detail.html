@@ -91,6 +91,39 @@
       </div>
     </div>
   {% endif %}
+        {% if comments %}
+        <div class="card shadow-sm mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Komentáře od spolužáků</strong>
+            <span class="badge bg-primary">Celkem: {{ comments|length }}</span>
+          </div>
+          <div class="card-body">
+            <ul class="list-group">
+              {% for c in comments %}
+                <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div>
+                    <strong>Komentář #{{ forloop.counter }}</strong>
+                    <div class="text-muted small">
+                      {% if c.comment %}Vyplněno{% else %}Čeká na vyplnění{% endif %}
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2">
+                    {% if c.comment %}
+                      <span class="badge bg-success">✓</span>
+                    {% else %}
+                      <span class="badge bg-secondary">⏳</span>
+                    {% endif %}
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'received_comment_detail' c.pk %}">
+                      Zobrazit
+                    </a>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
 
 </div>
 {% endblock content %}

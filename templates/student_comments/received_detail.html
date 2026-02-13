@@ -7,17 +7,18 @@
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <div>
       <h2 class="mb-0">{{ assignment.title }}</h2>
-      <div class="text-muted">Komentář od spolužáka (anonymně)</div>
+     {% if request.user == assignment.teacher %}
+      <div class="text-muted">Komentář od studenta: {{ comment_obj.reviewer }} </div>
+      {% else %}
+      <div class="text-muted">Komentář od spolužáka (anonymně) </div>
+      {%endif %}
     </div>
-    <a href="{% url 'assgn_detail_student' assignment.pk %}" class="btn btn-sm btn-outline-secondary">
-  Zpět
-</a>
-
+    <a href="{% url 'assgn_detail_student' assignment.pk %}" class="btn btn-sm btn-outline-secondary">Zpět</a>
   </div>
 
   <div class="card shadow-sm">
     <div class="card-header">
-      <strong>Text komentáře</strong>
+      <strong>Text komentáře</strong> 
     </div>
     <div class="card-body">
       <div class="border rounded p-3 bg-white">

@@ -163,12 +163,15 @@ def assgn_delete_view(request, pk):
 
 @login_required
 def hw_detail_view(request, pk):
-    hw = get_object_or_404(Homework, pk=pk)
-    is_student = request.user == hw.key.student
-    is_subject_teacher = request.user.is_teacher and hw.key.assignment.subject in request.user.teacher_subjects
+    homework = get_object_or_404(Homework, pk=pk)
+    comments=list(HomeworkStudentComment.objects.filter(hw=homework))
+    is_student = request.user == homework.key.student
+    is_subject_teacher = request.user.is_teacher and homework.key.assignment.subject in request.user.teacher_subjects
     if not (is_student or is_subject_teacher):
         return HttpResponseForbidden("Nemáš přístup k tomuto domácímu úkolu.")
-    context={"hw": hw}
+    context={"hw": homework,
+             "comments":comments,
+             }
     return render(request,"homework/hw_detail.html",context)
 
 @own_required(Homework,'key__assignment__teacher')
@@ -216,20 +219,22 @@ def assignment_make_comments_view(request, pk):
     if request.method != "POST":
         return redirect("assgn_detail_teacher", pk=assignment.pk)
 
-    submitted_hws = list(
-        Homework.objects.filter(key__assignment=assignment).select_related("key__student")
+    submitted_hws = list(Homework.objects.filter(key__assignment=assignment).select_related("key__student")
     )
     n = len(submitted_hws)
 
     form = MakeCommentsForm(request.POST)
     if not form.is_valid():
-        messages.error(request, "Neplatná hodnota k.")
+        messages.warning(request, "Neplatná hodnota k.")
         return redirect("assgn_detail_teacher", pk=assignment.pk)
+    if assignment.is_comments_generated:
+        messages.warning(request, "Komentáře byly již vygenerovány!")
+        return redirect("assgn_detail_teacher", pk=assignment.pk)        
 
     k = form.cleaned_data["k"]
 
     if n < 2:
-        messages.error(request, "Musí existovat alespoň 2 odevzdané domácí úkoly.")
+        messages.warning(request, "Musí existovat alespoň 2 odevzdané domácí úkoly.")
         return redirect("assgn_detail_teacher", pk=assignment.pk)
 
     if k > n - 1:
@@ -295,14 +300,15 @@ def student_comment_detail_view(request, pk):
         "form": form,
     })
 
-@student_required
+@login_required
 def student_received_comment_detail_view(request, pk):
     comment_obj = get_object_or_404(
         HomeworkStudentComment.objects.select_related("hw__key__student", "hw__key__assignment"),
         pk=pk,
     )
-    if comment_obj.hw.key.student_id != request.user.id:
-
+    is_student=comment_obj.hw.key.student_id==request.user.id
+    is_teacher=comment_obj.hw.key.assignment.teacher==request.user
+    if not (is_student or is_teacher):
         raise Http404()
 
     return render(request, "student_comments/received_detail.html", {
