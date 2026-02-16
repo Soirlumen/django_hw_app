@@ -21,10 +21,15 @@
       <h6>Odevzdej řešení</h6>
     </div>
     <div class="card-body">
+      {% if is_after_deadline %}
+      <p><em>Po deadline nelze přidávat řešení úkolu...</em></p>
+      <button type="submit" class="btn btn-success mt-2" disabled>Odevzdat</button>
+      {% else %}
       <form method="post">
         {% csrf_token %} {{ form|crispy }}
         <button type="submit" class="btn btn-success mt-2">Odevzdat</button>
-      </form>
+      </form>¨
+      {% endif %}
     </div>
   </div>
 </div>

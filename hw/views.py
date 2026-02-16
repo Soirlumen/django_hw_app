@@ -133,7 +133,8 @@ def hw_create_view(request):
 
     else:
         form = HomeworkForm()
-    context={"form": form, "hwdetail": assignment}
+    is_after_deadline=timezone.now() > assignment.deadline
+    context={"form": form, "hwdetail": assignment,"is_after_deadline":is_after_deadline}
     return render(request,"homework/hw_create.html",context)
 
 # @student_required
@@ -239,6 +240,9 @@ def assignment_make_comments_view(request, pk):
 
     if k > n - 1:
         messages.error(request, f"k je moc velké. Maximum je {n-1} (odevzdaných je {n}).")
+        return redirect("assgn_detail_teacher", pk=assignment.pk)
+    if assignment.deadline > timezone.now():
+        messages.warning(request, "Nemůžete generovat komentáře před deadline!")
         return redirect("assgn_detail_teacher", pk=assignment.pk)
 
     pairs = get_the_houmwrk(submitted_hws, k)

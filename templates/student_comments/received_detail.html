@@ -8,7 +8,7 @@
     <div>
       <h2 class="mb-0">{{ assignment.title }}</h2>
      {% if request.user == assignment.teacher %}
-      <div class="text-muted">Komentář od studenta: {{ comment_obj.reviewer }} </div>
+      <div class="text-muted">Komentář od studenta: {{ c.reviewer.first_name}} {{ c.reviewer.surname}} </div>
       {% else %}
       <div class="text-muted">Komentář od spolužáka (anonymně) </div>
       {%endif %}

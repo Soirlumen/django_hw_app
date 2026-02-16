@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container mt-4" style="max-width: 1000px;">
 
-  <h2 class="mb-4">Moje přidělené komentáře</h2>
+  <h2 class="mb-4">Všechny komentáře k mému předmětu</h2>
 
   {% if comments %}
 
@@ -34,7 +34,7 @@
             <li class="list-group-item d-flex justify-content-between align-items-center">
 
               <a href="{% url 'received_comment_detail' c.pk %}" class="text-decoration-none">
-                Komentář č. {{ forloop.counter }}
+                Komentář od {{ c.reviewer.first_name}} {{ c.reviewer.surname}}
               </a>
 
               {% if c.comment %}

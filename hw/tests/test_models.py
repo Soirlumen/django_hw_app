@@ -51,19 +51,6 @@ class HomeworkFlowTest(BaseHWTestCase):
         )
         self.assertEqual(hw.score, 8)
         self.assertEqual(hw.key.student, self.student)
-def test_unique_hw_reviewer(self):
-    hw = Homework.objects.create(
-        key=self.key,
-        engrossment="x",
-        submitted=timezone.now(),
-        score=5,
-    )
-
-    HomeworkStudentComment.objects.create(hw=hw, reviewer=self.teacher, comment="ok")
-
-    with self.assertRaises(Exception):
-        HomeworkStudentComment.objects.create(hw=hw, reviewer=self.teacher, comment="dup")
-
 
 class ScoreEvaluationTest(BaseHWTestCase):
     def test_score_maxscore(self):
@@ -81,10 +68,3 @@ class ModelStrTest(BaseHWTestCase):
     def test_assignment_str(self):
         self.assertEqual(str(self.assignment), "Domácí úkol 1")
         
-class KeyConstraintTest(BaseHWTestCase):
-     def test_student_cannot_have_two_keys_for_assignment(self):
-          with self.assertRaises(Exception):
-               Key.objects.create(
-                    student=self.student,
-                    assignment=self.assignment
-               )

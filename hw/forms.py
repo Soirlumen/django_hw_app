@@ -3,6 +3,15 @@ from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 
 class HomeworkForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data=super().clean()
+        submitted=cleaned_data.get("submitted")
+        if submitted is None:
+            return submitted
+        deadline=self.instance.key.assignment.deadline
+        if submitted > deadline:
+            raise ValidationError("Nemůžeš odevzdat úkol po deadline!")
+        return submitted     
     class Meta:
         model = Homework
         fields = ("engrossment",)
