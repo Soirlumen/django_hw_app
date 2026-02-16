@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}komentáře studentů{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1000px;">
+
+  <h2 class="mb-4">Moje přidělené komentáře</h2>
+
+  {% if comments %}
+
+    {% regroup comments by hw.key.assignment as assignment_list %}
+
+    {% for group in assignment_list %}
+      <div class="card shadow-sm mb-4">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ group.grouper.title }}</strong>
+            <div class="text-muted small">
+              Termín: {{ group.grouper.deadline|date:"d.m.Y H:i" }}
+            </div>
+          </div>
+
+          {# badge: kolik hotovo / celkem #}
+          {% with done=0 %}
+          {% for c in group.list %}
+            {% if c.comment %}{% widthratio 1 1 1 %}{% endif %}
+          {% endfor %}
+          {% endwith %}
+        </div>
+
+        <ul class="list-group list-group-flush">
+          {% for c in group.list %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+              <a href="{% url 'received_comment_detail' c.pk %}" class="text-decoration-none">
+                Komentář č. {{ forloop.counter }}
+              </a>
+
+              {% if c.comment %}
+                <span class="badge bg-success">
+                  ✓ Hotovo
+                </span>
+              {% else %}
+                <span class="badge bg-secondary">
+                  ⏳ Čeká
+                </span>
+              {% endif %}
+
+            </li>
+          {% endfor %}
+        </ul>
+
+      </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="alert alert-info">
+      Žádné komentáře od studentů tu nejsou...
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

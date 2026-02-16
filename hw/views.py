@@ -268,7 +268,7 @@ def student_comment_list_view(request):
 
     pending_count = comments.filter(comment="").count()
 
-    return render(request, "student_comments/list.html", {
+    return render(request, "student_comments/student_list.html", {
         "comments": comments,
         "pending_count": pending_count,
     })
@@ -315,3 +315,13 @@ def student_received_comment_detail_view(request, pk):
         "comment_obj": comment_obj,
         "assignment": comment_obj.hw.key.assignment,
     })
+    
+def teacher_comments_list_view(request):
+    subjects=request.user.teacher_subjects.all()
+    comments=HomeworkStudentComment.objects.select_related("hw__key__assignment__subject").filter(hw__key__assignment__subject__in=subjects)
+    pending_count = comments.filter(comment="").count()
+    return render(request,"student_comments/teacher_list.html",{
+        "comments":comments,
+        "pending_count":pending_count,
+    })
+    

@@ -21,18 +21,24 @@ Dashboard {% endblock title %}
         <div class="card-header">Akcičky</div>
         <div class="card-body d-flex flex-column">
           <ul class="list-unstyled flex-grow-1">
-            {% if user.teacher_profile %}
+             {% if user.is_teacher %}
             <li>
               <a href="{% url 'ass_create' %}">Zadat nový úkol</a>
             </li>
-            {% endif %} {% if user.student_profile %}
+            {% endif %} 
+             {% if user.is_student %}
             <li>
               <a href="#">Idk hoď hrách na zeď</a>
             </li>
             {% endif %}
             <li>
               <a href="{% url 'profile' %}" class="btn btn-outline-primary">Profil</a>
-              <a href="{% url 'student_comment_list' %}" class="btn btn-outline-primary">Moje komentáře</a>
+               {% if user.is_student %}
+              <a href="{% url 'student_comment_list' %}" class="btn btn-outline-primary">Moje komentáře</a> 
+              {% endif %}
+               {% if user.is_teacher %}
+              <a href="{% url 'teacher_comment_list' %}" class="btn btn-outline-primary">Komentáře od studentů</a> 
+              {% endif %}
             </li>
           </ul>
         </div>
