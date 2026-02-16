@@ -26,6 +26,7 @@
     <a class="nav-link" href="{% url 'list_after_deadline' %}">Po deadlinu</a>
   </li>
 </ul>
+{% if user.is_teacher %}
 {% if assignments_teacher %}
 
         <div class="card mb-4">
@@ -60,7 +61,8 @@
         {% else %}
             <div class="alert alert-primary">Žádná vytvořená zadání...</div>
         {% endif %}
-
+        {% endif %}
+        {% if user.is_student %}
         {% if assignments_student %}
         <div class="card mb-4">
             <div class="card-header">
@@ -95,6 +97,7 @@
         </div>
         {% else %}
             <div class="alert alert-primary">Žádné zadané úkoly</div>
+        {% endif %}
         {% endif %}
 
     {% else %}
