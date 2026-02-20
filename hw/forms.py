@@ -1,21 +1,38 @@
 from django import forms
 from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
-class HomeworkForm(forms.ModelForm):
+#vytvoření úkolu
+class CreateHomeworkForm(forms.ModelForm):
     def clean(self):
         cleaned_data=super().clean()
         submitted=cleaned_data.get("submitted")
         if submitted is None:
             return submitted
         deadline=self.instance.key.assignment.deadline
-        if submitted > deadline:
+        if timezone.now() > deadline:
             raise ValidationError("Nemůžeš odevzdat úkol po deadline!")
         return submitted     
     class Meta:
         model = Homework
         fields = ("engrossment",)
-
+# úprava úkolu  
+class HomeworkForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data=super().clean()
+        submitted=cleaned_data.get("submitted")
+        # if submitted is None:
+        #     return submitted
+        deadline=self.instance.key.assignment.deadline
+        if timezone.now() > deadline:
+            raise ValidationError("Nemůžeš odevzdat úkol po deadline!")
+        return submitted     
+    class Meta:
+        model = Homework
+        fields = ("engrossment",)
+          
+#vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -36,7 +53,7 @@ class AssignmentForm(forms.ModelForm):
             "deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "release": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
-
+#vyplnění hodnocení od učitele
 class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Homework

@@ -1,5 +1,5 @@
 from .models import Homework, Assignment, Key, HomeworkStudentComment
-from .forms import HomeworkForm, AssignmentForm, EvaluationForm,MakeCommentsForm,HomeworkStudentCommentForm
+from .forms import CreateHomeworkForm, HomeworkForm, AssignmentForm, EvaluationForm,MakeCommentsForm,HomeworkStudentCommentForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
@@ -119,17 +119,17 @@ def hw_create_view(request):
     hw = Homework.objects.filter(key=key).first()
     if hw:
         messages.warning(request, "Úkol už byl odevzdán, nelze ho odeslat znovu.")
-        return redirect("hw_detail", pk=hw.pk)
+        return redirect(hw.get_assgn_student_url())
 
     if request.method == "POST":
-        form = HomeworkForm(request.POST)
+        form = CreateHomeworkForm(request.POST)
         if form.is_valid():
-            hw = form.save(commit=False)
-            hw.key = key
-            hw.submitted = timezone.now()
-            hw.full_clean()  # teď full_clean() už bude bezpečný
-            hw.save()
-            return redirect("hw_detail", pk=hw.pk)
+            hwform = form.save(commit=False)
+            hwform.key = key
+            hwform.submitted = timezone.now()
+            hwform.full_clean()
+            hwform.save()
+            return redirect("assgn_detail_student", pk=assignment.pk)
 
     else:
         form = HomeworkForm()
@@ -142,12 +142,13 @@ def hw_create_view(request):
 def hw_update_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     if request.method == "POST":
+        
         form = HomeworkForm(request.POST, instance=hw)
         if form.is_valid():
             edit_hw = form.save(commit=False)
             edit_hw.submitted = datetime.datetime.now()
             edit_hw.save()
-            return redirect("hw_detail", pk=hw.pk)
+            return redirect(hw.get_assgn_student_url())
     else:
         form = HomeworkForm(instance=hw)
     context={"form": form, "hw": hw}
@@ -158,7 +159,7 @@ def assgn_delete_view(request, pk):
     assgn = get_object_or_404(Assignment, pk=pk)
     if request.method == "POST":
         assgn.delete()
-        return redirect("list")
+        return redirect("assgn_detail_student", pk=assgn.pk)
     context={"assgn": assgn}
     return render(request,"homework/ass_delete_confirm.html",context)
 
@@ -171,22 +172,10 @@ def hw_detail_view(request, pk):
     if not (is_student or is_subject_teacher):
         return HttpResponseForbidden("Nemáš přístup k tomuto domácímu úkolu.")
     context={"hw": homework,
+             "assignment": homework.key.assignment,
              "comments":comments,
              }
     return render(request,"homework/hw_detail.html",context)
-
-@own_required(Homework,'key__assignment__teacher')
-def create_evaluation_view(request, pk):
-    hw = get_object_or_404(Homework, pk=pk)
-    if request.method == "POST":
-        form = EvaluationForm(request.POST, instance=hw)
-        if form.is_valid():
-            form.save()
-            return redirect("hw_detail", pk=hw.pk)
-    else:
-        form = EvaluationForm(instance=hw)
-    context={"form": form, "hw": hw}
-    return render(request,"homework/hw_evaluate.html",context)
 
 @own_required(Homework,'key__assignment__teacher')
 def edit_evaluation_view(request, pk):
@@ -285,7 +274,6 @@ def student_comment_detail_view(request, pk):
         pk=pk,
         reviewer=request.user,  
     )
-
     if request.method == "POST":
         form = HomeworkStudentCommentForm(request.POST, instance=comment_obj)
         if form.is_valid():

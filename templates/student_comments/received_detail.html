@@ -8,12 +8,16 @@
     <div>
       <h2 class="mb-0">{{ assignment.title }}</h2>
      {% if request.user == assignment.teacher %}
-      <div class="text-muted">Komentář od studenta: {{ c.reviewer.first_name}} {{ c.reviewer.surname}} </div>
+      <div class="text-muted">Komentář od studenta: {{ comment_obj.reviewer.first_name}} {{ comment_obj.reviewer.surname}} </div>
       {% else %}
       <div class="text-muted">Komentář od spolužáka (anonymně) </div>
-      {%endif %}
+      {% endif %}
     </div>
+    {% if request.user == assignment.teacher %}
+    <a href="{% url 'assgn_detail_teacher' assignment.pk %}" class="btn btn-sm btn-outline-secondary">Zpět</a>
+    {%else%}
     <a href="{% url 'assgn_detail_student' assignment.pk %}" class="btn btn-sm btn-outline-secondary">Zpět</a>
+    {%endif%}
   </div>
 
   <div class="card shadow-sm">

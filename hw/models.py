@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 import datetime
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db.models import UniqueConstraint
 from django.conf import settings
@@ -39,6 +40,9 @@ class Assignment(models.Model):
                 'deadline': "Deadline nemůže být dříve než release."
             })
     @property
+    def is_after_deadline(self)->bool:
+        return timezone.now()>self.deadline
+    @property
     def is_comments_generated(self)->bool:
         return HomeworkStudentComment.objects.filter(hw__key__assignment=self).exists()
     
@@ -49,7 +53,7 @@ class Assignment(models.Model):
 
 class Key(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='homework_assignment')
 
     def __str__(self):
         return f"{self.student}-{self.assignment}"
@@ -74,20 +78,24 @@ class Homework(models.Model):
     ## část pro studenta
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False)
     engrossment = models.TextField()  # solution ale hustští
-    submitted = models.DateTimeField(null=(False == False))
+    submitted = models.DateTimeField(null=True)
     ## část pro učitele
     score = models.PositiveSmallIntegerField(null=True, blank=True)
     text_evaluation = models.TextField(null=True, blank=True)
     def __str__(self):
         return f"homework-{self.key}"
 
-    def get_absolute_url(self):
-        return reverse("hw_detail", kwargs={"pk": self.pk})
+    def get_assgn_student_url(self):
+        return reverse("assgn_detail_student", kwargs={"pk":self.key.assignment.pk})
+    @property
+    def is_after_deadline(self)->bool:
+        return timezone.now()>self.key.assignment.deadline
 
 class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     comment = models.TextField(blank=True, default="")
+    submitter=models.DateTimeField(null=True, default=None)
 
     def clean(self):
         if self.hw.key.student_id == self.reviewer_id:
@@ -106,4 +114,3 @@ class HomeworkStudentComment(models.Model):
                 name="unique_hw_reviewer"
             )
         ]
-  

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Moje komentáře{% endblock %}
+{% block title %}Úkoly k okomentování{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 1000px;">
 
-  <h2 class="mb-4">Moje přidělené komentáře</h2>
+  <h2 class="mb-4">Přidělené komentáře</h2>
 
   {% if comments %}
 
@@ -20,8 +20,6 @@
               Termín: {{ group.grouper.deadline|date:"d.m.Y H:i" }}
             </div>
           </div>
-
-          {# badge: kolik hotovo / celkem #}
           {% with done=0 %}
           {% for c in group.list %}
             {% if c.comment %}{% widthratio 1 1 1 %}{% endif %}

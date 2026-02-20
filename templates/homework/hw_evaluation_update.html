@@ -1,20 +1,79 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block title %}Upravit hodnocení k úkolu{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h5>Upravit hodnocení k úkolu: {{ hw.key }}</h5>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Uložit změny</button>
-                <a href="{% url 'hw_detail' hw.pk %}" class="btn btn-secondary">Zrušit</a>
-            </form>
-        </div>
+<div class="container mt-4" style="max-width: 1000px;">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <h2 class="mb-1">Odevzdaný úkol</h2>
+      <div class="text-muted">
+        {{ hw.key.assignment.title }} • {{ hw.key.assignment.subject }}
+      </div>
     </div>
+
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
+        Zpět na seznam
+      </a>
+    </div>
+  </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <strong>Student:</strong> {{ hw.key.student.username }}
+      </div>
+      <div>
+        <span class="badge bg-success">
+          Odevzdáno: {{ hw.submitted|date:"d.m.Y H:i" }}
+        </span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="mb-2"><strong>Řešení:</strong></div>
+      <div class="border rounded p-3 bg-white">
+        {{ hw.engrossment|linebreaks }}
+      </div>
+    </div>
+  </div>
+  {% if request.user == hw.key.assignment.teacher %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <strong>Hodnocení</strong>
+
+        {% if hw.text_evaluation or hw.score %}
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-sm btn-outline-primary">
+              Upravit hodnocení
+            </a>
+            <a href="{% url 'evaluate_delete' hw.pk %}" class="btn btn-sm btn-danger">
+              Smazat hodnocení
+            </a>
+          </div>
+        {% else %}
+          <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-sm btn-primary">
+            Ohodnotit úkol
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="card-body">
+                   <form method="post">
+                    {% csrf_token %}
+               {{ form|crispy }}
+                <button type="submit" class="btn btn-success mt-2">Odeslat hodnocení</button>
+            </form>
+      </div>
+    </div>
+  {% endif %}
+        
 </div>
-{% endblock %}
+{% endblock content %}

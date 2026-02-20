@@ -49,10 +49,16 @@
       </div>
 
       {% if not already_submitted %}
-        <div class="d-flex flex-wrap gap-2">
+          <div class="d-flex flex-wrap gap-2">
+      {% if hwdetail.is_after_deadline %}
+          <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary disabled">
+            Již nelze odevzdat
+          </a>
+      {% else %}
           <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
             Odevzdat úkol
           </a>
+          {% endif %}
           <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
             Zpět na seznam
           </a>
@@ -99,7 +105,7 @@
             </div>
           </div>
         </div>
-      {% endif %}   {# ← TADY CHYBĚLO #}
+      {% endif %}
 
       {% if comments %}
         <div class="card shadow-sm mb-4">

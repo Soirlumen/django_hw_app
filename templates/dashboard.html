@@ -7,12 +7,16 @@ Dashboard {% endblock title %}
   <div class="row align-items-stretch">
     <div class="col-md-6">
       <div class="card shadow-sm mb-4 h-100">
-        <div class="card-header">Úkolky</div>
+        <div class="card-header">zadané úkoly</div>
         <div class="card-body d-flex flex-column">
-          <p class="card-text">Jukni co za questy se nabízí</p>
-          <a href="{% url 'list_active' %}" class="btn btn-primary mt-auto"
-            >Přejít na úkoly</a
-          >
+          <a href="{% url 'list_active' %}" class="btn btn-primary mt-auto">Přejít na úkoly</a>
+               {% if user.is_student %}
+              <a href="{% url 'student_comment_list' %}" class="btn btn-primary mt-auto">Úkoly k okomentování</a> 
+              {% endif %}
+               {% if user.is_teacher %}
+              <a href="{% url 'teacher_comment_list' %}" class="btn btn-primary mt-auto">Komentáře od studentů</a> 
+              {% endif %}
+            </li>
         </div>
       </div>
     </div>
@@ -21,24 +25,16 @@ Dashboard {% endblock title %}
         <div class="card-header">Akcičky</div>
         <div class="card-body d-flex flex-column">
           <ul class="list-unstyled flex-grow-1">
+            <li>
+               <a href="{% url 'profile' %}" class="btn btn-outline-primary">Profil</a>
+            </li>
              {% if user.is_teacher %}
             <li>
               <a href="{% url 'ass_create' %}">Zadat nový úkol</a>
             </li>
             {% endif %} 
-             {% if user.is_student %}
             <li>
-              <a href="#">Idk hoď hrách na zeď</a>
-            </li>
-            {% endif %}
-            <li>
-              <a href="{% url 'profile' %}" class="btn btn-outline-primary">Profil</a>
-               {% if user.is_student %}
-              <a href="{% url 'student_comment_list' %}" class="btn btn-outline-primary">Moje komentáře</a> 
-              {% endif %}
-               {% if user.is_teacher %}
-              <a href="{% url 'teacher_comment_list' %}" class="btn btn-outline-primary">Komentáře od studentů</a> 
-              {% endif %}
+<a href="#">něco</a>
             </li>
           </ul>
         </div>
