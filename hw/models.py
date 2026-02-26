@@ -30,7 +30,6 @@ class Assignment(models.Model):
     max_score = models.PositiveSmallIntegerField(null=True)
     deadline = models.DateTimeField()
     release = models.DateTimeField()
-    # comments_generated=models.BooleanField(null=False,blank=False,default=False)
 
     def __str__(self):
         return self.title
@@ -78,7 +77,7 @@ class Homework(models.Model):
     ## část pro studenta
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False)
     engrossment = models.TextField()  # solution ale hustští
-    submitted = models.DateTimeField(null=True)
+    submitted = models.DateTimeField(null=True, blank=True)
     ## část pro učitele
     score = models.PositiveSmallIntegerField(null=True, blank=True)
     text_evaluation = models.TextField(null=True, blank=True)
@@ -91,11 +90,12 @@ class Homework(models.Model):
     def is_after_deadline(self)->bool:
         return timezone.now()>self.key.assignment.deadline
 
+
 class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     comment = models.TextField(blank=True, default="")
-    submitter=models.DateTimeField(null=True, default=None)
+    submitter=models.DateTimeField(null=True, blank=True)
 
     def clean(self):
         if self.hw.key.student_id == self.reviewer_id:

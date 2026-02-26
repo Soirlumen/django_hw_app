@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
 from .shuffle import get_the_houmwrk
+from .filters import AssignmentFilter
 
 
 @teacher_required
@@ -34,11 +35,32 @@ def hw_list_active_view(request):
     if request.user.is_student:
         subjects = request.user.student_subjects
         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
+    f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
     context={
             "assignments_teacher": assignments_teacher,
             "assignments_student": assignments_student,
+            'filter': f,
     }
     return render(request,"list/active.html",context)
+
+# @login_required
+# def hw_list_active_view2(request):
+#     assignments_teacher = []
+#     assignments_student = []
+#     now = timezone.now()
+#     if request.user.is_teacher:
+#         subjects = request.user.teacher_subjects
+#         assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
+        
+#     # student
+#     if request.user.is_student:
+#         subjects = request.user.student_subjects
+#         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
+#     context={
+#             "assignments_teacher": assignments_teacher,
+#             "assignments_student": assignments_student,
+#     }
+#     return render(request,"list/active.html",context)
 
 @login_required
 def hw_list_after_deadline_view(request):
@@ -258,9 +280,7 @@ def student_comment_list_view(request):
         .select_related("hw__key__assignment")
         .order_by("hw__key__assignment__deadline", "id")
     )
-
     pending_count = comments.filter(comment="").count()
-
     return render(request, "student_comments/student_list.html", {
         "comments": comments,
         "pending_count": pending_count,
@@ -277,6 +297,7 @@ def student_comment_detail_view(request, pk):
     if request.method == "POST":
         form = HomeworkStudentCommentForm(request.POST, instance=comment_obj)
         if form.is_valid():
+            form.submitter = timezone.now()
             form.save()
             messages.success(request, "Komentář uložen.")
             return redirect("student_comment_detail", pk=comment_obj.pk)
@@ -306,11 +327,14 @@ def student_received_comment_detail_view(request, pk):
     return render(request, "student_comments/received_detail.html", {
         "comment_obj": comment_obj,
         "assignment": comment_obj.hw.key.assignment,
+        "hw":comment_obj.hw.engrossment,
     })
     
 def teacher_comments_list_view(request):
-    subjects=request.user.teacher_subjects.all()
-    comments=HomeworkStudentComment.objects.select_related("hw__key__assignment__subject").filter(hw__key__assignment__subject__in=subjects)
+    #subjects=request.user.teacher_subjects.all()
+    comments=HomeworkStudentComment.objects.select_related(
+    "hw__key__assignment","reviewer").order_by(
+    "hw__key__assignment","reviewer")
     pending_count = comments.filter(comment="").count()
     return render(request,"student_comments/teacher_list.html",{
         "comments":comments,

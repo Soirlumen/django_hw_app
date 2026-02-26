@@ -21,7 +21,6 @@
 
     <div class="text-end">
       <div class="mb-2">
-        <span class="badge bg-secondary me-1">Max: {{ assignment.max_score }}</span>
         <span class="badge bg-light text-dark border">Zveřejněno: {{ assignment.release }}</span>
       </div>
       <div>
@@ -59,39 +58,57 @@
     </div>
   </div>
   <div class="card shadow-sm mb-4">
-<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-  <strong>Odevzdané úkoly</strong>
+<div class="card-header">
+  <div class="row align-items-center">
 
-  <div class="d-flex flex-wrap align-items-center gap-2">
-    {% if homeworks %}
-      <span class="badge bg-primary">Celkem: {{ homeworks|length }}</span>
+    <div class="col">
+      <strong>Odevzdané úkoly</strong>
+    </div>
 
-      <form method="post" action="{% url 'assgn_make_comments' assignment.pk %}" class="d-flex align-items-center gap-2">
-        {% csrf_token %}
+    <div class="col-auto">
+      <div class="d-flex align-items-center gap-3">
 
-        <div class="input-group input-group-sm" style="max-width: 260px;">
-          <span class="input-group-text">k</span>
-          <input
-            type="number"
-            name="k"
-            min="1"
-            class="form-control"
-            placeholder="např. 2"
-            required
-          >
-        </div>
+        {% if homeworks %}
+          <span class="badge bg-primary">
+            Celkem: {{ homeworks|length }}
+          </span>
 
-        <button type="submit" class="btn btn-sm btn-success">
-          Vygenerovat komentáře
-        </button>
-      </form>
+          {% if assignment.is_comments_generated %}
+            <span class="badge bg-success">
+              Komentáře již byly vygenerovány
+            </span>
+          {% else %}
+            <form method="post"
+                  action="{% url 'assgn_make_comments' assignment.pk %}"
+                  class="d-flex align-items-center gap-2 mb-0">
+              {% csrf_token %}
 
-    {% else %}
-      <span class="badge bg-secondary">0 odevzdaných</span>
-    {% endif %}
+              <div class="input-group input-group-sm" style="width: 140px;">
+                <span class="input-group-text">počet</span>
+                <input type="number"
+                       name="k"
+                       min="1"
+                       class="form-control"
+                       required>
+              </div>
+
+              <button type="submit" class="btn btn-sm btn-success">
+                Vygenerovat komentáře
+              </button>
+            </form>
+          {% endif %}
+
+        {% else %}
+          <span class="badge bg-secondary">
+            0 odevzdaných
+          </span>
+        {% endif %}
+
+      </div>
+    </div>
+
   </div>
 </div>
-
 
     <div class="card-body">
       {% if homeworks %}

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_bootstrap_icons',
     "phonenumber_field",
     "whitenoise.runserver_nostatic",
+    'django_filters',
     ## moje appky
     "hw",
     "accounts",

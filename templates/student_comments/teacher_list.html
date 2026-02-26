@@ -1,62 +1,75 @@
 {% extends "base.html" %}
-{% block title %}komentáře studentů{% endblock %}
+
+{% block title %}
+Komentáře od studentů
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="max-width: 1000px;">
-
-  <h2 class="mb-4">Všechny komentáře k mému předmětu</h2>
+<div class="container mt-4" style="max-width: 1000px">
+  <h2 class="mb-4">Komentáře od studentů</h2>
 
   {% if comments %}
-
     {% regroup comments by hw.key.assignment as assignment_list %}
 
-    {% for group in assignment_list %}
-      <div class="card shadow-sm mb-4">
-
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div>
-            <strong>{{ group.grouper.title }}</strong>
-            <div class="text-muted small">
-              Termín: {{ group.grouper.deadline|date:"d.m.Y H:i" }}
-            </div>
-          </div>
-
-          {# badge: kolik hotovo / celkem #}
-          {% with done=0 %}
-          {% for c in group.list %}
-            {% if c.comment %}{% widthratio 1 1 1 %}{% endif %}
-          {% endfor %}
-          {% endwith %}
+    {% for assignment_group in assignment_list %}
+      <div class="card mb-4">
+        <div class="card-header">
+         <a href="{% url 'assgn_detail_teacher' assignment_group.grouper.pk  %}"> <strong>{{ assignment_group.grouper.title }}</strong></a> • {{assignment_group.grouper.subject}}
         </div>
 
-        <ul class="list-group list-group-flush">
-          {% for c in group.list %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+        {% regroup assignment_group.list by reviewer as reviewer_list %}
 
-              <a href="{% url 'received_comment_detail' c.pk %}" class="text-decoration-none">
-                Komentář od {{ c.reviewer.first_name}} {{ c.reviewer.surname}}
-              </a>
+       {% for reviewer_group in reviewer_list %}
+  <div class="card-body border-top">
 
-              {% if c.comment %}
-                <span class="badge bg-success">
-                  ✓ Hotovo
-                </span>
+    <a class="text-decoration-none fw-semibold d-block"
+       data-bs-toggle="collapse"
+       href="#reviewer-{{ reviewer_group.grouper.pk }}-{{ assignment_group.grouper.pk }}"
+       role="button"
+       aria-expanded="false"
+       aria-controls="reviewer-{{ reviewer_group.grouper.pk }}-{{ assignment_group.grouper.pk }}">
+
+       {{ reviewer_group.grouper.first_name }}
+       {{ reviewer_group.grouper.surname }}
+    </a>
+
+    <div class="collapse mt-3"
+         id="reviewer-{{ reviewer_group.grouper.pk }}-{{ assignment_group.grouper.pk }}">
+
+      <ul class="list-group">
+
+        {% for comment in reviewer_group.list %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+
+            <div>
+              {% if comment.comment %}
+                <span class="badge bg-success me-2">Odevzdáno</span>
               {% else %}
-                <span class="badge bg-secondary">
-                  ⏳ Čeká
-                </span>
+                <span class="badge bg-secondary me-2">Neodevzdáno</span>
               {% endif %}
 
-            </li>
-          {% endfor %}
-        </ul>
+              Komentář k řešení úkolu studenta: {{ comment.hw.key.student.first_name }} {{ comment.hw.key.student.surname }}
+            </div>
 
-      </div>
+            <a href="{% url 'received_comment_detail' comment.pk %}"
+               class="btn btn-sm btn-outline-primary">
+               Detail
+            </a>
+
+          </li>
+        {% endfor %}
+
+      </ul>
+
+    </div>
+
+  </div>
+{% endfor %}
     {% endfor %}
 
   {% else %}
     <div class="alert alert-info">
-      Žádné komentáře od studentů tu nejsou...
+      Žádné komentáře tu nejsou.
     </div>
   {% endif %}
 

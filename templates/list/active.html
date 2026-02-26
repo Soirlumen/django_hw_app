@@ -11,7 +11,6 @@
             </div>
         {% endif %}
 
-
 <ul class="nav nav-tabs">
 
   {% if user.is_teacher %}   
@@ -26,6 +25,13 @@
     <a class="nav-link" href="{% url 'list_after_deadline' %}">Po deadlinu</a>
   </li>
 </ul>
+    {% comment %} <form method="get">
+        {{ filter.form.as_p }}
+        <input type="submit" />
+    </form>
+    {% for obj in filter.qs %}
+        {{ obj.name }} - ${{ obj.price }}<br />
+    {% endfor %} {% endcomment %}
 {% if user.is_teacher %}
 {% if assignments_teacher %}
 
