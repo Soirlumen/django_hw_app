@@ -2,6 +2,10 @@ from django import forms
 from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, HTML
+from crispy_forms.bootstrap import AppendedText
+
 
 #vytvoření úkolu
 class CreateHomeworkForm(forms.ModelForm):
@@ -57,7 +61,8 @@ class AssignmentForm(forms.ModelForm):
 class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Homework
-        fields = ("text_evaluation", "score")
+        fields = ("score","text_evaluation", )
+
 
     def clean_score(self):
         score = self.cleaned_data.get("score")
@@ -66,6 +71,22 @@ class EvaluationForm(forms.ModelForm):
         if score is not None and score > maxscore:
             raise ValidationError(f"max score je {maxscore}")
         return score
+    
+    # aby mohl učitel zadat maximálně max_score bodů
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['score'].widget.attrs.update({
+            'min': 0,
+            'max': self.instance.key.assignment.max_score, 
+        })
+        '''max_score=self.instance.key.assignment.max_score
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('score', placeholder="ksjdgjsdgj"),
+            HTML(f"<p> maximum: {max_score}</p>"),
+            Field('text_evaluation'),
+        )
+        print("maxiskore:", max_score)'''
     
 # pro vyplnění komentu
 class HomeworkStudentCommentForm(forms.ModelForm):

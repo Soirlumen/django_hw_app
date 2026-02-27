@@ -203,7 +203,7 @@ def hw_detail_view(request, pk):
 def edit_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     if request.method == "POST":
-        form = EvaluationForm(request.POST, instance=hw)
+        form = EvaluationForm(request.POST,instance=hw)
         if form.is_valid():
             edit_hw = form.save(commit=False)
             edit_hw.save()
