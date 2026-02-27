@@ -1,0 +1,458 @@
+[
+{
+  "model": "hw.subject",
+  "pk": 1,
+  "fields": {
+    "year": 2026,
+    "name": "pgr1"
+  }
+},
+{
+  "model": "hw.subject",
+  "pk": 2,
+  "fields": {
+    "year": 2026,
+    "name": "pyth"
+  }
+},
+{
+  "model": "hw.subject",
+  "pk": 3,
+  "fields": {
+    "year": 2026,
+    "name": "inta"
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 1,
+  "fields": {
+    "title": "Zadání ",
+    "subject": 1,
+    "teacher": 1,
+    "description": "napiš ahoj",
+    "max_score": 10,
+    "deadline": "2026-02-25T12:46:34Z",
+    "release": "2026-01-26T12:09:00Z"
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 2,
+  "fields": {
+    "title": "Zadání 2",
+    "subject": 1,
+    "teacher": 1,
+    "description": "napiš čau",
+    "max_score": 2,
+    "deadline": "2026-02-25T12:10:36Z",
+    "release": "2026-02-25T12:10:20Z"
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 3,
+  "fields": {
+    "title": "Zadání 3",
+    "subject": 2,
+    "teacher": 4,
+    "description": "napiš mňau",
+    "max_score": 1,
+    "deadline": "2026-02-25T12:11:44Z",
+    "release": "2026-02-25T12:11:40Z"
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 5,
+  "fields": {
+    "title": "Zadání 5",
+    "subject": 3,
+    "teacher": 4,
+    "description": "eeeeeeeeeeeeeee",
+    "max_score": 3,
+    "deadline": "2026-06-18T11:10:35Z",
+    "release": "2025-12-08T12:22:52Z"
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 1,
+  "fields": {
+    "student": 2,
+    "assignment": 1
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 2,
+  "fields": {
+    "student": 2,
+    "assignment": 2
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 3,
+  "fields": {
+    "student": 2,
+    "assignment": 3
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 4,
+  "fields": {
+    "student": 1,
+    "assignment": 5
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 5,
+  "fields": {
+    "student": 3,
+    "assignment": 5
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 6,
+  "fields": {
+    "student": 3,
+    "assignment": 2
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 7,
+  "fields": {
+    "student": 3,
+    "assignment": 1
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 8,
+  "fields": {
+    "student": 5,
+    "assignment": 1
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 1,
+  "fields": {
+    "key": 1,
+    "engrossment": "mbbgdgd",
+    "submitted": "2026-02-25T12:32:26.012Z",
+    "score": 7,
+    "text_evaluation": ""
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 2,
+  "fields": {
+    "key": 4,
+    "engrossment": "aaaaaaaaaaaaaaaaaaaaa",
+    "submitted": "2026-02-25T12:30:18.951Z",
+    "score": null,
+    "text_evaluation": null
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 3,
+  "fields": {
+    "key": 5,
+    "engrossment": "djfgjyfdbgly",
+    "submitted": "2026-02-25T12:37:43.911Z",
+    "score": null,
+    "text_evaluation": null
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 4,
+  "fields": {
+    "key": 6,
+    "engrossment": "sdlkngsdlkgn",
+    "submitted": "2026-02-25T12:41:28Z",
+    "score": null,
+    "text_evaluation": ""
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 5,
+  "fields": {
+    "key": 7,
+    "engrossment": "sdfsdf",
+    "submitted": "2026-02-25T12:43:39Z",
+    "score": null,
+    "text_evaluation": ""
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 6,
+  "fields": {
+    "key": 8,
+    "engrossment": "kxjnvsjkgn",
+    "submitted": "2026-02-26T14:02:57Z",
+    "score": 1,
+    "text_evaluation": ""
+  }
+},
+{
+  "model": "hw.homeworkstudentcomment",
+  "pk": 21,
+  "fields": {
+    "hw": 5,
+    "reviewer": 2,
+    "comment": "",
+    "submitter": null
+  }
+},
+{
+  "model": "hw.homeworkstudentcomment",
+  "pk": 22,
+  "fields": {
+    "hw": 6,
+    "reviewer": 2,
+    "comment": "",
+    "submitter": null
+  }
+},
+{
+  "model": "hw.homeworkstudentcomment",
+  "pk": 23,
+  "fields": {
+    "hw": 6,
+    "reviewer": 3,
+    "comment": "",
+    "submitter": null
+  }
+},
+{
+  "model": "hw.homeworkstudentcomment",
+  "pk": 24,
+  "fields": {
+    "hw": 1,
+    "reviewer": 3,
+    "comment": "",
+    "submitter": null
+  }
+},
+{
+  "model": "hw.homeworkstudentcomment",
+  "pk": 25,
+  "fields": {
+    "hw": 1,
+    "reviewer": 5,
+    "comment": "",
+    "submitter": null
+  }
+},
+{
+  "model": "hw.homeworkstudentcomment",
+  "pk": 26,
+  "fields": {
+    "hw": 5,
+    "reviewer": 5,
+    "comment": "",
+    "submitter": null
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$mIsO4lNlpLd2PAHd8G9ncX$m6t2n/5AsCv93LwrDqu1eLnEZ3HfFGrWssVVqndqq90=",
+    "last_login": "2026-02-27T15:35:18.759Z",
+    "is_superuser": true,
+    "username": "administrator",
+    "last_name": "",
+    "email": "admin@glop.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-02-25T11:58:39Z",
+    "first_name": null,
+    "surname": null,
+    "tel": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$z83G2N4kiKLgSNWXZU9trF$GMAvOKlIS1K+H0Q70kJsamj24uF2JCow5hMEtWIUWNQ=",
+    "last_login": "2026-02-27T15:35:28.703Z",
+    "is_superuser": false,
+    "username": "student1",
+    "last_name": "",
+    "email": "zbve@mail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-25T12:01:15Z",
+    "first_name": "Zbyněk",
+    "surname": "Věřil",
+    "tel": "+420212345678",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$IYxLgLgZI5VtCIb2hsU0EF$TBZI4oVhOHKkNuDmVQPtJc3nghdpA8muYOZ/ZmNVEGY=",
+    "last_login": "2026-02-25T14:27:18.931Z",
+    "is_superuser": false,
+    "username": "student2",
+    "last_name": "",
+    "email": "vlpl@mail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-25T12:06:49Z",
+    "first_name": "Vlastimil",
+    "surname": "Plamínek",
+    "tel": "+420212345673",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$RqcCbMwYQRWjjq0wVHqFln$XsIRtg2SxDXZ5Xvj/7qViSxPWKPbEWubBKYyYhI32oI=",
+    "last_login": "2026-02-25T12:38:12.277Z",
+    "is_superuser": false,
+    "username": "teacher",
+    "last_name": "",
+    "email": "koze@mail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-25T12:07:54.638Z",
+    "first_name": "Kopřimil",
+    "surname": "Zelený",
+    "tel": "+420212345634",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$st8ajSCer8poyjI0LhKMsc$WqR3M0zUhYYk3RBnHw4Nnf+jGMDjJe/WfTvv5QJvOHM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "student3",
+    "last_name": "",
+    "email": "rugu@mail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-26T14:02:25.003Z",
+    "first_name": "Ruslanidze",
+    "surname": "Gulievshili",
+    "tel": "+420212345678",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "subject": 1,
+    "role": "student"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "subject": 1,
+    "role": "teacher"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "subject": 2,
+    "role": "teacher"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "subject": 3,
+    "role": "student"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 5,
+  "fields": {
+    "user": 2,
+    "subject": 2,
+    "role": "student"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 6,
+  "fields": {
+    "user": 3,
+    "subject": 1,
+    "role": "student"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 7,
+  "fields": {
+    "user": 3,
+    "subject": 3,
+    "role": "student"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 8,
+  "fields": {
+    "user": 4,
+    "subject": 3,
+    "role": "teacher"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 9,
+  "fields": {
+    "user": 4,
+    "subject": 2,
+    "role": "teacher"
+  }
+},
+{
+  "model": "accounts.subjecttype",
+  "pk": 10,
+  "fields": {
+    "user": 5,
+    "subject": 1,
+    "role": "student"
+  }
+}
+]

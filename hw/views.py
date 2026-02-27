@@ -330,6 +330,7 @@ def student_received_comment_detail_view(request, pk):
         "hw":comment_obj.hw.engrossment,
     })
     
+@login_required
 def teacher_comments_list_view(request):
     #subjects=request.user.teacher_subjects.all()
     comments=HomeworkStudentComment.objects.select_related(
