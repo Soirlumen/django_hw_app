@@ -23,7 +23,7 @@
                 <p><strong>Vyučované předměty:</strong></p>
                 <ul>
                     {% for subject in teacher_subjects %}
-                        <li>{{ subject.name }}</li>
+                        <li>{{ subject }}</li>
                     {% endfor %}
                 </ul>
             {% else %}
@@ -43,7 +43,7 @@
                 <p><strong>Zapsané předměty:</strong></p>
                 <ul>
                     {% for subject in student_subjects %}
-                        <li>{{ subject.name }}</li>
+                        <li>{{ subject }}</li>
                     {% endfor %}
                 </ul>
             {% else %}

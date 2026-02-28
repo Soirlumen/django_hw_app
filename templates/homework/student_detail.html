@@ -20,7 +20,6 @@
 
     <div class="text-end">
       <div class="mb-2">
-        <span class="badge bg-secondary me-1">Max: {{ hwdetail.max_score }}</span>
         <span class="badge bg-light text-dark border">Zveřejněno: {{ hwdetail.release }}</span>
       </div>
       <div>
@@ -43,15 +42,18 @@
       </div>
       <div class="mb-3">
         <strong>Popis:</strong>
-        <div class="mt-1">
+        <div class="mt-1 border rounded p-3 bg-white">
           {{ hwdetail.description|linebreaks }}
+        </div>
+        <div class="mb-2">
+          <strong>Max skóre:</strong>  {{hwdetail.max_score}}
         </div>
       </div>
 
       {% if not already_submitted %}
           <div class="d-flex flex-wrap gap-2">
       {% if hwdetail.is_after_deadline %}
-          <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary disabled">
+          <a href="#" class="btn btn-primary disabled">
             Již nelze odevzdat
           </a>
       {% else %}
@@ -72,9 +74,16 @@
         <strong>Odevzdáno:</strong> {{ submitted_homework.submitted }}
       </div>
       {% if submitted_homework %}
+
+      {% if hwdetail.is_after_deadline %}
+              <a href="#" class="btn btn-sm btn-outline-primary disabled">
+          Již nelze upravit
+        </a>
+      {% else %}
         <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-sm btn-outline-primary">
           Upravit odevzdání
         </a>
+      {% endif %}
       {% endif %}
     </div>
 

@@ -19,7 +19,7 @@ class Subject(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.year}-{self.name}"
+        return str(self.name).upper()+"-"+ str(self.year)
 
 
 class Assignment(models.Model):
