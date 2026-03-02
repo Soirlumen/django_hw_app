@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %} 
 {% block title %}Upravit úkol{% endblock %}
 
 {% block content %}
@@ -10,7 +11,7 @@
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form|crispy }}
                 <button type="submit" class="btn btn-primary">Uložit změny</button>
                 <a href="{% url 'hw_detail' hw.key.assignment.pk %}" class="btn btn-secondary">Zrušit</a>
             </form>
