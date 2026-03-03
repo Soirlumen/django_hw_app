@@ -9,11 +9,21 @@ class BaseHWTestCase(TestCase):
           # users
           self.teacher = CustomUser.objects.create_user(
                username="teacher",
-               password="pass"
+               password="pass",
+               first_name="Adam",
+               surname="Břídil",
           )
           self.student = CustomUser.objects.create_user(
                username="student",
-               password="pass"
+               password="pass",
+               first_name="Adam",
+               surname="Břídil",
+          )
+          self.student2 = CustomUser.objects.create_user(
+               username="student2",
+               password="pass",
+               first_name="Adam",
+               surname="Břídil",
           )
 
           # subject
@@ -30,6 +40,11 @@ class BaseHWTestCase(TestCase):
           )
           SubjectType.objects.create(
                user=self.student,
+               subject=self.subject,
+               role="student"
+          )
+          SubjectType.objects.create(
+               user=self.student2,
                subject=self.subject,
                role="student"
           )
@@ -50,8 +65,27 @@ class BaseHWTestCase(TestCase):
                student=self.student,
                assignment=self.assignment
           )
+          self.key2 = Key.objects.create(
+               student=self.student2,
+               assignment=self.assignment
+          )
           self.homework=Homework.objects.create(
                key = self.key,
                engrossment = "Testovací odevzdaný úkol",
                submitted = now,
+          )
+          self.homework2=Homework.objects.create(
+               key = self.key2,
+               engrossment = "Testovací odevzdaný úkol2",
+               submitted = now,
+          )
+          self.studentComment=HomeworkStudentComment.objects.create(
+               hw=self.homework,
+               reviewer=self.student2,
+               comment="ahoj",
+          )
+          self.studentComment2=HomeworkStudentComment.objects.create(
+               hw=self.homework2,
+               reviewer=self.student,
+               comment="",
           )

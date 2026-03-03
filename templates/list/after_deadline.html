@@ -25,6 +25,7 @@
     <a class="nav-link active" href="{% url 'list_after_deadline' %}">Po deadlinu</a>
   </li>
 </ul>
+{% if user.is_teacher %}
 {% if assignments_teacher %}
 
         <div class="card mb-4">
@@ -47,7 +48,7 @@
                                 <tr>
                                     <td>{{ a.title }}</td>
                                     <td>{{ a.deadline }}</td>
-                                    <td>{{ a.subject.name }}</td>
+                                    <td>{{ a.subject }}</td>
                                     <td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}
@@ -59,7 +60,8 @@
         {% else %}
             <div class="alert alert-primary">Žádná vytvořená zadání...</div>
         {% endif %}
-
+        {% endif %}
+        {% if user.is_student %}
         {% if assignments_student %}
         <div class="card mb-4">
             <div class="card-header">
@@ -74,7 +76,7 @@
                                 <th>Termín</th>
                                 <th>Předmět</th>
                                 <th>Učitel</th>
-                                <th>Přidat řešení</th>
+                                <th>Detail úkolu</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,6 +96,7 @@
         </div>
         {% else %}
             <div class="alert alert-primary">Žádné zadané úkoly</div>
+        {% endif %}
         {% endif %}
 
     {% else %}

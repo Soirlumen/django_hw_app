@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_bootstrap_icons',
     "phonenumber_field",
     "whitenoise.runserver_nostatic",
+    'django_filters',
     ## moje appky
     "hw",
     "accounts",
@@ -141,6 +142,6 @@ LOGIN_REDIRECT_URL = reverse_lazy("dashboard")
 LOGOUT_REDIRECT_URL = "login"
 SIGNUP_REDIRECT_URL = "login"
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "all"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 PHONENUMBER_DEFAULT_REGION = "CZ" 

@@ -12,9 +12,14 @@ from .views import (
     hw_create_view,
     assignment_create_view,
     hw_detail_view,
-    create_evaluation_view,
+    #create_evaluation_view,
     edit_evaluation_view,
     delete_evaluation_view,
+    assignment_make_comments_view,
+    student_comment_list_view, 
+    student_comment_detail_view,
+    student_received_comment_detail_view,
+    teacher_comments_list_view,
 )
 
 urlpatterns = [
@@ -28,9 +33,14 @@ urlpatterns = [
     path("homework/submithw/", hw_create_view, name="hw_submit"),
     path("homework/<int:pk>/update/", hw_update_view, name="homework_update"),
     path("homework/<int:pk>/delete_asgn/", assgn_delete_view, name="assignment_delete"),
-    path("homework/<int:pk>/evaluate/", create_evaluation_view, name="evaluate_homework"),
+    #path("homework/<int:pk>/evaluate/", create_evaluation_view, name="evaluate_homework"),
     path("homework/<int:pk>/evaluate_update/", edit_evaluation_view, name="evaluate_edit"),
     path("homework/<int:pk>/delete_evaluation/",delete_evaluation_view,name="evaluate_delete",),
     path("assignmentt/<int:pk>/",assgn_detail_teacher,name="assgn_detail_teacher",),
     path("assignments/<int:pk>/",assgn_detail_stud,name="assgn_detail_student",),
+    path("assignment/<int:pk>/make-comments/", assignment_make_comments_view, name="assgn_make_comments"),
+    path("my-comments/", student_comment_list_view, name="student_comment_list"),
+    path("my-comments/<int:pk>/", student_comment_detail_view, name="student_comment_detail"),
+    path("received-comment/<int:pk>/", student_received_comment_detail_view, name="received_comment_detail"),
+    path("students-comments/",teacher_comments_list_view,name="teacher_comment_list"),
 ]

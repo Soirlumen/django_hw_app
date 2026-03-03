@@ -16,7 +16,7 @@
   <li class="nav-item">
     <a class="nav-link active" href="{% url 'list_before_release' %}">Před releasem</a>
   </li>
-     {% endif %}
+  {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'list_active' %}">Aktivní úkoly</a>
           </li>
@@ -31,6 +31,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
+                      {% if filtered_subjects %}
                     <table class="table table-bordered table-hover align-middle">
                         <thead class="table-light">
                             <tr>
@@ -45,16 +46,19 @@
                                 <tr>
                                     <td>{{ a.title }}</td>
                                     <td>{{ a.deadline }}</td>
-                                    <td>{{ a.subject.name }}</td>
+                                    <td>{{ a.subject }}</td>
                                     <td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
+                            {% else %}
+    <div class="alert alert-primary">Žádná zadání...</div>
+    {% endif %}
+    {%endif %}
                     </table>
                 </div>
             </div>
         </div>
 
-    {% endif %}
 </div>
 {% endblock content %}

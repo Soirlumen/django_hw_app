@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Subject, Assignment, Key, Homework
+from .models import Subject, Assignment, Key, Homework, HomeworkStudentComment
 
 
 @admin.register(Subject)
@@ -28,3 +28,5 @@ class HomeworkAdmin(admin.ModelAdmin):
     list_display = ["key", "submitted", "score"]
     list_filter = ["score"]
     search_fields = ["key__assignment__title", "key__student__username"]
+
+admin.site.register(HomeworkStudentComment)
