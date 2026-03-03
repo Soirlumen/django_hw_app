@@ -61,13 +61,12 @@ class AssignmentForm(forms.ModelForm):
 class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Homework
-        fields = ("score","text_evaluation", )
-
-
+        fields = ["score","text_evaluation", ]
+                
     def clean_score(self):
         score = self.cleaned_data.get("score")
         maxscore = self.instance.key.assignment.max_score
-
+        
         if score is not None and score > maxscore:
             raise ValidationError(f"max score je {maxscore}")
         return score
@@ -78,7 +77,14 @@ class EvaluationForm(forms.ModelForm):
         self.fields['score'].widget.attrs.update({
             'min': 0,
             'max': self.instance.key.assignment.max_score, 
+
         })
+        self.fields["score"].help_text = (
+             f"Maximální počet bodů je  {self.instance.key.assignment.max_score}"
+        )
+        # self.fields["text_evaluation"].help_text = (
+        #      f"Napište studentovi zpětnou vazbu ke kódu."
+        # )
         '''max_score=self.instance.key.assignment.max_score
         self.helper = FormHelper()
         self.helper.layout = Layout(
