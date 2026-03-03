@@ -21,12 +21,15 @@ class Subject(models.Model):
     def __str__(self):
         return str(self.name).upper()+"-"+ str(self.year)
 
-
+class AssignmentFile(models.Model):
+    file=models.FileField()
+    
 class Assignment(models.Model):
     title = models.CharField(max_length=200)
     subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(AssignmentFile)
+    files=models.ManyToManyField(AssignmentFile,blank=True, null=True)
     max_score = models.PositiveSmallIntegerField(null=True)
     deadline = models.DateTimeField()
     release = models.DateTimeField()
@@ -77,6 +80,7 @@ class Homework(models.Model):
     ## část pro studenta
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False)
     engrossment = models.TextField()  # solution ale hustští
+    
     submitted = models.DateTimeField(null=True, blank=True)
     ## část pro učitele
     score = models.PositiveSmallIntegerField(null=True, blank=True)
