@@ -82,9 +82,9 @@ class EvaluationForm(forms.ModelForm):
         self.fields["score"].help_text = (
              f"Maximální počet bodů je  {self.instance.key.assignment.max_score}"
         )
-        self.fields["text_evaluation"].help_text = (
-             f"Napište studentovi zpětnou vazbu ke kódu."
-        )
+        # self.fields["text_evaluation"].help_text = (
+        #      f"Napište studentovi zpětnou vazbu ke kódu."
+        # )
         '''max_score=self.instance.key.assignment.max_score
         self.helper = FormHelper()
         self.helper.layout = Layout(
