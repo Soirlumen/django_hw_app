@@ -8,16 +8,15 @@ class CustomUser(AbstractUser):
     surname=models.CharField(max_length=50,null=True, blank=True)
     tel = PhoneNumberField(blank=True, region="CZ")
     subjects=models.ManyToManyField("hw.Subject",through="accounts.SubjectType",through_fields=("user","subject") ,related_name="users",)
+    def __str__(self):
+        return f"{self.first_name} {self.surname}"
+
     @property
     def is_teacher(self)->bool:
         return self.subject_type.filter(role="teacher").exists()
     @property
     def is_student(self)->bool:
         return self.subject_type.filter(role="student").exists()
-    
-    def __str__(self):
-        return self.username
-    
     @property
     def teacher_subjects(self):
         return self.subjects.filter(subject_type__role="teacher")

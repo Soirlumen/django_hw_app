@@ -48,7 +48,7 @@
                                 <tr>
                                     <td>{{ a.title }}</td>
                                     <td>{{ a.deadline }}</td>
-                                    <td>{{ a.subject.name }}</td>
+                                    <td>{{ a.subject }}</td>
                                     <td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">Zobrazit</a></td>
                                 </tr>
                             {% endfor %}

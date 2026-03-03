@@ -15,10 +15,7 @@
 
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
-            <strong>{{ group.grouper.title }}</strong>
-            <div class="text-muted small">
-              Termín: {{ group.grouper.deadline|date:"d.m.Y H:i" }}
-            </div>
+            <strong><a href="{% url 'assgn_detail_student' group.grouper.pk%}">{{ group.grouper.title }}</a></strong>
           </div>
           {% with done=0 %}
           {% for c in group.list %}
