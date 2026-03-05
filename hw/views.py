@@ -1,5 +1,10 @@
-from .models import Homework, Assignment, Key, HomeworkStudentComment
-from .forms import CreateHomeworkForm, HomeworkForm, AssignmentForm, EvaluationForm,MakeCommentsForm,HomeworkStudentCommentForm
+from .models import Homework, Assignment, Key, HomeworkStudentComment, CodeFile
+from .forms import (CreateHomeworkForm, 
+                    HomeworkForm, 
+                    AssignmentForm, 
+                    EvaluationForm,MakeCommentsForm,
+                    HomeworkStudentCommentForm,
+                    )
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
@@ -114,13 +119,18 @@ def assgn_detail_stud(request, pk):
 @teacher_required
 def assignment_create_view(request):
     if request.method == "POST":
-        form = AssignmentForm(request.POST, user=request.user)
+        form = AssignmentForm(request.POST,request.FILES, user=request.user)
         if form.is_valid():
             assignment = form.save(commit=False)
             if assignment.subject not in request.user.teacher_subjects:
                 return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
             assignment.teacher = request.user
             assignment.save()
+            files = form.cleaned_data["filesimput"]
+            for f in files:
+                obj_f=CodeFile.objects.create(file=f)
+                assignment.files.add(obj_f)
+
             return redirect("assgn_detail_teacher", pk=assignment.pk)
     else:
         form = AssignmentForm(user=request.user)
@@ -144,13 +154,17 @@ def hw_create_view(request):
         return redirect(hw.get_assgn_student_url())
 
     if request.method == "POST":
-        form = CreateHomeworkForm(request.POST)
+        form = CreateHomeworkForm(request.POST,request.FILES)
         if form.is_valid():
             hwform = form.save(commit=False)
             hwform.key = key
             hwform.submitted = timezone.now()
             hwform.full_clean()
             hwform.save()
+            files = form.cleaned_data["filesimput"]
+            for f in files:
+                obj_f=CodeFile.objects.create(file=f)
+                hwform.files.add(obj_f)
             return redirect("assgn_detail_student", pk=assignment.pk)
 
     else:
@@ -164,12 +178,15 @@ def hw_create_view(request):
 def hw_update_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     if request.method == "POST":
-        
-        form = HomeworkForm(request.POST, instance=hw)
+        form = HomeworkForm(request.POST,request.FILES, instance=hw)
         if form.is_valid():
             edit_hw = form.save(commit=False)
             edit_hw.submitted = datetime.datetime.now()
             edit_hw.save()
+            files = form.cleaned_data["filesimput"]
+            for f in files:
+                obj_f=CodeFile.objects.create(file=f)
+                edit_hw.files.add(obj_f)
             return redirect(hw.get_assgn_student_url())
     else:
         form = HomeworkForm(instance=hw)
@@ -181,7 +198,7 @@ def assgn_delete_view(request, pk):
     assgn = get_object_or_404(Assignment, pk=pk)
     if request.method == "POST":
         assgn.delete()
-        return redirect("assgn_detail_student", pk=assgn.pk)
+        return redirect("list_active")
     context={"assgn": assgn}
     return render(request,"homework/ass_delete_confirm.html",context)
 

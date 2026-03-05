@@ -7,6 +7,23 @@ from django.utils import timezone
 # from crispy_forms.bootstrap import AppendedText
 from django.utils.safestring import mark_safe
 
+ 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
 
 #vytvoření úkolu
 class CreateHomeworkForm(forms.ModelForm):
@@ -24,6 +41,7 @@ class CreateHomeworkForm(forms.ModelForm):
         fields = ("engrossment",)
 # úprava úkolu  
 class HomeworkForm(forms.ModelForm):
+    filesimput= MultipleFileField(help_text="Můžete přiložit více souborů najednou" ,required=False, label="Upload files")
     def clean(self):
         cleaned_data=super().clean()
         submitted=cleaned_data.get("submitted")
@@ -39,6 +57,7 @@ class HomeworkForm(forms.ModelForm):
           
 #vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):
+    filesimput= MultipleFileField(help_text="Můžete přiložit více souborů najednou" ,required=False, label="Upload files")
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super(AssignmentForm, self).__init__(*args, **kwargs)

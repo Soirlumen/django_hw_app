@@ -46,6 +46,15 @@
         <div class="mt-1 border rounded p-3 bg-white">
           {{ hwdetail.description|markdown | safe  }}
         </div>
+      {% if hwdetail.files.exists %}
+      <div class="mb-2"><strong>Přiložené soubory:</strong></div>
+      <ul>
+      {% for f in hwdetail.files.all %}
+      <li><div class="mb-3"><a href="{{ f.get_file_path }}"download>{{ f }}</a></div></li>
+      {% endfor %}
+      {% else %}
+      {% endif %}
+      </ul>
         <div class="mb-2">
           <strong>Max skóre:</strong>  {{hwdetail.max_score}}
         </div>
@@ -91,7 +100,7 @@
     {% if submitted_homework %}
       <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <strong>Tvůj odevzdaný text</strong>
+          <strong>Tvůj odevzdaný úkol</strong>
           {% if submitted_homework.score %}
             <span class="badge bg-success">
               Skóre: {{ submitted_homework.score }} / {{ hwdetail.max_score }}
@@ -102,6 +111,14 @@
           <div class="border rounded p-3 bg-white">
             {{ submitted_homework.engrossment|linebreaks }}
           </div>
+                 {% if submitted_homework.files.exists %}
+      <div class="mb-2"><strong>Přiložené soubory:</strong></div>
+      <ul>
+      {% for f in submitted_homework.files.all %}
+      <li><div class="mb-3"><a href="{{ f.get_file_path }}"download>{{ f }}</a></div></li>
+      {% endfor %}
+      {% else %}
+      {% endif %}
         </div>
       </div>
             {% if submitted_homework.text_evaluation %}

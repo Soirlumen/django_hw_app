@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db.models import UniqueConstraint
 from django.conf import settings
+import os
 
 
 YEAR_CHOICES = []
@@ -22,7 +23,16 @@ class Subject(models.Model):
         return str(self.name).upper()+"-"+ str(self.year)
 
 class CodeFile(models.Model):
-    file=models.FileField()
+    file=models.FileField(upload_to="uploads/")
+    @property
+    def get_file_path(self)->str:
+        return self.file.url
+    def __str__(self):
+        return os.path.basename(self.file.name)
+    # def delete(self, *args, **kwargs):
+    #     if self.file:
+    #         self.file.delete(save=False) 
+    #     super().delete(*args, **kwargs)
     
 class TextFile(models.Model):
     LANGUAGE_CHOICES = (
@@ -39,7 +49,7 @@ class Assignment(models.Model):
     subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField()
-    #files=models.ManyToManyField(CodeFile,blank=True, null=True)
+    files=models.ManyToManyField(CodeFile,blank=True)
     max_score = models.PositiveSmallIntegerField(null=True)
     deadline = models.DateTimeField()
     release = models.DateTimeField()
@@ -91,6 +101,7 @@ class Homework(models.Model):
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False)
     engrossment = models.TextField()  # solution ale hustští
     #files=models.ManyToManyField(CodeFile,blank=True, null=True)
+    files=models.ManyToManyField(CodeFile,blank=True)
     submitted = models.DateTimeField(null=True, blank=True)
     ## část pro učitele
     score = models.PositiveSmallIntegerField(null=True, blank=True)

@@ -41,6 +41,14 @@
       <div class="border rounded p-3 bg-white">
         {{ hw.engrossment|linebreaks }}
       </div>
+             {% if hw.files.exists %}
+      <div class="mb-2"><strong>Přiložené soubory:</strong></div>
+      <ul>
+      {% for f in hw.files.all %}
+      <li><div class="mb-3"><a href="{{ f.get_file_path }}"download>{{ f }}</a></div></li>
+      {% endfor %}
+      {% else %}
+      {% endif %}
     </div>
   </div>
   {% if request.user == hw.key.assignment.teacher %}

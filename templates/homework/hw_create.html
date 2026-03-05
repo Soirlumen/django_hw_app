@@ -42,7 +42,14 @@
             {{ hwdetail.description|markdown|safe }}
           </div>
         </div>
-
+      {% if hwdetail.files.exists %}
+      <div class="mb-2"><strong>Přiložené soubory:</strong></div>
+      <ul>
+      {% for f in hwdetail.files.all %}
+      <li><div class="mb-3"><a href="{{ f.get_file_path }}"download>{{ f }}</a></div></li>
+      {% endfor %}
+      {% else %}
+      {% endif %}
         <div class="mb-2">
           <strong>Max skóre:</strong> {{ hwdetail.max_score }}
         </div>
@@ -59,7 +66,7 @@
       <button class="btn btn-success mt-2" disabled>Odevzdat</button>
 
       {% else %}
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
         {% csrf_token %} {{ form|crispy }}
 
         <button type="submit" class="btn btn-success mt-2">Odevzdat</button>

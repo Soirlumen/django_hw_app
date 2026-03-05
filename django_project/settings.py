@@ -73,6 +73,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -145,3 +146,5 @@ SIGNUP_REDIRECT_URL = "login"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 PHONENUMBER_DEFAULT_REGION = "CZ" 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Subject, Assignment, Key, Homework, HomeworkStudentComment
+from .models import Subject, Assignment, Key, Homework, HomeworkStudentComment, CodeFile
 
 
 @admin.register(Subject)
@@ -30,3 +30,4 @@ class HomeworkAdmin(admin.ModelAdmin):
     search_fields = ["key__assignment__title", "key__student__username"]
 
 admin.site.register(HomeworkStudentComment)
+admin.site.register(CodeFile)
