@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load markdown_extras %}
 {% block title %}Úkol: {{ hwdetail.title }}{% endblock title %}
 
 {% block content %}
@@ -43,7 +44,7 @@
       <div class="mb-3">
         <strong>Popis:</strong>
         <div class="mt-1 border rounded p-3 bg-white">
-          {{ hwdetail.description|linebreaks }}
+          {{ hwdetail.description|markdown | safe  }}
         </div>
         <div class="mb-2">
           <strong>Max skóre:</strong>  {{hwdetail.max_score}}

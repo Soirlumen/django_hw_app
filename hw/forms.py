@@ -2,9 +2,10 @@ from django import forms
 from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, HTML
-from crispy_forms.bootstrap import AppendedText
+# from crispy_forms.helper import FormHelper
+# from crispy_forms.layout import Layout, Field, HTML
+# from crispy_forms.bootstrap import AppendedText
+from django.utils.safestring import mark_safe
 
 
 #vytvoření úkolu
@@ -43,6 +44,7 @@ class AssignmentForm(forms.ModelForm):
         super(AssignmentForm, self).__init__(*args, **kwargs)
         if self.user:
             self.fields["subject"].queryset = self.user.teacher_subjects
+            self.fields["description"].help_text= mark_safe("Popište zadání domácího úkolu. Podporuje <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>.")
         
     def clean_subject(self):
         subject = self.cleaned_data["subject"]
@@ -82,17 +84,6 @@ class EvaluationForm(forms.ModelForm):
         self.fields["score"].help_text = (
              f"Maximální počet bodů je  {self.instance.key.assignment.max_score}"
         )
-        # self.fields["text_evaluation"].help_text = (
-        #      f"Napište studentovi zpětnou vazbu ke kódu."
-        # )
-        '''max_score=self.instance.key.assignment.max_score
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Field('score', placeholder="ksjdgjsdgj"),
-            HTML(f"<p> maximum: {max_score}</p>"),
-            Field('text_evaluation'),
-        )
-        print("maxiskore:", max_score)'''
     
 # pro vyplnění komentu
 class HomeworkStudentCommentForm(forms.ModelForm):

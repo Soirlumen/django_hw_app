@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load markdown_extras %}
 {% block title %}Detail zadání: {{ assignment.title }}{% endblock title %}
 
 {% block content %}
@@ -53,7 +54,7 @@
 
       <div class="mb-2"><strong>Popis:</strong></div>
       <div class="border rounded p-3 bg-white">
-        {{ assignment.description|linebreaks }}
+        {{ assignment.description|markdown | safe }}
       </div>
     </div>
   </div>

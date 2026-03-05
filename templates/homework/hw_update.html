@@ -1,68 +1,108 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %} 
+{% load crispy_forms_tags %}
+{% load markdown_extras %}
+
 {% block title %}Upravit úkol{% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="max-width: 900px;">
-{% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
-    <div>
-      <h2 class="mb-1">{{ hw.key.assignment }}</h2>
-      <div class="text-muted">
-        {{ hw.key.assignment.subject }} • {{ hw.key.assignment.teacher }}
-      </div>
-    </div>
 
-    <div class="text-end">
-      <div class="mb-2">
-        <span class="badge bg-light text-dark border">Zveřejněno: {{ hw.key.assignment.release }}</span>
-      </div>
-      <div>
-        <span class="badge bg-warning text-dark border">
-          Termín: {{ hw.key.assignment.deadline }}
-        </span>
-      </div>
+<div class="container mt-4" style="max-width: 900px;">
+
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} mb-3" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+  <div>
+    <h2 class="mb-1">{{ hw.key.assignment }}</h2>
+    <div class="text-muted">
+      {{ hw.key.assignment.subject }} • {{ hw.key.assignment.teacher }}
     </div>
   </div>
-  <div class="card shadow-sm mb-4">
-    <div class="card-header">
-      <strong>Zadání</strong>
+
+  <div class="text-end">
+    <div class="mb-2">
+      <span class="badge bg-light text-dark border">
+        Zveřejněno: {{ hw.key.assignment.release }}
+      </span>
     </div>
-    <div class="card-body">
-      <div class="mb-2">
-        <strong>Předmět:</strong> {{ hw.key.assignment.subject }}
-      </div>
-      <div class="mb-2">
-        <strong>Učitel:</strong> {{ hw.key.assignment.teacher }}
-      </div>
-      <div class="mb-3">
-        <strong>Popis:</strong>
-        <div class="mt-1 border rounded p-3 bg-white">
-          {{ hw.key.assignment.description|linebreaks }}
-        </div>
-        <div class="mb-2">
-          <strong>Max skóre:</strong>  {{hw.key.assignment.max_score}}
-        </div>
-      </div>  </div>
+    <div>
+      <span class="badge bg-warning text-dark border">
+        Termín: {{ hw.key.assignment.deadline }}
+      </span>
     </div>
-    <div class="card">
-        <div class="card-header">
-            <h5>Upravit úkol: {{ hw.key.assignment.title }}</h5>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-primary">Uložit změny</button>
-                <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}" class="btn btn-secondary">Zrušit</a>
-            </form>
-        </div>
-    </div>
+  </div>
 </div>
+
+<div class="card shadow-sm mb-4">
+
+  <div class="card-header d-flex justify-content-between align-items-center"
+       data-bs-toggle="collapse"
+       data-bs-target="#assignmentCollapse"
+       style="cursor:pointer;">
+<strong>Zadání úkolu</strong>
+
+<span class="text-muted small">
+  klikni pro zobrazení
+</span>
+  </div>
+
+  <div class="collapse" id="assignmentCollapse">
+<div class="card-body">
+
+  <div class="mb-2">
+    <strong>Předmět:</strong> {{ hw.key.assignment.subject }}
+  </div>
+
+  <div class="mb-2">
+    <strong>Učitel:</strong> {{ hw.key.assignment.teacher }}
+  </div>
+
+  <div class="mb-3">
+    <strong>Popis:</strong>
+
+    <div class="mt-1 border rounded p-3 bg-white">
+      {{ hw.key.assignment.description|markdown|safe }}
+    </div>
+  </div>
+
+  <div class="mb-2">
+    <strong>Max skóre:</strong> {{ hw.key.assignment.max_score }}
+  </div>
+
+</div>
+  </div>
+</div>
+<div class="card shadow-sm">
+
+  <div class="card-header">
+    <strong>Upravit úkol: {{ hw.key.assignment.title }}</strong>
+  </div>
+
+  <div class="card-body">
+<form method="post">
+  {% csrf_token %}
+  {{ form|crispy }}
+
+  <button type="submit" class="btn btn-primary">
+    Uložit změny
+  </button>
+
+  <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}"
+     class="btn btn-outline-secondary">
+    Zrušit
+  </a>
+
+</form>
+  </div>
+
+</div>
+
+</div>
+
 {% endblock %}

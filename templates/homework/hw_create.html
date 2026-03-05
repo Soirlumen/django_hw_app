@@ -1,36 +1,71 @@
 {% extends "base.html" %} 
-{% load crispy_forms_tags %} 
-{% block title %}Odevzdat úkol{% endblock title %} 
-{% block content %}
-<div class="container mt-4">
-  <div class="card mb-4">
-    <div class="card-header">
-      <h5>{{ hwdetail.title }}</h5>
-    </div>
-    <div class="card-body">
-      <p><strong>Předmět:</strong> {{ hwdetail.subject }}</p>
-      <p><strong>Učitel:</strong> {{ hwdetail.teacher }}</p>
-      <p><strong>Popis:</strong> {{ hwdetail.description }}</p>
-      <p><strong>Termín odevzdání:</strong> {{ hwdetail.deadline }}</p>
-      <p><strong>Zveřejněno:</strong> {{ hwdetail.release }}</p>
+{% load markdown_extras %} 
+{% load crispy_forms_tags%} 
+{% block title %}Odevzdat úkol{% endblock title %}
+ {% block content %} 
+ {% if messages %} {% for message in messages %}
+<div class="alert alert-{{ message.tags }} mb-3" role="alert">
+  {{ message }}
+</div>
+{% endfor %} {% endif %}
+
+<div class="container mt-4" style="max-width: 900px">
+  <div class="mb-3 d-flex justify-content-between align-items-center">
+    <div>
+      <h2 class="mb-1">{{ hwdetail.title }}</h2>
+      <div class="text-muted">
+        {{ hwdetail.subject }} • {{ hwdetail.teacher }}
+      </div>
     </div>
   </div>
+  <div class="card shadow-sm mb-4">
+    <div
+      class="card-header d-flex justify-content-between align-items-center"
+      data-bs-toggle="collapse"
+      data-bs-target="#assignmentCollapse"
+      style="cursor: pointer"
+    >
+      <strong>Zadání úkolu</strong>
 
-  <div class="card">
+      <span class="text-muted small"> klikni pro zobrazení </span>
+    </div>
+
+    <div class="collapse" id="assignmentCollapse">
+      <div class="card-body">
+        <div class="mb-2"><strong>Předmět:</strong> {{ hwdetail.subject }}</div>
+
+        <div class="mb-2"><strong>Učitel:</strong> {{ hwdetail.teacher }}</div>
+
+        <div class="mb-3">
+          <strong>Popis:</strong>
+          <div class="mt-1 border rounded p-3 bg-white">
+            {{ hwdetail.description|markdown|safe }}
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <strong>Max skóre:</strong> {{ hwdetail.max_score }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card shadow-sm">
     <div class="card-header">
-      <h6>Odevzdej řešení</h6>
+      <strong>Odevzdej řešení</strong>
     </div>
     <div class="card-body">
       {% if is_after_deadline %}
       <p><em>Po deadline nelze přidávat řešení úkolu...</em></p>
-      <button type="submit" class="btn btn-success mt-2" disabled>Odevzdat</button>
+      <button class="btn btn-success mt-2" disabled>Odevzdat</button>
+
       {% else %}
       <form method="post">
         {% csrf_token %} {{ form|crispy }}
+
         <button type="submit" class="btn btn-success mt-2">Odevzdat</button>
       </form>
       {% endif %}
     </div>
   </div>
+  {% endblock content %}
 </div>
-{% endblock content %}
