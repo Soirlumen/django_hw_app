@@ -19,9 +19,8 @@ LANGUAGE_CHOICES = (
     ("PLAIN_TEXT","Plain text")
 )
 def validate_file_size(value):
-    max_size_mb = 2
-    if value.size > max_size_mb * 1024 * 1024:
-        raise ValidationError(f"Maximální velikost jednoho souboru je {settings.MAX_UPLOAD_FILE_SIZE:.0f} MB.")
+    if value.size > settings.MAX_UPLOAD_FILE_SIZE:
+        raise ValidationError(f"Maximální velikost jednoho souboru je {settings.MAX_UPLOAD_FILE_SIZE_MB:.0f} MB.")
 
 
 class Subject(models.Model):

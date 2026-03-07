@@ -7,6 +7,12 @@ from django.utils import timezone
 # from crispy_forms.bootstrap import AppendedText
 from django.utils.safestring import mark_safe
 from django.conf import settings
+
+UPLOAD_HELP_TEXT = (
+    f"Můžete přiložit více souborů najednou. "
+    f"Maximálně {settings.MAX_UPLOAD_FILES_NUMBER} souborů, "
+    f"každý nejvýše {settings.MAX_UPLOAD_FILE_SIZE_MB} MB."
+)
  
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -20,6 +26,7 @@ class MultipleFileField(forms.FileField):
         single_file_clean = super().clean
         max_size=settings.MAX_UPLOAD_FILE_SIZE
         max_size_mb = max_size/(1024**2)
+        max_files=settings.MAX_UPLOAD_FILES_NUMBER
         if not data:
             return []
 
@@ -27,6 +34,10 @@ class MultipleFileField(forms.FileField):
             files = [single_file_clean(d, initial) for d in data]
         else:
             files = [single_file_clean(data, initial)]
+        if len(files) > max_files:
+            raise ValidationError(
+                f"Najednou můžeš nahrát maximálně {max_files} souborů."
+            )
 
         for f in files:
             if f.size > max_size:
@@ -38,7 +49,7 @@ class MultipleFileField(forms.FileField):
 #vytvoření úkolu
 class CreateHomeworkForm(forms.ModelForm):
     max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
-    filesimput= MultipleFileField(help_text=f"Můžete přiložit více souborů najednou, maximální velikost souborů je {max_size:.0f} MB." ,required=False, label="Upload files")
+    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label="Upload files")
     def clean(self):
         cleaned_data=super().clean()
         submitted=cleaned_data.get("submitted")
@@ -54,16 +65,25 @@ class CreateHomeworkForm(forms.ModelForm):
 # úprava úkolu  
 class HomeworkForm(forms.ModelForm):
     max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
-    filesimput= MultipleFileField(help_text=f"Můžete přiložit více souborů najednou, maximální velikost souborů je {max_size:.0f} MB." ,required=False, label="Upload files")
+    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label="Upload files")
+    
     def clean(self):
-        cleaned_data=super().clean()
-        submitted=cleaned_data.get("submitted")
-        # if submitted is None:
-        #     return submitted
-        deadline=self.instance.key.assignment.deadline
+        cleaned_data = super().clean()
+        deadline = self.instance.key.assignment.deadline
+
         if timezone.now() > deadline:
             raise ValidationError("Nemůžeš odevzdat úkol po deadline!")
-        return submitted     
+
+        new_files = cleaned_data.get("filesimput", [])
+        current_files_count = self.instance.files.count() if self.instance.pk else 0
+        #nepřerkočit max nahraných souborů
+        if current_files_count + len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
+            raise ValidationError(
+                f"Celkem může být u odevzdání maximálně "
+                f"{settings.MAX_UPLOAD_FILES_NUMBER} souborů."
+            )
+        return cleaned_data
+ 
     class Meta:
         model = Homework
         fields = ("engrossment",)
@@ -71,7 +91,7 @@ class HomeworkForm(forms.ModelForm):
 #vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):
     max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
-    filesimput= MultipleFileField(help_text=f"Můžete přiložit více souborů najednou, maximální velikost souborů je {max_size:.0f} MB." ,required=False, label="Upload files")
+    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label="Upload files")
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super(AssignmentForm, self).__init__(*args, **kwargs)
@@ -84,6 +104,16 @@ class AssignmentForm(forms.ModelForm):
         if self.user and not subject.subject_type.filter(user=self.user, role="teacher").exists():
             raise forms.ValidationError("Na tomto předmětu nejsi veden jako učitel.")
         return subject
+    def clean(self):
+        cleaned_data = super().clean()
+        new_files = cleaned_data.get("filesimput", [])
+
+        if len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
+            raise ValidationError(
+                f"Můžeš přiložit maximálně {settings.MAX_UPLOAD_FILES_NUMBER} souborů."
+            )
+
+        return cleaned_data
 
     class Meta:
         model = Assignment

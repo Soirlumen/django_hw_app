@@ -118,25 +118,30 @@ def assgn_detail_stud(request, pk):
     
 @teacher_required
 def assignment_create_view(request):
-    if request.method == "POST":
-        form = AssignmentForm(request.POST,request.FILES, user=request.user)
-        if form.is_valid():
-            assignment = form.save(commit=False)
-            if assignment.subject not in request.user.teacher_subjects:
-                return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
-            assignment.teacher = request.user
-            assignment.save()
-            files = form.cleaned_data["filesimput"]
-            for f in files:
-                obj_f=CodeFile(file=f)
-                obj_f.full_clean()
-                obj_f.save()
-                assignment.files.add(obj_f)
-            return redirect("assgn_detail_teacher", pk=assignment.pk)
-    else:
-        form = AssignmentForm(user=request.user)
-        context={"form": form}
-    return render(request,"homework/ass_create.html",context)
+    form = AssignmentForm(
+        request.POST or None,
+        request.FILES or None,
+        user=request.user,
+    )
+
+    if request.method == "POST" and form.is_valid():
+        assignment = form.save(commit=False)
+
+        if assignment.subject not in request.user.teacher_subjects:
+            return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
+
+        assignment.teacher = request.user
+        assignment.save()
+
+        files = form.cleaned_data.get("filesimput", [])
+        for f in files:
+            obj_f = CodeFile(file=f)
+            obj_f.full_clean()
+            obj_f.save()
+            assignment.files.add(obj_f)
+
+        return redirect("assgn_detail_teacher", pk=assignment.pk)
+    return render(request, "homework/ass_create.html", {"form": form})
 
 @student_required
 def hw_create_view(request):
