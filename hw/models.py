@@ -11,6 +11,17 @@ import os
 YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
     YEAR_CHOICES.append((r, r))
+LANGUAGE_CHOICES = (
+    ("PYTHON", "python"),
+    ("CPP", "cpp"),
+    ("JAVA", "java"),
+    ("MARKDOWN", "Markdown"),
+    ("PLAIN_TEXT","Plain text")
+)
+def validate_file_size(value):
+    max_size_mb = 2
+    if value.size > max_size_mb * 1024 * 1024:
+        raise ValidationError(f"Maximální velikost jednoho souboru je {settings.MAX_UPLOAD_FILE_SIZE:.0f} MB.")
 
 
 class Subject(models.Model):
@@ -23,7 +34,7 @@ class Subject(models.Model):
         return str(self.name).upper()+"-"+ str(self.year)
 
 class CodeFile(models.Model):
-    file=models.FileField(upload_to="uploads/")
+    file=models.FileField(upload_to="uploads/",validators=[validate_file_size])
     @property
     def get_file_path(self)->str:
         return self.file.url
@@ -33,16 +44,6 @@ class CodeFile(models.Model):
     #     if self.file:
     #         self.file.delete(save=False) 
     #     super().delete(*args, **kwargs)
-    
-class TextFile(models.Model):
-    LANGUAGE_CHOICES = (
-    ("PYTHON", "python"),
-    ("CPP", "cpp"),
-    ("JAVA", "java"),
-    ("DECEMBER", "December"),
-)
-    language=models.CharField(choices=LANGUAGE_CHOICES, default="PYTHON")
-    text=models.TextField()
     
 class Assignment(models.Model):
     title = models.CharField(max_length=200)
@@ -67,7 +68,8 @@ class Assignment(models.Model):
     @property
     def is_comments_generated(self)->bool:
         return HomeworkStudentComment.objects.filter(hw__key__assignment=self).exists()
-    
+    def total_files(self)->int:
+        return self.files.count()
     class Meta:
         ordering = [
             "release",
@@ -108,13 +110,13 @@ class Homework(models.Model):
     text_evaluation = models.TextField(null=True, blank=True)
     def __str__(self):
         return f"homework-{self.key}"
-
+    def total_files(self)->int:
+        return self.files.count()
     def get_assgn_student_url(self):
         return reverse("assgn_detail_student", kwargs={"pk":self.key.assignment.pk})
     @property
     def is_after_deadline(self)->bool:
         return timezone.now()>self.key.assignment.deadline
-
 
 class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)

@@ -128,9 +128,10 @@ def assignment_create_view(request):
             assignment.save()
             files = form.cleaned_data["filesimput"]
             for f in files:
-                obj_f=CodeFile.objects.create(file=f)
+                obj_f=CodeFile(file=f)
+                obj_f.full_clean()
+                obj_f.save()
                 assignment.files.add(obj_f)
-
             return redirect("assgn_detail_teacher", pk=assignment.pk)
     else:
         form = AssignmentForm(user=request.user)
@@ -163,7 +164,9 @@ def hw_create_view(request):
             hwform.save()
             files = form.cleaned_data["filesimput"]
             for f in files:
-                obj_f=CodeFile.objects.create(file=f)
+                obj_f=CodeFile(file=f)
+                obj_f.full_clean()
+                obj_f.save()
                 hwform.files.add(obj_f)
             return redirect("assgn_detail_student", pk=assignment.pk)
 
@@ -185,7 +188,9 @@ def hw_update_view(request, pk):
             edit_hw.save()
             files = form.cleaned_data["filesimput"]
             for f in files:
-                obj_f=CodeFile.objects.create(file=f)
+                obj_f=CodeFile(file=f)
+                obj_f.full_clean()
+                obj_f.save()
                 edit_hw.files.add(obj_f)
             return redirect(hw.get_assgn_student_url())
     else:

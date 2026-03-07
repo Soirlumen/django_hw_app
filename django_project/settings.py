@@ -148,3 +148,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 PHONENUMBER_DEFAULT_REGION = "CZ" 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# omezení souborů
+MAX_UPLOAD_FILE_SIZE = 2 * 1024 * 1024  # 2 MB, bajty

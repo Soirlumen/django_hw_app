@@ -6,7 +6,7 @@ from django.utils import timezone
 # from crispy_forms.layout import Layout, Field, HTML
 # from crispy_forms.bootstrap import AppendedText
 from django.utils.safestring import mark_safe
-
+from django.conf import settings
  
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -18,15 +18,27 @@ class MultipleFileField(forms.FileField):
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
-        else:
-            result = [single_file_clean(data, initial)]
-        return result
+        max_size=settings.MAX_UPLOAD_FILE_SIZE
+        max_size_mb = max_size/(1024**2)
+        if not data:
+            return []
 
+        if isinstance(data, (list, tuple)):
+            files = [single_file_clean(d, initial) for d in data]
+        else:
+            files = [single_file_clean(data, initial)]
+
+        for f in files:
+            if f.size > max_size:
+                raise ValidationError(
+                    f"Soubor '{f}' je příliš velký. Maximum je {max_size_mb:.0f} MB."
+                )
+        return files
 
 #vytvoření úkolu
 class CreateHomeworkForm(forms.ModelForm):
+    max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
+    filesimput= MultipleFileField(help_text=f"Můžete přiložit více souborů najednou, maximální velikost souborů je {max_size:.0f} MB." ,required=False, label="Upload files")
     def clean(self):
         cleaned_data=super().clean()
         submitted=cleaned_data.get("submitted")
@@ -41,7 +53,8 @@ class CreateHomeworkForm(forms.ModelForm):
         fields = ("engrossment",)
 # úprava úkolu  
 class HomeworkForm(forms.ModelForm):
-    filesimput= MultipleFileField(help_text="Můžete přiložit více souborů najednou" ,required=False, label="Upload files")
+    max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
+    filesimput= MultipleFileField(help_text=f"Můžete přiložit více souborů najednou, maximální velikost souborů je {max_size:.0f} MB." ,required=False, label="Upload files")
     def clean(self):
         cleaned_data=super().clean()
         submitted=cleaned_data.get("submitted")
@@ -57,7 +70,8 @@ class HomeworkForm(forms.ModelForm):
           
 #vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):
-    filesimput= MultipleFileField(help_text="Můžete přiložit více souborů najednou" ,required=False, label="Upload files")
+    max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
+    filesimput= MultipleFileField(help_text=f"Můžete přiložit více souborů najednou, maximální velikost souborů je {max_size:.0f} MB." ,required=False, label="Upload files")
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super(AssignmentForm, self).__init__(*args, **kwargs)
