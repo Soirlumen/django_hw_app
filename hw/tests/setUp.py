@@ -9,15 +9,21 @@ class BaseHWTestCase(TestCase):
           # users
           self.teacher = CustomUser.objects.create_user(
                username="teacher",
-               password="pass"
+               password="pass",
+               first_name="Adam",
+               surname="Břídil",
           )
           self.student = CustomUser.objects.create_user(
                username="student",
-               password="pass"
+               password="pass",
+               first_name="Adam",
+               surname="Břídil",
           )
           self.student2 = CustomUser.objects.create_user(
                username="student2",
-               password="pass"
+               password="pass",
+               first_name="Adam",
+               surname="Břídil",
           )
 
           # subject
