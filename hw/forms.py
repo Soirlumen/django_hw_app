@@ -6,6 +6,7 @@ from django.utils import timezone
 # from crispy_forms.layout import Layout, Field, HTML
 # from crispy_forms.bootstrap import AppendedText
 from django.utils.safestring import mark_safe
+from .widgets import CodeMirrorWidget
 from django.conf import settings
 
 UPLOAD_HELP_TEXT = (
@@ -54,14 +55,18 @@ class CreateHomeworkForm(forms.ModelForm):
         cleaned_data=super().clean()
         submitted=cleaned_data.get("submitted")
         if submitted is None:
-            return submitted
+            return cleaned_data
         deadline=self.instance.key.assignment.deadline
         if timezone.now() > deadline:
             raise ValidationError("Nemůžeš odevzdat úkol po deadline!")
-        return submitted     
+        return cleaned_data     
     class Meta:
         model = Homework
-        fields = ("engrossment",)
+        fields = ("programming_language","engrossment",)
+        widgets= {
+            "engrossment": CodeMirrorWidget()
+        }
+
 # úprava úkolu  
 class HomeworkForm(forms.ModelForm):
     max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
@@ -86,7 +91,10 @@ class HomeworkForm(forms.ModelForm):
  
     class Meta:
         model = Homework
-        fields = ("engrossment",)
+        fields = ("programming_language","engrossment",)
+        widgets= {
+            "engrossment": CodeMirrorWidget()
+        }
           
 #vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):

@@ -12,11 +12,11 @@ YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
     YEAR_CHOICES.append((r, r))
 LANGUAGE_CHOICES = (
-    ("PYTHON", "python"),
-    ("CPP", "cpp"),
-    ("JAVA", "java"),
-    ("MARKDOWN", "Markdown"),
-    ("PLAIN_TEXT","Plain text")
+    ("python", "Python"),
+    ("text/x-c++src", "C++"),
+    ("text/x-java", "Java"),
+    ("markdown", "Markdown"),
+    ("null", "Plain text"),
 )
 def validate_file_size(value):
     if value.size > settings.MAX_UPLOAD_FILE_SIZE:
@@ -100,6 +100,7 @@ class Key(models.Model):
 class Homework(models.Model):
     ## část pro studenta
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False)
+    programming_language = models.CharField(max_length=32,choices=LANGUAGE_CHOICES, default="python",)
     engrossment = models.TextField()  # solution ale hustští
     #files=models.ManyToManyField(CodeFile,blank=True, null=True)
     files=models.ManyToManyField(CodeFile,blank=True)

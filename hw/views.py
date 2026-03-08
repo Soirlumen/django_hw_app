@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.db import transaction
 from .shuffle import get_the_houmwrk
 from .filters import AssignmentFilter
+from django.core.exceptions import PermissionDenied
 
 
 @teacher_required
@@ -47,25 +48,6 @@ def hw_list_active_view(request):
             'filter': f,
     }
     return render(request,"list/active.html",context)
-
-# @login_required
-# def hw_list_active_view2(request):
-#     assignments_teacher = []
-#     assignments_student = []
-#     now = timezone.now()
-#     if request.user.is_teacher:
-#         subjects = request.user.teacher_subjects
-#         assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
-        
-#     # student
-#     if request.user.is_student:
-#         subjects = request.user.student_subjects
-#         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
-#     context={
-#             "assignments_teacher": assignments_teacher,
-#             "assignments_student": assignments_student,
-#     }
-#     return render(request,"list/active.html",context)
 
 @login_required
 def hw_list_after_deadline_view(request):
@@ -324,7 +306,7 @@ def student_comment_detail_view(request, pk):
     if request.method == "POST":
         form = HomeworkStudentCommentForm(request.POST, instance=comment_obj)
         if form.is_valid():
-            form.submitter = timezone.now()
+            form.instance.submitter = timezone.now()
             form.save()
             messages.success(request, "Komentář uložen.")
             return redirect("student_comment_detail", pk=comment_obj.pk)
@@ -339,6 +321,13 @@ def student_comment_detail_view(request, pk):
         "assignment": comment_obj.hw.key.assignment,
         "form": form,
     })
+
+def can_access_comment(user, comment_obj) -> bool:
+    return user.id in {
+        comment_obj.hw.key.student_id,
+        comment_obj.hw.key.assignment.teacher_id,
+        comment_obj.reviewer_id,
+    }
 
 @login_required
 def student_received_comment_detail_view(request, pk):

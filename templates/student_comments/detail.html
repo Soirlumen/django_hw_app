@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Komentář – {{ assignment.title }}{% endblock %}
 
 {% block content %}
@@ -25,9 +26,7 @@
   <div class="card shadow-sm mb-4">
     <div class="card-header"><strong>Řešení (anonymně)</strong></div>
     <div class="card-body">
-      <div class="border rounded p-3 bg-white">
-        {{ hw.engrossment|linebreaks }}
-      </div>
+      <textarea id="hw-code-viewer">{{ homework.engrossment }}</textarea>
     </div>
   </div>
 
