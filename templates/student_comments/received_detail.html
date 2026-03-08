@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
+{% load markdown_extras %}
+
 {% block title %}Komentář k úkolu{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 900px;">
@@ -8,37 +15,48 @@
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <div>
       <h2 class="mb-0">{{ assignment.title }}</h2>
-     {% if request.user == assignment.teacher %}
-      <div class="text-muted">Komentář od studenta: {{ comment_obj.reviewer.first_name}} {{ comment_obj.reviewer.surname}} </div>
+      {% if request.user == assignment.teacher %}
+        <div class="text-muted">
+          Komentář od studenta: {{ comment_obj.reviewer.first_name }} {{ comment_obj.reviewer.surname }}
+        </div>
       {% else %}
-      <div class="text-muted">Komentář od spolužáka (anonymně) </div>
+        <div class="text-muted">
+          Komentář od spolužáka (anonymně)
+        </div>
       {% endif %}
     </div>
+
     {% if request.user == assignment.teacher %}
-    <a href="{% url 'assgn_detail_teacher' assignment.pk %}" class="btn btn-sm btn-outline-secondary">Zpět</a>
-    {%else%}
-    <a href="{% url 'assgn_detail_student' assignment.pk %}" class="btn btn-sm btn-outline-secondary">Zpět</a>
-    {%endif%}
+      <a href="{% url 'assgn_detail_teacher' assignment.pk %}" class="btn btn-sm btn-outline-secondary">
+        Zpět
+      </a>
+    {% else %}
+      <a href="{% url 'assgn_detail_student' assignment.pk %}" class="btn btn-sm btn-outline-secondary">
+        Zpět
+      </a>
+    {% endif %}
   </div>
 
-  
-  <div class="card shadow-sm">
-    <div class="card-header"><strong>Řešení úkolu</strong></div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      <strong>Řešení úkolu</strong>
+    </div>
     <div class="card-body">
-      <div class="border rounded p-3 bg-white">
-        {{ hw|linebreaks }}
-      </div>
+      <textarea
+        id="hw-code-viewer"
+        data-code-language="{{ language|default:'python' }}"
+      >{{ hw }}</textarea>
     </div>
   </div>
 
-  <div class="card shadow-sm">
+  <div class="card shadow-sm mb-4">
     <div class="card-header">
-      <strong>Text komentáře</strong> 
+      <strong>Text komentáře</strong>
     </div>
     <div class="card-body">
       <div class="border rounded p-3 bg-white">
         {% if comment_obj.comment %}
-          {{ comment_obj.comment|linebreaks }}
+          {{ comment_obj.comment|markdown|safe }}
         {% else %}
           <span class="text-muted">Komentář zatím nebyl vyplněn.</span>
         {% endif %}
@@ -47,4 +65,11 @@
   </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="{% static 'hw/js/codemirror-readonly.js' %}"></script>
 {% endblock %}

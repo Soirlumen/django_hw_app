@@ -152,9 +152,8 @@ class EvaluationForm(forms.ModelForm):
             'max': self.instance.key.assignment.max_score, 
 
         })
-        self.fields["score"].help_text = (
-             f"Maximální počet bodů je  {self.instance.key.assignment.max_score}"
-        )
+        self.fields["score"].help_text = (f"Maximální počet bodů je  {self.instance.key.assignment.max_score}")
+        self.fields["text_evaluation"].help_text= mark_safe("Ohodnoťte úkol. Podporuje <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>.")
     
 # pro vyplnění komentu
 class HomeworkStudentCommentForm(forms.ModelForm):
@@ -164,6 +163,10 @@ class HomeworkStudentCommentForm(forms.ModelForm):
         widgets = {
             "comment": forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": "Napiš zpětnou vazbu..."}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["comment"].help_text= mark_safe("Podporuje <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>.")
+    
 
 # generování k-tic hodnotících k úkolu
 class MakeCommentsForm(forms.Form):

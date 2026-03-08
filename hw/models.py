@@ -48,7 +48,7 @@ class Assignment(models.Model):
     title = models.CharField(max_length=200)
     subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(max_length=30000)
     files=models.ManyToManyField(CodeFile,blank=True)
     max_score = models.PositiveSmallIntegerField(null=True)
     deadline = models.DateTimeField()
@@ -101,7 +101,7 @@ class Homework(models.Model):
     ## část pro studenta
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False)
     programming_language = models.CharField(max_length=32,choices=LANGUAGE_CHOICES, default="python",)
-    engrossment = models.TextField()  # solution ale hustští
+    engrossment = models.TextField(max_length=30000)  # solution ale hustští
     #files=models.ManyToManyField(CodeFile,blank=True, null=True)
     files=models.ManyToManyField(CodeFile,blank=True)
     submitted = models.DateTimeField(null=True, blank=True)
@@ -121,7 +121,7 @@ class Homework(models.Model):
 class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    comment = models.TextField(blank=True, default="")
+    comment = models.TextField(blank=True, default="",max_length=30000)
     submitter=models.DateTimeField(null=True, blank=True)
 
     def clean(self):

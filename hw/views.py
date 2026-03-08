@@ -344,6 +344,7 @@ def student_received_comment_detail_view(request, pk):
         "comment_obj": comment_obj,
         "assignment": comment_obj.hw.key.assignment,
         "hw":comment_obj.hw.engrossment,
+        "language":comment_obj.hw.programming_language,
     })
     
 @login_required
