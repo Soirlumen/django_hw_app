@@ -101,13 +101,25 @@
   <button type="submit" class="btn btn-primary">
     Uložit změny
   </button>
+  </form>
+{% for f in hw.files.all %}
+  <li class="mb-2">
+    <a href="{{ f.get_file_path }}" download>{{ f }}</a>
 
+    <form method="post" action="{% url 'homework_file_remove' hw.pk f.pk %}" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-outline-danger">
+        Odebrat
+      </button>
+    </form>
+  </li>
+{% endfor %}
   <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}"
      class="btn btn-outline-secondary">
     Zrušit
   </a>
 
-</form>
+
   </div>
 
 </div>

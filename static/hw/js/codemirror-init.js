@@ -10,16 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
     lineWrapping: true,
     indentUnit: 4,
     tabSize: 4,
-
     autoCloseBrackets: true,
     matchBrackets: true,
-
     autoCloseTags: true,
     matchTags: { bothTags: true },
-
     foldGutter: true,
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-
     extraKeys: {
       "Ctrl-/": "toggleComment",
       "Cmd-/": "toggleComment",
@@ -38,6 +34,13 @@ document.addEventListener("DOMContentLoaded", function () {
   if (languageSelect) {
     languageSelect.addEventListener("change", function () {
       editor.setOption("mode", this.value);
+    });
+  }
+
+  const form = textarea.closest("form");
+  if (form) {
+    form.addEventListener("submit", function () {
+      editor.save();
     });
   }
 });

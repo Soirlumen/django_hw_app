@@ -49,21 +49,24 @@ class MultipleFileField(forms.FileField):
 
 #vytvoření úkolu
 class CreateHomeworkForm(forms.ModelForm):
-    max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
-    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label="Upload files")
+    filesimput = MultipleFileField(
+        help_text=UPLOAD_HELP_TEXT,
+        required=False,
+        label="Upload files"
+    )
+    def __init__(self, *args, **kwargs):
+        self.assignment = kwargs.pop("assignment", None)
+        super().__init__(*args, **kwargs)
     def clean(self):
-        cleaned_data=super().clean()
-        submitted=cleaned_data.get("submitted")
-        if submitted is None:
-            return cleaned_data
-        deadline=self.instance.key.assignment.deadline
-        if timezone.now() > deadline:
+        cleaned_data = super().clean()
+        if self.assignment and timezone.now() > self.assignment.deadline:
             raise ValidationError("Nemůžeš odevzdat úkol po deadline!")
-        return cleaned_data     
+        return cleaned_data
+
     class Meta:
         model = Homework
-        fields = ("programming_language","engrossment",)
-        widgets= {
+        fields = ("programming_language", "engrossment")
+        widgets = {
             "engrossment": CodeMirrorWidget()
         }
 

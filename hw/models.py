@@ -39,10 +39,10 @@ class CodeFile(models.Model):
         return self.file.url
     def __str__(self):
         return os.path.basename(self.file.name)
-    # def delete(self, *args, **kwargs):
-    #     if self.file:
-    #         self.file.delete(save=False) 
-    #     super().delete(*args, **kwargs)
+    def delete(self, *args, **kwargs):
+        if self.file:
+            self.file.delete(save=False)
+        super().delete(*args, **kwargs)
     
 class Assignment(models.Model):
     title = models.CharField(max_length=200)
@@ -51,8 +51,9 @@ class Assignment(models.Model):
     description = models.TextField(max_length=30000)
     files=models.ManyToManyField(CodeFile,blank=True)
     max_score = models.PositiveSmallIntegerField(null=True)
-    deadline = models.DateTimeField()
     release = models.DateTimeField()
+    deadline = models.DateTimeField()
+    
 
     def __str__(self):
         return self.title
@@ -101,7 +102,7 @@ class Homework(models.Model):
     ## část pro studenta
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False)
     programming_language = models.CharField(max_length=32,choices=LANGUAGE_CHOICES, default="python",)
-    engrossment = models.TextField(max_length=30000)  # solution ale hustští
+    engrossment = models.TextField()  # solution ale hustští
     #files=models.ManyToManyField(CodeFile,blank=True, null=True)
     files=models.ManyToManyField(CodeFile,blank=True)
     submitted = models.DateTimeField(null=True, blank=True)

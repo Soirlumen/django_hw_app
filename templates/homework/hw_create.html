@@ -1,16 +1,18 @@
-{% extends "base.html" %} 
-{% load markdown_extras %} 
-{% load crispy_forms_tags%}
+{% extends "base.html" %}
+{% load markdown_extras %}
+{% load crispy_forms_tags %}
+
 {% block title %}Odevzdat úkol{% endblock title %}
- {% block content %} 
- {{ form.media }}
- 
- {% if messages %} 
- {% for message in messages %}
-<div class="alert alert-{{ message.tags }} mb-3" role="alert">
-  {{ message }}
-</div>
-{% endfor %}
+
+{% block content %}
+{{ form.media }}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+      {{ message }}
+    </div>
+  {% endfor %}
 {% endif %}
 
 <div class="container mt-4" style="max-width: 900px">
@@ -22,6 +24,7 @@
       </div>
     </div>
   </div>
+
   <div class="card shadow-sm mb-4">
     <div
       class="card-header d-flex justify-content-between align-items-center"
@@ -30,15 +33,18 @@
       style="cursor: pointer"
     >
       <strong>Zadání úkolu</strong>
-
-      <span class="text-muted small"> klikni pro zobrazení </span>
+      <span class="text-muted small">klikni pro zobrazení</span>
     </div>
 
     <div class="collapse" id="assignmentCollapse">
       <div class="card-body">
-        <div class="mb-2"><strong>Předmět:</strong> {{ hwdetail.subject }}</div>
+        <div class="mb-2">
+          <strong>Předmět:</strong> {{ hwdetail.subject }}
+        </div>
 
-        <div class="mb-2"><strong>Učitel:</strong> {{ hwdetail.teacher }}</div>
+        <div class="mb-2">
+          <strong>Učitel:</strong> {{ hwdetail.teacher }}
+        </div>
 
         <div class="mb-3">
           <strong>Popis:</strong>
@@ -46,37 +52,44 @@
             {{ hwdetail.description|markdown|safe }}
           </div>
         </div>
-      {% if hwdetail.files.exists %}
-      <div class="mb-2"><strong>Přiložené soubory:</strong></div>
-      <ul>
-      {% for f in hwdetail.files.all %}
-      <li><div class="mb-3"><a href="{{ f.get_file_path }}"download>{{ f }}</a></div></li>
-      {% endfor %}
-      {% else %}
-      {% endif %}
+
+        {% if hwdetail.files.exists %}
+          <div class="mb-2"><strong>Přiložené soubory:</strong></div>
+          <ul>
+            {% for f in hwdetail.files.all %}
+              <li>
+                <div class="mb-3">
+                  <a href="{{ f.get_file_path }}" download>{{ f }}</a>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
         <div class="mb-2">
           <strong>Max skóre:</strong> {{ hwdetail.max_score }}
         </div>
       </div>
     </div>
   </div>
+
   <div class="card shadow-sm">
     <div class="card-header">
       <strong>Odevzdej řešení</strong>
     </div>
     <div class="card-body">
       {% if is_after_deadline %}
-      <p><em>Po deadline nelze přidávat řešení úkolu...</em></p>
-      <button class="btn btn-success mt-2" disabled>Odevzdat</button>
-
+        <p><em>Po deadline nelze přidávat řešení úkolu...</em></p>
+        <button class="btn btn-success mt-2" disabled>Odevzdat</button>
       {% else %}
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %} {{ form|crispy }}
-
-        <button type="submit" class="btn btn-success mt-2">Odevzdat</button>
-      </form>
+       <form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {{ form|crispy }}
+  <button type="submit" class="btn btn-success mt-2">Odevzdat</button>
+</form>
       {% endif %}
     </div>
   </div>
-  {% endblock content %}
 </div>
+{% endblock content %}

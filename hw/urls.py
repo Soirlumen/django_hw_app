@@ -20,6 +20,8 @@ from .views import (
     student_comment_detail_view,
     student_received_comment_detail_view,
     teacher_comments_list_view,
+    homework_file_remove
+
 )
 
 urlpatterns = [
@@ -43,4 +45,5 @@ urlpatterns = [
     path("my-comments/<int:pk>/", student_comment_detail_view, name="student_comment_detail"),
     path("received-comment/<int:pk>/", student_received_comment_detail_view, name="received_comment_detail"),
     path("students-comments/",teacher_comments_list_view,name="teacher_comment_list"),
+    path("homework/<int:hw_pk>/file/<int:file_pk>/remove/", homework_file_remove, name="homework_file_remove"),
 ]
