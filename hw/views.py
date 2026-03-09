@@ -333,7 +333,7 @@ def student_comment_list_view(request):
     })
 
 
-@student_required
+@own_required(HomeworkStudentComment,"reviewer")
 def student_comment_detail_view(request, pk):
     comment_obj = get_object_or_404(
         HomeworkStudentComment.objects.select_related("hw__key__assignment"),
