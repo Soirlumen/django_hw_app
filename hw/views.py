@@ -384,7 +384,7 @@ def student_received_comment_detail_view(request, pk):
         "language":comment_obj.hw.programming_language,
     })
     
-@login_required
+@teacher_required
 def teacher_comments_list_view(request):
     #subjects=request.user.teacher_subjects.all()
     comments=HomeworkStudentComment.objects.select_related(
