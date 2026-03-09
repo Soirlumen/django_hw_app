@@ -84,11 +84,25 @@
   }
 },
 {
-  "model": "sessions.session",
-  "pk": "kt83z33x77xruk6xxfrxp2wqaf31logi",
+  "model": "contenttypes.contenttype",
   "fields": {
-    "session_data": ".eJxVjMsOwiAQRf-FtSEMlZdL9_0GMgwgVQNJaVfGf1eSLnR7zzn3xTzuW_F7T6tfIrswYKffLSA9Uh0g3rHeGqdWt3UJfCj8oJ3PLabn9XD_Dgr2MmqIIoHNoAVaIYMWyplsFJGasrVfIm2aSACcgw7gLGGepJEuiohkFHt_AM5-N24:1vwLRh:jx0arUQWgZ_1L9DDtABvt8ac8Cx2GNI6dswq2QuRvg8",
-    "expire_date": "2026-03-14T14:37:29.338Z"
+    "app_label": "hw",
+    "model": "textfile"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "hw",
+    "model": "codefile"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "0h4soip4hhf28zbcvozi9mf5cdgtuku4",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pChUKe4dN8zkGEGpGpKUtqV8e7apAvd_vfef6lA21rC1tISJlEXZdXpd4vEjzTvQO4036rmOq_LFPWu6IM2PVZJz-vh_h0UauVbG3ceBsbeYTSRyQmh7wCSxc6bHLPlHgxRYg8eBdCzeEwYAZw4kzv1_gDVBjee:1vzVAU:4c6QDPtdUxRHR2z--8vzx485sB0rXjFuXJCaV38mbhw",
+    "expire_date": "2026-03-23T07:36:46.211Z"
   }
 },
 {
@@ -116,14 +130,23 @@
   }
 },
 {
+  "model": "hw.codefile",
+  "pk": 1,
+  "fields": {
+    "file": "uploads/i_hate_green_by_soirlumen_dl7nig6-414w-2x.jpg"
+  }
+},
+{
   "model": "hw.homework",
   "pk": 1,
   "fields": {
     "key": 1,
+    "programming_language": "python",
     "engrossment": "mbbgdgd",
     "submitted": "2026-02-25T12:32:26.012Z",
     "score": 7,
-    "text_evaluation": ""
+    "text_evaluation": "",
+    "files": []
   }
 },
 {
@@ -131,10 +154,14 @@
   "pk": 2,
   "fields": {
     "key": 4,
-    "engrossment": "aaaaaaaaaaaaaaaaaaaaa",
-    "submitted": "2026-02-25T12:30:18.951Z",
+    "programming_language": "python",
+    "engrossment": "import numpy as np\r\n\r\ndef foo(idk):\r\n     return f\"ahoj {idk}\"",
+    "submitted": "2026-03-06T12:16:59.582Z",
     "score": null,
-    "text_evaluation": null
+    "text_evaluation": null,
+    "files": [
+      1
+    ]
   }
 },
 {
@@ -142,21 +169,12 @@
   "pk": 3,
   "fields": {
     "key": 5,
-    "engrossment": ":>j",
-    "submitted": "2026-02-28T14:31:38.717Z",
+    "programming_language": "python",
+    "engrossment": "djfgjyfdbgly",
+    "submitted": "2026-02-25T12:37:43.911Z",
     "score": null,
-    "text_evaluation": null
-  }
-},
-{
-  "model": "hw.homework",
-  "pk": 4,
-  "fields": {
-    "key": 6,
-    "engrossment": "sdlkngsdlkgn",
-    "submitted": "2026-02-25T12:41:28Z",
-    "score": null,
-    "text_evaluation": ""
+    "text_evaluation": null,
+    "files": []
   }
 },
 {
@@ -164,10 +182,12 @@
   "pk": 5,
   "fields": {
     "key": 7,
+    "programming_language": "python",
     "engrossment": "sdfsdf",
     "submitted": "2026-02-25T12:43:39Z",
     "score": null,
-    "text_evaluation": ""
+    "text_evaluation": "",
+    "files": []
   }
 },
 {
@@ -175,10 +195,38 @@
   "pk": 6,
   "fields": {
     "key": 8,
+    "programming_language": "python",
     "engrossment": "kxjnvsjkgn",
     "submitted": "2026-02-26T14:02:57Z",
     "score": 1,
-    "text_evaluation": ""
+    "text_evaluation": "",
+    "files": []
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 7,
+  "fields": {
+    "key": 9,
+    "programming_language": "python",
+    "engrossment": "supr dupr epic",
+    "submitted": "2026-03-05T09:49:30.559Z",
+    "score": null,
+    "text_evaluation": null,
+    "files": []
+  }
+},
+{
+  "model": "hw.homework",
+  "pk": 8,
+  "fields": {
+    "key": 10,
+    "programming_language": "python",
+    "engrossment": "Bengr",
+    "submitted": "2026-03-05T09:50:03.436Z",
+    "score": null,
+    "text_evaluation": null,
+    "files": []
   }
 },
 {
@@ -710,10 +758,98 @@
   }
 },
 {
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add text file",
+    "content_type": [
+      "hw",
+      "textfile"
+    ],
+    "codename": "add_textfile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change text file",
+    "content_type": [
+      "hw",
+      "textfile"
+    ],
+    "codename": "change_textfile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete text file",
+    "content_type": [
+      "hw",
+      "textfile"
+    ],
+    "codename": "delete_textfile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view text file",
+    "content_type": [
+      "hw",
+      "textfile"
+    ],
+    "codename": "view_textfile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add code file",
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "codename": "add_codefile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change code file",
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "codename": "change_codefile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete code file",
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "codename": "delete_codefile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view code file",
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "codename": "view_codefile"
+  }
+},
+{
   "model": "accounts.customuser",
   "fields": {
     "password": "pbkdf2_sha256$1000000$mIsO4lNlpLd2PAHd8G9ncX$m6t2n/5AsCv93LwrDqu1eLnEZ3HfFGrWssVVqndqq90=",
-    "last_login": "2026-02-28T14:37:29Z",
+    "last_login": "2026-03-06T10:31:27.661Z",
     "is_superuser": true,
     "username": "administrator",
     "last_name": "",
@@ -721,9 +857,9 @@
     "is_staff": true,
     "is_active": true,
     "date_joined": "2026-02-25T11:58:39Z",
-    "first_name": "Arnošt",
-    "surname": "Trhlý",
-    "tel": "",
+    "first_name": "Petr",
+    "surname": "Pavel",
+    "tel": "+420212345678",
     "groups": [],
     "user_permissions": []
   }
@@ -732,7 +868,7 @@
   "model": "accounts.customuser",
   "fields": {
     "password": "pbkdf2_sha256$1000000$z83G2N4kiKLgSNWXZU9trF$GMAvOKlIS1K+H0Q70kJsamj24uF2JCow5hMEtWIUWNQ=",
-    "last_login": "2026-02-28T14:02:50.790Z",
+    "last_login": "2026-03-09T07:36:17.767Z",
     "is_superuser": false,
     "username": "student1",
     "last_name": "",
@@ -741,7 +877,7 @@
     "is_active": true,
     "date_joined": "2026-02-25T12:01:15Z",
     "first_name": "Zbyněk",
-    "surname": "Věřl",
+    "surname": "Věřil",
     "tel": "+420212345678",
     "groups": [],
     "user_permissions": []
@@ -751,7 +887,7 @@
   "model": "accounts.customuser",
   "fields": {
     "password": "pbkdf2_sha256$1000000$IYxLgLgZI5VtCIb2hsU0EF$TBZI4oVhOHKkNuDmVQPtJc3nghdpA8muYOZ/ZmNVEGY=",
-    "last_login": "2026-02-28T14:14:45.758Z",
+    "last_login": "2026-03-09T07:36:46.188Z",
     "is_superuser": false,
     "username": "student2",
     "last_name": "",
@@ -770,7 +906,7 @@
   "model": "accounts.customuser",
   "fields": {
     "password": "pbkdf2_sha256$1000000$RqcCbMwYQRWjjq0wVHqFln$XsIRtg2SxDXZ5Xvj/7qViSxPWKPbEWubBKYyYhI32oI=",
-    "last_login": "2026-02-25T12:38:12.277Z",
+    "last_login": "2026-03-05T13:36:36.223Z",
     "is_superuser": false,
     "username": "teacher",
     "last_name": "",
@@ -789,7 +925,7 @@
   "model": "accounts.customuser",
   "fields": {
     "password": "pbkdf2_sha256$1000000$st8ajSCer8poyjI0LhKMsc$WqR3M0zUhYYk3RBnHw4Nnf+jGMDjJe/WfTvv5QJvOHM=",
-    "last_login": "2026-02-28T14:36:59.763Z",
+    "last_login": "2026-03-09T07:34:42.868Z",
     "is_superuser": false,
     "username": "student3",
     "last_name": "",
@@ -922,8 +1058,8 @@
     "reviewer": [
       "student1"
     ],
-    "comment": "to je ale hloupost",
-    "submitter": null
+    "comment": "yooooooooooooo",
+    "submitter": "2026-03-09T07:36:24.725Z"
   }
 },
 {
@@ -934,7 +1070,7 @@
     "reviewer": [
       "student1"
     ],
-    "comment": "ahoj",
+    "comment": "",
     "submitter": null
   }
 },
@@ -946,7 +1082,7 @@
     "reviewer": [
       "student2"
     ],
-    "comment": "to je blbost",
+    "comment": "no nic moc",
     "submitter": null
   }
 },
@@ -958,7 +1094,7 @@
     "reviewer": [
       "student2"
     ],
-    "comment": "hsbxfkjhsbdkft",
+    "comment": "",
     "submitter": null
   }
 },
@@ -998,16 +1134,6 @@
 },
 {
   "model": "hw.key",
-  "pk": 2,
-  "fields": {
-    "student": [
-      "student1"
-    ],
-    "assignment": 2
-  }
-},
-{
-  "model": "hw.key",
   "pk": 3,
   "fields": {
     "student": [
@@ -1038,16 +1164,6 @@
 },
 {
   "model": "hw.key",
-  "pk": 6,
-  "fields": {
-    "student": [
-      "student2"
-    ],
-    "assignment": 2
-  }
-},
-{
-  "model": "hw.key",
   "pk": 7,
   "fields": {
     "student": [
@@ -1067,6 +1183,26 @@
   }
 },
 {
+  "model": "hw.key",
+  "pk": 9,
+  "fields": {
+    "student": [
+      "student1"
+    ],
+    "assignment": 7
+  }
+},
+{
+  "model": "hw.key",
+  "pk": 10,
+  "fields": {
+    "student": [
+      "student2"
+    ],
+    "assignment": 7
+  }
+},
+{
   "model": "hw.assignment",
   "pk": 1,
   "fields": {
@@ -1077,23 +1213,9 @@
     ],
     "description": "napiš ahoj",
     "max_score": 10,
+    "release": "2026-01-26T12:09:00Z",
     "deadline": "2026-02-25T12:46:34Z",
-    "release": "2026-01-26T12:09:00Z"
-  }
-},
-{
-  "model": "hw.assignment",
-  "pk": 2,
-  "fields": {
-    "title": "Zadání 2",
-    "subject": 1,
-    "teacher": [
-      "administrator"
-    ],
-    "description": "napiš čau",
-    "max_score": 2,
-    "deadline": "2026-02-25T12:10:36Z",
-    "release": "2026-02-25T12:10:20Z"
+    "files": []
   }
 },
 {
@@ -1105,10 +1227,11 @@
     "teacher": [
       "teacher"
     ],
-    "description": "napi� m�au",
+    "description": "napiš mňau",
     "max_score": 1,
+    "release": "2026-02-25T12:11:40Z",
     "deadline": "2026-02-25T12:11:44Z",
-    "release": "2026-02-25T12:11:40Z"
+    "files": []
   }
 },
 {
@@ -1120,17 +1243,186 @@
     "teacher": [
       "teacher"
     ],
-    "description": "eeeeeeeeeeeeeee",
+    "description": "******\r\n## markdown yes",
     "max_score": 3,
+    "release": "2025-12-08T12:22:52Z",
     "deadline": "2026-06-18T11:10:35Z",
-    "release": "2025-12-08T12:22:52Z"
+    "files": []
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 6,
+  "fields": {
+    "title": "n",
+    "subject": 1,
+    "teacher": [
+      "administrator"
+    ],
+    "description": "nj",
+    "max_score": 2,
+    "release": "2026-03-17T15:35:00Z",
+    "deadline": "2026-03-20T15:35:00Z",
+    "files": []
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 7,
+  "fields": {
+    "title": "Epické zadání",
+    "subject": 1,
+    "teacher": [
+      "administrator"
+    ],
+    "description": "* * *\r\n\r\n***\r\n\r\n*****\r\n\r\n- - -\r\n\r\n---------------------------------------\r\n\r\nThis is [an example](http://example.com/ \"Title\") inline link.\r\n\r\n[This link](http://example.net/) has no title attribute.\r\n\r\n*single asterisks*\r\n\r\n_single underscores_\r\n\r\n**double asterisks**\r\n\r\n__double underscores__\r\n``There is a literal backtick (`) here.``",
+    "max_score": 1,
+    "release": "2026-03-02T09:14:00Z",
+    "deadline": "2026-09-26T08:18:00Z",
+    "files": []
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 8,
+  "fields": {
+    "title": "hm",
+    "subject": 1,
+    "teacher": [
+      "administrator"
+    ],
+    "description": "## hihi",
+    "max_score": 1,
+    "release": "2026-03-05T10:22:00Z",
+    "deadline": "2026-04-05T09:22:00Z",
+    "files": []
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 9,
+  "fields": {
+    "title": "f",
+    "subject": 2,
+    "teacher": [
+      "administrator"
+    ],
+    "description": "idk",
+    "max_score": 1,
+    "release": "2026-02-24T11:02:00Z",
+    "deadline": "2026-03-20T11:02:00Z",
+    "files": []
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 13,
+  "fields": {
+    "title": "souborky",
+    "subject": 1,
+    "teacher": [
+      "administrator"
+    ],
+    "description": "juhu\r\n_a_\r\n**bold**",
+    "max_score": 1,
+    "release": "2026-03-04T13:14:00Z",
+    "deadline": "2026-03-29T12:14:00Z",
+    "files": []
+  }
+},
+{
+  "model": "hw.assignment",
+  "pk": 14,
+  "fields": {
+    "title": "něco",
+    "subject": 1,
+    "teacher": [
+      "administrator"
+    ],
+    "description": "## ha",
+    "max_score": 1,
+    "release": "2026-02-23T13:20:00Z",
+    "deadline": "2026-03-21T13:20:00Z",
+    "files": []
   }
 },
 {
   "model": "admin.logentry",
   "pk": 1,
   "fields": {
-    "action_time": "2026-02-28T14:43:43.490Z",
+    "action_time": "2026-03-05T09:15:51.722Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "assignment"
+    ],
+    "object_id": "7",
+    "object_repr": "Epické zadání",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-03-05T09:18:39.370Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "assignment"
+    ],
+    "object_id": "7",
+    "object_repr": "Epické zadání",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-03-05T09:19:37.001Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "assignment"
+    ],
+    "object_id": "7",
+    "object_repr": "Epické zadání",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-03-05T09:22:33.643Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "assignment"
+    ],
+    "object_id": "7",
+    "object_repr": "Epické zadání",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-03-05T09:24:02.441Z",
     "user": [
       "administrator"
     ],
@@ -1139,9 +1431,189 @@
       "customuser"
     ],
     "object_id": "1",
-    "object_repr": "Arnošt Trhlý",
+    "object_repr": "Petr Pavel",
     "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Surname\"]}}]"
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Surname\", \"Tel\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-03-05T12:21:06.048Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "1",
+    "object_repr": "USU_prednasky_komplet.txt",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-03-05T13:08:48.572Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "2",
+    "object_repr": "USU_prednasky_komplet.txt",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-03-05T13:09:17.227Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "3",
+    "object_repr": "USU_prednasky_komplet.txt",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2026-03-05T13:09:20.294Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "assignment"
+    ],
+    "object_id": "12",
+    "object_repr": "Soubory thingy",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Files\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2026-03-05T13:12:47.515Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "3",
+    "object_repr": "USU_prednasky_komplet.txt",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2026-03-05T13:20:11.720Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "4",
+    "object_repr": "USU_prednasky_komplet_6jh8OtN.txt",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2026-03-05T13:21:13.164Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "7",
+    "object_repr": "destroyer.png",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2026-03-05T13:21:13.164Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "6",
+    "object_repr": "moon-oop_planet.ipynb",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2026-03-05T13:21:13.164Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "codefile"
+    ],
+    "object_id": "5",
+    "object_repr": "USU_prednasky_komplet.txt",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2026-03-06T12:53:58.870Z",
+    "user": [
+      "administrator"
+    ],
+    "content_type": [
+      "hw",
+      "assignment"
+    ],
+    "object_id": "5",
+    "object_repr": "Zadání 5",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
   }
 }
 ]
