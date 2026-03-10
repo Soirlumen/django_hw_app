@@ -1,33 +1,33 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block content %}
 <div class="container mt-4">
 
-    <h2 class="mb-4">Profil uživatele</h2>
+    <h2 class="mb-4">{% translate "Profil uživatele" %}</h2>
 
     <div class="card mb-4">
         <div class="card-body">
-            <p><strong>Uživatelské jméno:</strong> {{ request.user.username }}</p>
-            <p><strong>Email:</strong> {{ request.user.email }}</p>
+            <p><strong>{% translate "Uživatelské jméno:" %}</strong> {{ request.user.username }}</p>
+            <p><strong>{% translate "Email:" %}</strong> {{ request.user.email }}</p>
         </div>
     </div>
 
     {% if is_teacher %}
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
-            Učitelský profil
+            {% translate "Učitelský profil" %}
         </div>
         <div class="card-body">
             {% if teacher_subjects %}
-                <p><strong>Vyučované předměty:</strong></p>
+                <p><strong>{% translate "Vyučované předměty:" %}</strong></p>
                 <ul>
                     {% for subject in teacher_subjects %}
                         <li>{{ subject }}</li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p>Nemáš přiřazené žádné předměty.</p>
+                <p>{% translate "Nemáš přiřazené žádné předměty." %}</p>
             {% endif %}
         </div>
     </div>
@@ -36,18 +36,18 @@
     {% if is_student %}
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
-            Studentský profil
+            {% translate "Studentský profil" %}
         </div>
         <div class="card-body">
             {% if student_subjects %}
-                <p><strong>Zapsané předměty:</strong></p>
+                <p><strong>{% translate "Zapsané předměty:" %}</strong></p>
                 <ul>
                     {% for subject in student_subjects %}
                         <li>{{ subject }}</li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p>Nemáš zapsané žádné předměty.</p>
+                <p>{% translate "Nemáš zapsané žádné předměty." %}</p>
             {% endif %}
         </div>
     </div>

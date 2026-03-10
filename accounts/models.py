@@ -34,8 +34,8 @@ class CustomUser(AbstractUser):
 
 class SubjectType(models.Model):
     ROLE_CHOICES = [
-        "student", _("Student"),
-        "teacher", _("Vyučující")
+        ("student", _("Student")),
+        ("teacher", _("Vyučující")),
         ]
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="subject_type",verbose_name=_("Uživatel"),)
