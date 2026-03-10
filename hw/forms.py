@@ -2,19 +2,21 @@ from django import forms
 from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-# from crispy_forms.helper import FormHelper
-# from crispy_forms.layout import Layout, Field, HTML
-# from crispy_forms.bootstrap import AppendedText
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from .widgets import CodeMirrorWidget
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-UPLOAD_HELP_TEXT = _((
-    f"Můžete přiložit více souborů najednou. "
-    f"Maximálně {settings.MAX_UPLOAD_FILES_NUMBER} souborů, "
-    f"každý nejvýše {settings.MAX_UPLOAD_FILE_SIZE_MB} MB.")
-)
+UPLOAD_HELP_TEXT = _(
+    "Můžete přiložit více souborů najednou. "
+    "Maximálně %(number)s souborů, "
+    "každý nejvýše %(maxsize)s MB."
+) % {
+    "number": settings.MAX_UPLOAD_FILES_NUMBER,
+    "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
+}
+
+MARKDOWN_HELP_TEXT= format_html("{} <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>.",_("Podporuje"),)
  
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -38,13 +40,13 @@ class MultipleFileField(forms.FileField):
             files = [single_file_clean(data, initial)]
         if len(files) > max_files:
             raise ValidationError(
-                _(f"Najednou můžeš nahrát maximálně {max_files} souborů.")
+                _("Najednou můžeš nahrát maximálně %(mf)s souborů.")%{"mf":max_files}
             )
 
         for f in files:
             if f.size > max_size:
                 raise ValidationError(
-                    _(f"Soubor '{f}' je příliš velký. Maximum je {max_size_mb:.0f} MB.")
+                    _("Soubor %(file)s je příliš velký. Maximum je %(msm)s MB.")%{"file":str(f),"msm":f"{max_size_mb:.0f}"}
                 )
         return files
 
@@ -53,7 +55,7 @@ class CreateHomeworkForm(forms.ModelForm):
     filesimput = MultipleFileField(
         help_text=UPLOAD_HELP_TEXT,
         required=False,
-        label="Upload files"
+        label=_("Přiložit soubory")
     )
     def __init__(self, *args, **kwargs):
         self.assignment = kwargs.pop("assignment", None)
@@ -61,7 +63,7 @@ class CreateHomeworkForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if self.assignment and timezone.now() > self.assignment.deadline:
-            raise ValidationError(_("Nemůžeš odevzdat úkol po deadline!"))
+            raise ValidationError(_("Nemůžeš odevzdat úkol po termínu odevzdání!"))
         return cleaned_data
 
     class Meta:
@@ -73,24 +75,21 @@ class CreateHomeworkForm(forms.ModelForm):
 
 # úprava úkolu  
 class HomeworkForm(forms.ModelForm):
-    max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
-    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label="Upload files")
+    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label=_("Přiložit soubory"))
     
     def clean(self):
         cleaned_data = super().clean()
         deadline = self.instance.key.assignment.deadline
 
         if timezone.now() > deadline:
-            raise ValidationError(_("Nemůžeš odevzdat úkol po deadline!"))
+            raise ValidationError(_("Nemůžeš odevzdat úkol po termínu odevzdání!"))
 
         new_files = cleaned_data.get("filesimput", [])
         current_files_count = self.instance.files.count() if self.instance.pk else 0
         #nepřerkočit max nahraných souborů
         if current_files_count + len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
             raise ValidationError(_(
-                f"Celkem může být u odevzdání maximálně "
-                f"{settings.MAX_UPLOAD_FILES_NUMBER} souborů."
-            ))
+                "Celkem může být u odevzdání maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER})
         return cleaned_data
  
     class Meta:
@@ -103,13 +102,13 @@ class HomeworkForm(forms.ModelForm):
 #vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):
     max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
-    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label="Upload files")
+    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label=_("Přiložit soubory"))
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super(AssignmentForm, self).__init__(*args, **kwargs)
         if self.user:
             self.fields["subject"].queryset = self.user.teacher_subjects
-            self.fields["description"].help_text= mark_safe(_("Popište zadání domácího úkolu. Podporuje <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>."))
+            self.fields["description"].help_text = MARKDOWN_HELP_TEXT
         
     def clean_subject(self):
         subject = self.cleaned_data["subject"]
@@ -122,7 +121,7 @@ class AssignmentForm(forms.ModelForm):
 
         if len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
             raise ValidationError(
-               _( f"Můžeš přiložit maximálně {settings.MAX_UPLOAD_FILES_NUMBER} souborů.")
+               _("Můžeš přiložit maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER}
             )
 
         return cleaned_data
@@ -145,7 +144,7 @@ class EvaluationForm(forms.ModelForm):
         maxscore = self.instance.key.assignment.max_score
         
         if score is not None and score > maxscore:
-            raise ValidationError(f"max score je {maxscore}")
+            raise ValidationError(_("max score je %(maxscore)s")%{"maxscore":maxscore})
         return score
     
     # aby mohl učitel zadat maximálně max_score bodů
@@ -156,8 +155,8 @@ class EvaluationForm(forms.ModelForm):
             'max': self.instance.key.assignment.max_score, 
 
         })
-        self.fields["score"].help_text = (_(f"Maximální počet bodů je  {self.instance.key.assignment.max_score}"))
-        self.fields["text_evaluation"].help_text= mark_safe(_("Ohodnoťte úkol. Podporuje <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>."))
+        self.fields["score"].help_text = (_("Maximální počet bodů je %(mb)s")%{"mb":self.instance.key.assignment.max_score})
+        self.fields["text_evaluation"].help_text = MARKDOWN_HELP_TEXT
     
 # pro vyplnění komentu
 class HomeworkStudentCommentForm(forms.ModelForm):
@@ -165,11 +164,11 @@ class HomeworkStudentCommentForm(forms.ModelForm):
         model=HomeworkStudentComment
         fields=("comment",)
         widgets = {
-            "comment": forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": "Napiš zpětnou vazbu..."}),
+            "comment": forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": _("Napiš zpětnou vazbu...")}),
         }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["comment"].help_text= mark_safe(_("Podporuje <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>."))
+        self.fields["comment"].help_text = MARKDOWN_HELP_TEXT
     
 
 # generování k-tic hodnotících k úkolu
