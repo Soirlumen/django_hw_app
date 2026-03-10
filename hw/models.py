@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import UniqueConstraint
 from django.conf import settings
 import os
+from django.utils.translation import gettext_lazy as _
 
 
 YEAR_CHOICES = []
@@ -20,7 +21,7 @@ LANGUAGE_CHOICES = (
 )
 def validate_file_size(value):
     if value.size > settings.MAX_UPLOAD_FILE_SIZE:
-        raise ValidationError(f"Maximální velikost jednoho souboru je {settings.MAX_UPLOAD_FILE_SIZE_MB:.0f} MB.")
+        raise ValidationError(_(f"Maximální velikost jednoho souboru je {settings.MAX_UPLOAD_FILE_SIZE_MB:.0f} MB."))
 
 
 class Subject(models.Model):
@@ -60,7 +61,7 @@ class Assignment(models.Model):
     def clean(self):
         if self.deadline < self.release:
             raise ValidationError({
-                'deadline': "Deadline nemůže být dříve než release."
+                'deadline': _("Deadline nemůže být dříve než release.")
             })
     @property
     def is_after_deadline(self)->bool:
@@ -84,10 +85,10 @@ class Key(models.Model):
     def clean(self):
         subj = self.assignment.subject
         if subj is None:
-            raise ValidationError("Úkol nemá přiřazený předmět.")
+            raise ValidationError(_("Úkol nemá přiřazený předmět."))
 
         if not subj.subject_type.filter(user=self.student, role="student").exists():
-            raise ValidationError("Uživatel není studentem tohoto předmětu.")
+            raise ValidationError(_("Uživatel není studentem tohoto předmětu."))
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -127,9 +128,9 @@ class HomeworkStudentComment(models.Model):
 
     def clean(self):
         if self.hw.key.student_id == self.reviewer_id:
-            raise ValidationError("Reviewer nemůže být autor domácího úkolu.")
+            raise ValidationError(_("Reviewer nemůže být autor domácího úkolu."))
         if self.hw.key.assignment.teacher_id==self.reviewer_id:
-            raise ValidationError("Reviewer nemůže být autor zadání úkolu.")
+            raise ValidationError(_("Reviewer nemůže být autor zadání úkolu."))
 
     def save(self, *args, **kwargs):
         self.full_clean()

@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.db import transaction
 from .shuffle import get_the_houmwrk
 from .filters import AssignmentFilter
+from django.utils.translation import gettext as _
 
 @teacher_required
 def hw_teacher_list_before_release_view(request):
