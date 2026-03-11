@@ -116,11 +116,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "cs"
 
-LANGUAGES = [
-    ("cs", "Čeština"),
-    ("en", "English"),
-]
-
 TIME_ZONE = "Europe/Prague" #kvůli deadline things
 
 USE_I18N = True
