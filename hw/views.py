@@ -1,8 +1,13 @@
-from .models import Homework, Assignment, Key, HomeworkStudentComment
-from .forms import CreateHomeworkForm, HomeworkForm, AssignmentForm, EvaluationForm,MakeCommentsForm,HomeworkStudentCommentForm
+from .models import Homework, Assignment, Key, HomeworkStudentComment, CodeFile
+from .forms import (CreateHomeworkForm, 
+                    HomeworkForm, 
+                    AssignmentForm, 
+                    EvaluationForm,MakeCommentsForm,
+                    HomeworkStudentCommentForm,
+                    )
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
-import datetime
 from accounts.decorators import teacher_required, student_required, own_required
 from django.http import HttpResponseForbidden,HttpResponseBadRequest,Http404
 from django.contrib import messages
@@ -10,7 +15,7 @@ from django.utils import timezone
 from django.db import transaction
 from .shuffle import get_the_houmwrk
 from .filters import AssignmentFilter
-
+from django.utils.translation import gettext as _
 
 @teacher_required
 def hw_teacher_list_before_release_view(request):
@@ -42,25 +47,6 @@ def hw_list_active_view(request):
             'filter': f,
     }
     return render(request,"list/active.html",context)
-
-# @login_required
-# def hw_list_active_view2(request):
-#     assignments_teacher = []
-#     assignments_student = []
-#     now = timezone.now()
-#     if request.user.is_teacher:
-#         subjects = request.user.teacher_subjects
-#         assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
-        
-#     # student
-#     if request.user.is_student:
-#         subjects = request.user.student_subjects
-#         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
-#     context={
-#             "assignments_teacher": assignments_teacher,
-#             "assignments_student": assignments_student,
-#     }
-#     return render(request,"list/active.html",context)
 
 @login_required
 def hw_list_after_deadline_view(request):
@@ -113,25 +99,37 @@ def assgn_detail_stud(request, pk):
     
 @teacher_required
 def assignment_create_view(request):
-    if request.method == "POST":
-        form = AssignmentForm(request.POST, user=request.user)
-        if form.is_valid():
-            assignment = form.save(commit=False)
-            if assignment.subject not in request.user.teacher_subjects:
-                return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
-            assignment.teacher = request.user
-            assignment.save()
-            return redirect("assgn_detail_teacher", pk=assignment.pk)
-    else:
-        form = AssignmentForm(user=request.user)
-        context={"form": form}
-    return render(request,"homework/ass_create.html",context)
+    form = AssignmentForm(
+        request.POST or None,
+        request.FILES or None,
+        user=request.user,
+    )
+
+    if request.method == "POST" and form.is_valid():
+        assignment = form.save(commit=False)
+
+        if assignment.subject not in request.user.teacher_subjects:
+            return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
+
+        assignment.teacher = request.user
+        assignment.save()
+
+        files = form.cleaned_data.get("filesimput", [])
+        for f in files:
+            obj_f = CodeFile(file=f)
+            obj_f.full_clean()
+            obj_f.save()
+            assignment.files.add(obj_f)
+
+        return redirect("assgn_detail_teacher", pk=assignment.pk)
+    return render(request, "homework/ass_create.html", {"form": form})
 
 @student_required
 def hw_create_view(request):
     assgn_id = request.GET.get("assgn_id")
     if not assgn_id:
         return HttpResponseBadRequest("Chybí ID úkolu!!")
+
     assignment = get_object_or_404(Assignment, pk=assgn_id)
 
     if assignment.subject not in request.user.student_subjects:
@@ -139,37 +137,61 @@ def hw_create_view(request):
 
     key, created = Key.objects.get_or_create(student=request.user, assignment=assignment)
     hw = Homework.objects.filter(key=key).first()
+
     if hw:
         messages.warning(request, "Úkol už byl odevzdán, nelze ho odeslat znovu.")
         return redirect(hw.get_assgn_student_url())
 
     if request.method == "POST":
-        form = CreateHomeworkForm(request.POST)
+        form = CreateHomeworkForm(request.POST, request.FILES, assignment=assignment)
         if form.is_valid():
             hwform = form.save(commit=False)
             hwform.key = key
             hwform.submitted = timezone.now()
             hwform.full_clean()
             hwform.save()
-            return redirect("assgn_detail_student", pk=assignment.pk)
 
+            files = form.cleaned_data.get("filesimput", [])
+            for f in files:
+                obj_f = CodeFile(file=f)
+                obj_f.full_clean()
+                obj_f.save()
+                hwform.files.add(obj_f)
+
+            return redirect("assgn_detail_student", pk=assignment.pk)
+        else:
+            messages.error(request, "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole.")
+            print(form.errors)
+            print(form.non_field_errors())
     else:
-        form = HomeworkForm()
-    is_after_deadline=timezone.now() > assignment.deadline
-    context={"form": form, "hwdetail": assignment,"is_after_deadline":is_after_deadline}
-    return render(request,"homework/hw_create.html",context)
+        form = CreateHomeworkForm(assignment=assignment)
+
+    is_after_deadline = timezone.now() > assignment.deadline
+    context = {
+        "form": form,
+        "hwdetail": assignment,
+        "is_after_deadline": is_after_deadline,
+    }
+    return render(request, "homework/hw_create.html", context)
+
+
 
 # @student_required
 @own_required(Homework,'key__student')
 def hw_update_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     if request.method == "POST":
-        
-        form = HomeworkForm(request.POST, instance=hw)
+        form = HomeworkForm(request.POST,request.FILES, instance=hw)
         if form.is_valid():
             edit_hw = form.save(commit=False)
-            edit_hw.submitted = datetime.datetime.now()
+            edit_hw.submitted = timezone.now()
             edit_hw.save()
+            files = form.cleaned_data["filesimput"]
+            for f in files:
+                obj_f=CodeFile(file=f)
+                obj_f.full_clean()
+                obj_f.save()
+                edit_hw.files.add(obj_f)
             return redirect(hw.get_assgn_student_url())
     else:
         form = HomeworkForm(instance=hw)
@@ -181,7 +203,7 @@ def assgn_delete_view(request, pk):
     assgn = get_object_or_404(Assignment, pk=pk)
     if request.method == "POST":
         assgn.delete()
-        return redirect("assgn_detail_student", pk=assgn.pk)
+        return redirect("list_active")
     context={"assgn": assgn}
     return render(request,"homework/ass_delete_confirm.html",context)
 
@@ -198,6 +220,31 @@ def hw_detail_view(request, pk):
              "comments":comments,
              }
     return render(request,"homework/hw_detail.html",context)
+
+def delete_file_if_unused(codefile):
+    if not codefile.homework_set.exists() and not codefile.assignment_set.exists():
+        codefile.delete()
+
+@login_required
+@require_POST
+def homework_file_remove(request, hw_pk, file_pk):
+    hw = get_object_or_404(Homework, pk=hw_pk)
+    file_obj = get_object_or_404(CodeFile, pk=file_pk)
+    if request.user != hw.key.student:
+        messages.error(request, "Tento soubor nemůžeš odebrat.")
+        return redirect(hw.get_assgn_student_url())
+    if hw.is_after_deadline:
+        messages.error(request, "Po deadline už nelze soubory odebírat.")
+        return redirect(hw.get_assgn_student_url())
+    if not hw.files.filter(pk=file_obj.pk).exists():
+        messages.error(request, "Soubor u tohoto odevzdání neexistuje.")
+        return redirect(hw.get_assgn_student_url())
+
+    hw.files.remove(file_obj)
+    delete_file_if_unused(file_obj)
+
+    messages.success(request, "Soubor byl odebrán.")
+    return redirect("homework_update", pk=hw.pk)
 
 @own_required(Homework,'key__assignment__teacher')
 def edit_evaluation_view(request, pk):
@@ -287,7 +334,7 @@ def student_comment_list_view(request):
     })
 
 
-@student_required
+@own_required(HomeworkStudentComment,"reviewer")
 def student_comment_detail_view(request, pk):
     comment_obj = get_object_or_404(
         HomeworkStudentComment.objects.select_related("hw__key__assignment"),
@@ -297,7 +344,7 @@ def student_comment_detail_view(request, pk):
     if request.method == "POST":
         form = HomeworkStudentCommentForm(request.POST, instance=comment_obj)
         if form.is_valid():
-            form.submitter = timezone.now()
+            form.instance.submitter = timezone.now()
             form.save()
             messages.success(request, "Komentář uložen.")
             return redirect("student_comment_detail", pk=comment_obj.pk)
@@ -312,6 +359,13 @@ def student_comment_detail_view(request, pk):
         "assignment": comment_obj.hw.key.assignment,
         "form": form,
     })
+
+def can_access_comment(user, comment_obj) -> bool:
+    return user.id in {
+        comment_obj.hw.key.student_id,
+        comment_obj.hw.key.assignment.teacher_id,
+        comment_obj.reviewer_id,
+    }
 
 @login_required
 def student_received_comment_detail_view(request, pk):
@@ -328,9 +382,10 @@ def student_received_comment_detail_view(request, pk):
         "comment_obj": comment_obj,
         "assignment": comment_obj.hw.key.assignment,
         "hw":comment_obj.hw.engrossment,
+        "language":comment_obj.hw.programming_language,
     })
     
-@login_required
+@teacher_required
 def teacher_comments_list_view(request):
     #subjects=request.user.teacher_subjects.all()
     comments=HomeworkStudentComment.objects.select_related(

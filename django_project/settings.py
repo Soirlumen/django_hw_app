@@ -54,6 +54,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -73,6 +74,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.media',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -111,14 +114,20 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "cs"
 
 TIME_ZONE = "Europe/Prague" #kvůli deadline things
 
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
-
+LANGUAGES = [
+    ("cs", "Čeština"),
+    ("en", "English"),
+]
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"] 
@@ -145,3 +154,11 @@ SIGNUP_REDIRECT_URL = "login"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 PHONENUMBER_DEFAULT_REGION = "CZ" 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# omezení souborů
+MAX_UPLOAD_FILE_SIZE_MB =2
+MAX_UPLOAD_FILE_SIZE = MAX_UPLOAD_FILE_SIZE_MB *(1024**2) 
+MAX_UPLOAD_FILES_NUMBER = 5 
+MAX_HOMEWORK_LENGTH = 30000

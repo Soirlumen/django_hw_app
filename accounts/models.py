@@ -1,15 +1,19 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-
+from django.utils.translation import gettext_lazy as _
 
 class CustomUser(AbstractUser):
-    first_name=models.CharField(max_length=50,null=True, blank=True)
-    surname=models.CharField(max_length=50,null=True, blank=True)
-    tel = PhoneNumberField(blank=True, region="CZ")
-    subjects=models.ManyToManyField("hw.Subject",through="accounts.SubjectType",through_fields=("user","subject") ,related_name="users",)
+    first_name=models.CharField(max_length=50,null=True, blank=True,verbose_name=_("Jméno"),help_text=_("Křestní jméno uživatele."),)
+    surname=models.CharField(max_length=50,null=True, blank=True,verbose_name=_("Příjmení"),help_text=_("Příjmení uživatele."),)
+    tel = PhoneNumberField(blank=True, region="CZ",verbose_name=_("Telefon"), help_text=_("Telefonní číslo ve správném formátu."),)
+    subjects=models.ManyToManyField("hw.Subject",through="accounts.SubjectType",
+                                    through_fields=("user","subject") ,
+                                    related_name="users", verbose_name=_("Předměty"),
+                                    help_text=_("Předměty, ke kterým je uživatel přiřazen."),)
     def __str__(self):
-        return f"{self.first_name} {self.surname}"
+        full_name = f"{self.first_name or ''} {self.surname or ''}".strip()
+        return full_name or self.username
 
     @property
     def is_teacher(self)->bool:
@@ -24,19 +28,20 @@ class CustomUser(AbstractUser):
     @property
     def student_subjects(self):
         return self.subjects.filter(subject_type__role="student")
+    class Meta:
+        verbose_name = _("Uživatel")
+        verbose_name_plural = _("Uživatelé")
 
 class SubjectType(models.Model):
     ROLE_CHOICES = [
-        ("student", "Student"),
-        ("teacher", "Teacher"),
-    ]
+        ("student", _("Student")),
+        ("teacher", _("Vyučující")),
+        ]
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="subject_type"
-    )
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="subject_type",verbose_name=_("Uživatel"),)
     subject = models.ForeignKey(
-        "hw.Subject", on_delete=models.CASCADE, related_name="subject_type"
-    )
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+        "hw.Subject", on_delete=models.CASCADE, related_name="subject_type",verbose_name=_("Předmět"))
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,verbose_name=_("Role"),help_text=_("Role uživatele v daném předmětu."),)
 
     class Meta:
         constraints = [
@@ -48,6 +53,8 @@ class SubjectType(models.Model):
                 name="role_valid",
             ),
         ]
+        verbose_name = _("Přiřazení role k předmětu")
+        verbose_name_plural = _("Přiřazení rolí k předmětům")
 
     def __str__(self):
         return f"{self.user.username} - {self.subject} ({self.role})"

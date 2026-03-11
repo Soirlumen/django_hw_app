@@ -1,6 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Komentář – {{ assignment.title }}{% endblock %}
-
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load markdown_extras %}
+{% block title %}{% trans "Komentář"%} – {{ assignment.title }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+{% endblock %}
 {% block content %}
 <div class="container mt-4" style="max-width: 1000px;">
 
@@ -15,38 +22,37 @@
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <div>
       <h2 class="mb-0">{{ assignment.title }}</h2>
-      <div class="text-muted">Anonymní řešení spolužáka • termín {{ assignment.deadline|date:"d.m.Y H:i" }}</div>
+      <div class="text-muted">{% trans "Anonymní řešení spolužáka"%} • {% trans "termín"%} {{ assignment.deadline|date:"d.m.Y H:i" }}</div>
     </div>
     <a href="{% url 'student_comment_list' %}" class="btn btn-sm btn-outline-secondary">
-      Zpět na seznam
+      {% trans "Zpět na seznam"%}
     </a>
   </div>
 
   <div class="card shadow-sm mb-4">
-    <div class="card-header"><strong>Řešení (anonymně)</strong></div>
+    <div class="card-header"><strong>{% trans "Řešení (anonymně)"%}</strong></div>
     <div class="card-body">
-      <div class="border rounded p-3 bg-white">
-        {{ hw.engrossment|linebreaks }}
-      </div>
+      <textarea id="hw-code-viewer" data-code-language="{{ hw.programming_language|default:'python' }}">{{ hw.engrossment }}</textarea>
     </div>
   </div>
 
   <div class="card shadow-sm">
-    <div class="card-header"><strong>Tvůj komentář</strong></div>
+    <div class="card-header"><strong>{% trans "Tvůj komentář"%}</strong></div>
     <div class="card-body">
-      <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-          {{ form.comment.label_tag }}
-          {{ form.comment }}
-          {% if form.comment.errors %}
-            <div class="text-danger small mt-1">{{ form.comment.errors }}</div>
-          {% endif %}
-        </div>
-        <button type="submit" class="btn btn-success">Uložit komentář</button>
-      </form>
+      
+<form method="post">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <button type="submit" class="btn btn-success">{% trans "Uložit komentář"%}</button>
+</form>
     </div>
   </div>
 
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="{% static 'hw/js/codemirror-readonly.js' %}"></script>
 {% endblock %}

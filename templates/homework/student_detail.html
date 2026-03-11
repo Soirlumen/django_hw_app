@@ -1,5 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Úkol: {{ hwdetail.title }}{% endblock title %}
+{% load markdown_extras %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+  {% blocktranslate with title=hwdetail.title %}Úkol: {{ title }}{% endblocktranslate %}
+{% endblock title %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 900px;">
@@ -10,6 +21,7 @@
       </div>
     {% endfor %}
   {% endif %}
+
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
       <h2 class="mb-1">{{ hwdetail.title }}</h2>
@@ -20,97 +32,121 @@
 
     <div class="text-end">
       <div class="mb-2">
-        <span class="badge bg-light text-dark border">Zveřejněno: {{ hwdetail.release }}</span>
+        <span class="badge bg-light text-dark border">
+          {% blocktranslate with release=hwdetail.release %}Zveřejněno: {{ release }}{% endblocktranslate %}
+        </span>
       </div>
       <div>
         <span class="badge bg-warning text-dark border">
-          Termín: {{ hwdetail.deadline }}
+          {% blocktranslate with deadline=hwdetail.deadline %}Termín: {{ deadline }}{% endblocktranslate %}
         </span>
       </div>
     </div>
   </div>
+
   <div class="card shadow-sm mb-4">
     <div class="card-header">
-      <strong>Zadání</strong>
+      <strong>{% translate "Zadání" %}</strong>
     </div>
     <div class="card-body">
       <div class="mb-2">
-        <strong>Předmět:</strong> {{ hwdetail.subject }}
+        <strong>{% translate "Předmět:" %}</strong> {{ hwdetail.subject }}
       </div>
       <div class="mb-2">
-        <strong>Učitel:</strong> {{ hwdetail.teacher }}
+        <strong>{% translate "Učitel:" %}</strong> {{ hwdetail.teacher }}
       </div>
       <div class="mb-3">
-        <strong>Popis:</strong>
+        <strong>{% translate "Popis:" %}</strong>
         <div class="mt-1 border rounded p-3 bg-white">
-          {{ hwdetail.description|linebreaks }}
-        </div>
-        <div class="mb-2">
-          <strong>Max skóre:</strong>  {{hwdetail.max_score}}
+          {{ hwdetail.description|markdown|safe }}
         </div>
       </div>
 
+      {% if hwdetail.files.exists %}
+        <div class="mb-2"><strong>{% translate "Přiložené soubory:" %}</strong></div>
+        <ul>
+          {% for f in hwdetail.files.all %}
+            <li><div class="mb-3"><a href="{{ f.get_file_path }}" download>{{ f }}</a></div></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="mb-2">
+        <strong>{% translate "Maximální počet bodů:" %}</strong> {{ hwdetail.max_score }}
+      </div>
+
       {% if not already_submitted %}
-          <div class="d-flex flex-wrap gap-2">
-      {% if hwdetail.is_after_deadline %}
-          <a href="#" class="btn btn-primary disabled">
-            Již nelze odevzdat
-          </a>
-      {% else %}
-          <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
-            Odevzdat úkol
-          </a>
+        <div class="d-flex flex-wrap gap-2">
+          {% if hwdetail.is_after_deadline %}
+            <a href="#" class="btn btn-primary disabled">
+              {% translate "Již nelze odevzdat" %}
+            </a>
+          {% else %}
+            <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
+              {% translate "Odevzdat úkol" %}
+            </a>
           {% endif %}
           <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
-            Zpět na seznam
+            {% translate "Zpět na seznam" %}
           </a>
         </div>
       {% endif %}
     </div>
   </div>
+
   {% if already_submitted %}
     <div class="alert alert-success d-flex flex-wrap justify-content-between align-items-center gap-2" role="alert">
       <div>
-        <strong>Odevzdáno:</strong> {{ submitted_homework.submitted }}
+        <strong>{% translate "Odevzdáno:" %}</strong> {{ submitted_homework.submitted }}
       </div>
-      {% if submitted_homework %}
 
-      {% if hwdetail.is_after_deadline %}
-              <a href="#" class="btn btn-sm btn-outline-primary disabled">
-          Již nelze upravit
-        </a>
-      {% else %}
-        <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-sm btn-outline-primary">
-          Upravit odevzdání
-        </a>
-      {% endif %}
+      {% if submitted_homework %}
+        {% if hwdetail.is_after_deadline %}
+          <a href="#" class="btn btn-sm btn-outline-primary disabled">
+            {% translate "Již nelze upravit" %}
+          </a>
+        {% else %}
+          <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-sm btn-outline-primary">
+            {% translate "Upravit odevzdání" %}
+          </a>
+        {% endif %}
       {% endif %}
     </div>
 
     {% if submitted_homework %}
       <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <strong>Tvůj odevzdaný text</strong>
+          <strong>{% translate "Tvůj odevzdaný úkol" %}</strong>
           {% if submitted_homework.score %}
             <span class="badge bg-success">
-              Skóre: {{ submitted_homework.score }} / {{ hwdetail.max_score }}
+              {% blocktranslate with score=submitted_homework.score max_score=hwdetail.max_score %}
+                Skóre: {{ score }} / {{ max_score }}
+              {% endblocktranslate %}
             </span>
           {% endif %}
         </div>
         <div class="card-body">
-          <div class="border rounded p-3 bg-white">
-            {{ submitted_homework.engrossment|linebreaks }}
-          </div>
+          <textarea id="hw-code-viewer" data-code-language="{{ submitted_homework.programming_language|default:'python' }}">{{ submitted_homework.engrossment }}</textarea>
+
+          {% if submitted_homework.files.exists %}
+            <div class="mb-2"><strong>{% translate "Přiložené soubory:" %}</strong></div>
+            <ul>
+              {% for f in submitted_homework.files.all %}
+                <li><div class="mb-3"><a href="{{ f.get_file_path }}" download>{{ f }}</a></div></li>
+              {% endfor %}
+            </ul>
+          {% endif %}
         </div>
       </div>
-            {% if submitted_homework.text_evaluation %}
+
+      {% if submitted_homework.text_evaluation %}
         <div class="card shadow-sm mb-4">
           <div class="card-header">
-            <strong>Hodnocení od učitele</strong>
+            <strong>{% translate "Hodnocení od učitele" %}</strong>
           </div>
           <div class="card-body">
             <div class="border rounded p-3 bg-white">
-              {{ submitted_homework.text_evaluation|linebreaks }}
+              {{ submitted_homework.text_evaluation|markdown|safe }}
             </div>
           </div>
         </div>
@@ -119,17 +155,23 @@
       {% if comments %}
         <div class="card shadow-sm mb-4">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Komentáře od spolužáků</strong>
-            <span class="badge bg-primary">Celkem: {{ comments|length }}</span>
+            <strong>{% translate "Komentáře od spolužáků" %}</strong>
+            <span class="badge bg-primary">
+              {% blocktranslate with count=comments|length %}Celkem: {{ count }}{% endblocktranslate %}
+            </span>
           </div>
           <div class="card-body">
             <ul class="list-group">
               {% for c in comments %}
                 <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
                   <div>
-                    <strong>Komentář #{{ forloop.counter }}</strong>
+                    {% blocktranslate with num=forloop.counter %}Komentář #{{ num }}{% endblocktranslate %}
                     <div class="text-muted small">
-                      {% if c.comment %}Vyplněno{% else %}Čeká na vyplnění{% endif %}
+                      {% if c.comment %}
+                        {% translate "Vyplněno" %}
+                      {% else %}
+                        {% translate "Čeká na vyplnění" %}
+                      {% endif %}
                     </div>
                   </div>
 
@@ -140,7 +182,7 @@
                       <span class="badge bg-secondary">⏳</span>
                     {% endif %}
                     <a class="btn btn-sm btn-outline-primary" href="{% url 'received_comment_detail' c.pk %}">
-                      Zobrazit
+                      {% translate "Zobrazit" %}
                     </a>
                   </div>
                 </li>
@@ -152,11 +194,17 @@
 
       <div class="d-flex flex-wrap gap-2 mb-4">
         <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
-          Zpět na seznam
+          {% translate "Zpět na seznam" %}
         </a>
       </div>
     {% endif %}
   {% endif %}
-
 </div>
 {% endblock content %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="{% static 'hw/js/codemirror-readonly.js' %}"></script>
+{% endblock %}

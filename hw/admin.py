@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Subject, Assignment, Key, Homework, HomeworkStudentComment
+from .models import Subject, Assignment, Key, Homework, HomeworkStudentComment, CodeFile
 
 
 @admin.register(Subject)
@@ -11,7 +11,7 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Assignment)
 class AssignmentAdmin(admin.ModelAdmin):
-    list_display = ["title", "subject", "teacher", "deadline", "release"]
+    list_display = ["title", "subject", "teacher", "release", "deadline"]
     list_filter = ["subject", "teacher"]
     search_fields = ["title", "description"]
 
@@ -30,3 +30,11 @@ class HomeworkAdmin(admin.ModelAdmin):
     search_fields = ["key__assignment__title", "key__student__username"]
 
 admin.site.register(HomeworkStudentComment)
+
+@admin.register(CodeFile)
+class CodeFileAdmin(admin.ModelAdmin):
+    list_display = ["file"]
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()

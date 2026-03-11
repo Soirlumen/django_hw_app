@@ -1,10 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Úkoly k okomentování{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Úkoly k okomentování" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 1000px;">
 
-  <h2 class="mb-4">Přidělené komentáře</h2>
+  <h2 class="mb-4">{% trans "Přidělené komentáře" %}</h2>
 
   {% if comments %}
 
@@ -15,7 +17,7 @@
 
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
-            <strong><a href="{% url 'assgn_detail_student' group.grouper.pk%}">{{ group.grouper.title }}</a></strong>
+            <strong><a href="{% url 'assgn_detail_student' group.grouper.pk %}">{{ group.grouper.title }}</a></strong>
           </div>
           {% with done=0 %}
           {% for c in group.list %}
@@ -29,16 +31,16 @@
             <li class="list-group-item d-flex justify-content-between align-items-center">
 
               <a href="{% url 'student_comment_detail' c.pk %}" class="text-decoration-none">
-                Komentář č. {{ forloop.counter }}
+                {% blocktrans with counter=forloop.counter %}Komentář č. {{ counter }}{% endblocktrans %}
               </a>
 
               {% if c.comment %}
                 <span class="badge bg-success">
-                  ✓ Hotovo
+                  {% trans "✓ Hotovo" %}
                 </span>
               {% else %}
                 <span class="badge bg-secondary">
-                  ⏳ Čeká
+                  {% trans "⏳ Čeká" %}
                 </span>
               {% endif %}
 
@@ -51,7 +53,7 @@
 
   {% else %}
     <div class="alert alert-info">
-      Nemáš přidělené žádné komentáře.
+      {% trans "Nemáš přidělené žádné komentáře." %}
     </div>
   {% endif %}
 

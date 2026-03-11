@@ -1,20 +1,21 @@
-{% extends 'base.html' %} {% load static %} 
-{% block title %} 
-Dashboard {% endblock title %} 
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block title %} Dashboard {% endblock title %} 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="mb-4">Dobrý den, {{ user }}</h2>
+  <h2 class="mb-4">{% trans "Dobrý den,"%} {{ user }}</h2>
   <div class="row align-items-stretch">
     <div class="col-md-6">
       <div class="card shadow-sm mb-4 h-100">
-        <div class="card-header">zadané úkoly</div>
+        <div class="card-header">{% trans "Zadané úkoly"%}</div>
         <div class="card-body d-flex flex-column">
-          <a href="{% url 'list_active' %}" class="btn btn-primary mt-auto">Přejít na úkoly</a>
+          <a href="{% url 'list_active' %}" class="btn btn-primary mt-auto">{% trans "Přejít na úkoly" %}</a>
                {% if user.is_student %}
-              <a href="{% url 'student_comment_list' %}" class="btn btn-primary mt-auto">Úkoly k okomentování</a> 
+              <a href="{% url 'student_comment_list' %}" class="btn btn-primary mt-auto">{% trans "Úkoly k okomentování"%}</a> 
               {% endif %}
                {% if user.is_teacher %}
-              <a href="{% url 'teacher_comment_list' %}" class="btn btn-primary mt-auto">Komentáře od studentů</a> 
+              <a href="{% url 'teacher_comment_list' %}" class="btn btn-primary mt-auto">{% trans "Komentáře od studentů"%}</a> 
               {% endif %}
             </li>
         </div>
@@ -22,19 +23,19 @@ Dashboard {% endblock title %}
     </div>
     <div class="col-md-6">
       <div class="card shadow-sm mb-4 h-100">
-        <div class="card-header">Akcičky</div>
+        <div class="card-header">{% trans "Akce"%}</div>
         <div class="card-body d-flex flex-column">
           <ul class="list-unstyled flex-grow-1">
             <li>
-               <a href="{% url 'profile' %}" class="btn btn-outline-primary">Profil</a>
+               <a href="{% url 'profile' %}" class="btn btn-outline-primary">{% trans "Profil"%}</a>
             </li>
              {% if user.is_teacher %}
             <li>
-              <a href="{% url 'ass_create' %}">Zadat nový úkol</a>
+              <a href="{% url 'ass_create' %}">{% trans "Zadat nový úkol"%}</a>
             </li>
             {% endif %} 
             <li>
-<a href="#">něco</a>
+<a href="#">Nefunkční odkaz</a>
             </li>
           </ul>
         </div>
@@ -43,7 +44,7 @@ Dashboard {% endblock title %}
   </div>
 
   <div class="card shadow-sm mb-4 mt-5">
-    <div class="card-header fs-4">Novinky!</div>
+    <div class="card-header fs-4">{% trans "Novinky"%}!</div>
     <div class="card-body">
       <p class="card-text">
         Nějaké info, které by se mohlo řešit v budoucnu přes samostatnou app.
