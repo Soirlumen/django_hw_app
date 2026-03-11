@@ -3,20 +3,22 @@ from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
+from django.utils.functional import lazy
 from .widgets import CodeMirrorWidget
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 UPLOAD_HELP_TEXT = _(
-    "Můžete přiložit více souborů najednou. "
-    "Maximálně %(number)s souborů, "
-    "každý nejvýše %(maxsize)s MB."
+    _("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.")
 ) % {
     "number": settings.MAX_UPLOAD_FILES_NUMBER,
     "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
 }
 
-MARKDOWN_HELP_TEXT= format_html("{} <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>.",_("Podporuje"),)
+MARKDOWN_HELP_TEXT = format_html(
+    "{} <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>.",
+    _("Podporuje")
+)
  
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -25,6 +27,9 @@ class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("widget", MultipleFileInput())
         super().__init__(*args, **kwargs)
+        kwargs.setdefault("label", _("Zvolit soubory"))
+        kwargs.setdefault(
+            "help_text",UPLOAD_HELP_TEXT)
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean

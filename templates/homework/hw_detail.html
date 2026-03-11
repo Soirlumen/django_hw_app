@@ -2,7 +2,7 @@
 {% load static %}
 {% load markdown_extras %}
 {% load i18n %}
-{% block title %}Odevzdaný úkol{% endblock title %}
+{% block title %}{% trans "Odevzdaný úkol" %}{% endblock title %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -21,7 +21,7 @@
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
-      <h2 class="mb-1">Odevzdaný úkol</h2>
+      <h2 class="mb-1">{% trans "Odevzdaný úkol" %}</h2>
       <div class="text-muted">
         {{ hw.key.assignment.title }} • {{ hw.key.assignment.subject }}
       </div>
@@ -29,7 +29,7 @@
 
     <div class="d-flex flex-wrap gap-2">
       <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
-        Zpět na seznam
+        {% trans "Zpět na seznam" %}
       </a>
     </div>
   </div>
@@ -38,20 +38,22 @@
     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
       <div>
         {% if request.user == hw.key.assignment.teacher %}
-          <strong>Student:</strong> {{ hw.key.student.username }}
+          <strong>{% trans "Student:" %}</strong> {{ hw.key.student.username }}
         {% else %}
-          <strong>Řešení úkolu</strong>
+          <strong>{% trans "Řešení úkolu" %}</strong>
         {% endif %}
       </div>
       <div>
         <span class="badge bg-success">
-          Odevzdáno: {{ hw.submitted|date:"d.m.Y H:i" }}
+          {% blocktrans with date=hw.submitted|date:"d.m.Y H:i" %}
+          Odevzdáno: {{ date }}
+          {% endblocktrans %}
         </span>
       </div>
     </div>
 
     <div class="card-body">
-      <div class="mb-2"><strong>Řešení:</strong></div>
+      <div class="mb-2"><strong>{% trans "Řešení:" %}</strong></div>
 
       <textarea
         id="hw-code-viewer"
@@ -59,7 +61,7 @@
       >{{ hw.engrossment }}</textarea>
 
       {% if hw.files.exists %}
-        <div class="mt-3 mb-2"><strong>Přiložené soubory:</strong></div>
+        <div class="mt-3 mb-2"><strong>{% trans "Přiložené soubory:" %}</strong></div>
         <ul>
           {% for f in hw.files.all %}
             <li>
@@ -76,20 +78,20 @@
   {% if request.user == hw.key.assignment.teacher %}
     <div class="card shadow-sm mb-4">
       <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-        <strong>Hodnocení</strong>
+        <strong>{% trans "Hodnocení" %}</strong>
 
         {% if hw.text_evaluation or hw.score %}
           <div class="d-flex flex-wrap gap-2">
             <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-sm btn-outline-primary">
-              Upravit hodnocení
+              {% trans "Upravit hodnocení" %}
             </a>
             <a href="{% url 'evaluate_delete' hw.pk %}" class="btn btn-sm btn-danger">
-              Smazat hodnocení
+              {% trans "Smazat hodnocení" %}
             </a>
           </div>
         {% else %}
           <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-sm btn-primary">
-            Ohodnotit úkol
+            {% trans "Ohodnotit úkol" %}
           </a>
         {% endif %}
       </div>
@@ -99,24 +101,26 @@
           {% if hw.score %}
             <div class="mb-3">
               <span class="badge bg-secondary">
-                Skóre: {{ hw.score }} / {{ hw.key.assignment.max_score }}
+                {% blocktrans with score=hw.score max=hw.key.assignment.max_score %}
+                Skóre: {{ score }} / {{ max }}
+                {% endblocktrans %}
               </span>
             </div>
           {% endif %}
 
           {% if hw.text_evaluation %}
-            <div class="mb-2"><strong>Slovní hodnocení:</strong></div>
+            <div class="mb-2"><strong>{% trans "Slovní hodnocení:" %}</strong></div>
             <div class="border rounded p-3 bg-white">
               {{ hw.text_evaluation|markdown | safe }}
             </div>
           {% else %}
             <div class="alert alert-light border mb-0" role="alert">
-              Slovní hodnocení zatím není vyplněné.
+              {% trans "Slovní hodnocení zatím není vyplněné." %}
             </div>
           {% endif %}
         {% else %}
           <div class="alert alert-primary mb-0" role="alert">
-            Tento úkol zatím není ohodnocený.
+            {% trans "Tento úkol zatím není ohodnocený." %}
           </div>
         {% endif %}
       </div>
@@ -125,8 +129,12 @@
     {% if comments %}
       <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <strong>Komentáře od spolužáků</strong>
-          <span class="badge bg-primary">Celkem: {{ comments|length }}</span>
+          <strong>{% trans "Komentáře od spolužáků" %}</strong>
+          <span class="badge bg-primary">
+            {% blocktrans with count=comments|length %}
+            Celkem: {{ count }}
+            {% endblocktrans %}
+          </span>
         </div>
 
         <div class="card-body">
@@ -134,9 +142,17 @@
             {% for c in comments %}
               <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
-                  <strong>Komentář #{{ forloop.counter }}</strong>
+                  <strong>
+                    {% blocktrans with num=forloop.counter %}
+                    Komentář #{{ num }}
+                    {% endblocktrans %}
+                  </strong>
                   <div class="text-muted small">
-                    {% if c.comment %}Vyplněno{% else %}Čeká na vyplnění{% endif %}
+                    {% if c.comment %}
+                      {% trans "Vyplněno" %}
+                    {% else %}
+                      {% trans "Čeká na vyplnění" %}
+                    {% endif %}
                   </div>
                 </div>
 
@@ -147,7 +163,7 @@
                     <span class="badge bg-secondary">⏳</span>
                   {% endif %}
                   <a class="btn btn-sm btn-outline-primary" href="{% url 'received_comment_detail' c.pk %}">
-                    Zobrazit
+                    {% trans "Zobrazit" %}
                   </a>
                 </div>
               </li>

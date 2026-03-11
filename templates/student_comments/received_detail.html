@@ -3,7 +3,7 @@
 {% load markdown_extras %}
 {% load i18n %}
 
-{% block title %}Komentář k úkolu{% endblock %}
+{% block title %}{% trans "Komentář k úkolu"%}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -18,29 +18,29 @@
       <h2 class="mb-0">{{ assignment.title }}</h2>
       {% if request.user == assignment.teacher %}
         <div class="text-muted">
-          Komentář od studenta: {{ comment_obj.reviewer.first_name }} {{ comment_obj.reviewer.surname }}
+         {% trans " Komentář od studenta:"%} {{ comment_obj.reviewer.first_name }} {{ comment_obj.reviewer.surname }}
         </div>
       {% else %}
         <div class="text-muted">
-          Komentář od spolužáka (anonymně)
+          {% trans "Komentář od spolužáka (anonymně)"%}
         </div>
       {% endif %}
     </div>
 
     {% if request.user == assignment.teacher %}
       <a href="{% url 'assgn_detail_teacher' assignment.pk %}" class="btn btn-sm btn-outline-secondary">
-        Zpět
+        {% trans "Zpět"%}
       </a>
     {% else %}
       <a href="{% url 'assgn_detail_student' assignment.pk %}" class="btn btn-sm btn-outline-secondary">
-        Zpět
+        {% trans "Zpět"%}
       </a>
     {% endif %}
   </div>
 
   <div class="card shadow-sm mb-4">
     <div class="card-header">
-      <strong>Řešení úkolu</strong>
+      <strong>{% trans "Řešení úkolu"%}</strong>
     </div>
     <div class="card-body">
       <textarea
@@ -52,14 +52,14 @@
 
   <div class="card shadow-sm mb-4">
     <div class="card-header">
-      <strong>Text komentáře</strong>
+      <strong>{% trans "Text komentáře"%}</strong>
     </div>
     <div class="card-body">
       <div class="border rounded p-3 bg-white">
         {% if comment_obj.comment %}
           {{ comment_obj.comment|markdown|safe }}
         {% else %}
-          <span class="text-muted">Komentář zatím nebyl vyplněn.</span>
+          <span class="text-muted">{% trans "Komentář zatím nebyl vyplněn."%}</span>
         {% endif %}
       </div>
     </div>

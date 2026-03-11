@@ -3,15 +3,15 @@
 {% load markdown_extras %}
 {% load i18n %}
 
-{% block title %}Upravit úkol{% endblock %}
+{% block title %}{% trans "Upravit úkol" %}{% endblock %}
 
 {% block content %}
- {{ form.media }}
+{{ form.media }}
+
 <div class="container mt-4" style="max-width: 900px;">
 
 {% if messages %}
 {% for message in messages %}
-
 <div class="alert alert-{{ message.tags }} mb-3" role="alert">
   {{ message }}
 </div>
@@ -29,12 +29,16 @@
   <div class="text-end">
     <div class="mb-2">
       <span class="badge bg-light text-dark border">
-        Zveřejněno: {{ hw.key.assignment.release }}
+        {% blocktrans trimmed with release=hw.key.assignment.release %}
+        Zveřejněno: {{ release }}
+        {% endblocktrans %}
       </span>
     </div>
     <div>
       <span class="badge bg-warning text-dark border">
-        Termín: {{ hw.key.assignment.deadline }}
+        {% blocktrans trimmed with deadline=hw.key.assignment.deadline %}
+        Termín: {{ deadline }}
+        {% endblocktrans %}
       </span>
     </div>
   </div>
@@ -46,63 +50,77 @@
        data-bs-toggle="collapse"
        data-bs-target="#assignmentCollapse"
        style="cursor:pointer;">
-<strong>Zadání úkolu</strong>
+
+<strong>{% trans "Zadání úkolu" %}</strong>
 
 <span class="text-muted small">
-  klikni pro zobrazení
+  {% trans "klikni pro zobrazení" %}
 </span>
+
   </div>
 
   <div class="collapse" id="assignmentCollapse">
 <div class="card-body">
 
   <div class="mb-2">
-    <strong>Předmět:</strong> {{ hw.key.assignment.subject }}
+    <strong>{% trans "Předmět:" %}</strong> {{ hw.key.assignment.subject }}
   </div>
 
   <div class="mb-2">
-    <strong>Učitel:</strong> {{ hw.key.assignment.teacher }}
+    <strong>{% trans "Učitel:" %}</strong> {{ hw.key.assignment.teacher }}
   </div>
 
   <div class="mb-3">
-    <strong>Popis:</strong>
+    <strong>{% trans "Popis:" %}</strong>
 
     <div class="mt-1 border rounded p-3 bg-white">
       {{ hw.key.assignment.description|markdown|safe }}
     </div>
   </div>
-      {% if hw.key.assignment.files.exists %}
-      <div class="mb-2"><strong>Přiložené soubory:</strong></div>
-      <ul>
-      {% for f in hw.key.assignment.files.all %}
-      <li><div class="mb-3"><a href="{{ f.get_file_path }}"download>{{ f }}</a></div></li>
-      {% endfor %}
-      {% else %}
-      {% endif %}
-      </ul>
+
+  {% if hw.key.assignment.files.exists %}
+  <div class="mb-2"><strong>{% trans "Přiložené soubory:" %}</strong></div>
+
+  <ul>
+  {% for f in hw.key.assignment.files.all %}
+  <li>
+    <div class="mb-3">
+      <a href="{{ f.get_file_path }}" download>{{ f }}</a>
+    </div>
+  </li>
+  {% endfor %}
+  </ul>
+  {% endif %}
 
   <div class="mb-2">
-    <strong>Max skóre:</strong> {{ hw.key.assignment.max_score }}
+    <strong>{% trans "Max skóre:" %}</strong> {{ hw.key.assignment.max_score }}
   </div>
 
 </div>
   </div>
 </div>
+
 <div class="card shadow-sm">
 
   <div class="card-header">
-    <strong>Upravit úkol: {{ hw.key.assignment.title }}</strong>
+    <strong>
+      {% blocktrans trimmed with title=hw.key.assignment.title %}
+      Upravit úkol: {{ title }}
+      {% endblocktrans %}
+    </strong>
   </div>
 
   <div class="card-body">
+
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form|crispy }}
 
   <button type="submit" class="btn btn-primary">
-    Uložit změny
+    {% trans "Uložit změny" %}
   </button>
-  </form>
+</form>
+
 {% for f in hw.files.all %}
   <li class="mb-2">
     <a href="{{ f.get_file_path }}" download>{{ f }}</a>
@@ -110,16 +128,16 @@
     <form method="post" action="{% url 'homework_file_remove' hw.pk f.pk %}" class="d-inline">
       {% csrf_token %}
       <button type="submit" class="btn btn-sm btn-outline-danger">
-        Odebrat
+        {% trans "Odebrat" %}
       </button>
     </form>
   </li>
 {% endfor %}
-  <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}"
-     class="btn btn-outline-secondary">
-    Zrušit
-  </a>
 
+<a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}"
+   class="btn btn-outline-secondary">
+  {% trans "Zrušit" %}
+</a>
 
   </div>
 

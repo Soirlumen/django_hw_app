@@ -2,25 +2,23 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 
-{% block title %}{% translate "Smazat zadání" %}{% endblock title %}
+{% block title %}{% trans "Smazat zadání" %}{% endblock title %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="card shadow-sm border-danger">
         <div class="card-body">
             <h3 class="card-title text-danger mb-4">
-                {% blocktranslate with assgn_name=assgn %}
-                    Opravdu chceš smazat zadání „{{ assgn_name }}“?
-                {% endblocktranslate %}
+                   {% trans " Opravdu chceš smazat zadání"%} „{{ assgn }}“?
             </h3>
             <form method="post">
                 {% csrf_token %}
                 <div class="d-flex gap-3">
                     <button type="submit" class="btn btn-danger">
-                        {% translate "Ano, smazat" %}
+                        {% trans "Ano, smazat" %}
                     </button>
                     <a href="{% url 'list_active' %}" class="btn btn-secondary">
-                        {% translate "Zpět na seznam zadání" %}
+                        {% trans "Zpět na seznam zadání" %}
                     </a>
                 </div>
             </form>
