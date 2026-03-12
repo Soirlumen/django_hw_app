@@ -8,17 +8,12 @@ from .widgets import CodeMirrorWidget
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-UPLOAD_HELP_TEXT = _(
-    _("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.")
-) % {
+UPLOAD_HELP_TEXT = _("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
     "number": settings.MAX_UPLOAD_FILES_NUMBER,
     "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
 }
 
-MARKDOWN_HELP_TEXT = format_html(
-    "{} <a href='https://www.daringfireball.net/projects/markdown/syntax'>Markdown syntax</a>.",
-    _("Podporuje")
-)
+MARKDOWN_HELP_TEXT = format_html( _("Podporuje <a href='{url}'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
  
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
