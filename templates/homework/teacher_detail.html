@@ -1,20 +1,16 @@
 {% extends "base.html" %}
-{% load markdown_extras %}
-{% load i18n %}
-
-{% block title %}
-  {% blocktranslate with title=assignment.title %}Detail zadání: {{ title }}{% endblocktranslate %}
-{% endblock title %}
-
+ {% load markdown_extras %}
+ {% load i18n %} 
+{% block title %} {% blocktranslate with title=assignment.title %}Detail zadání: {{ title}}
+{% endblocktranslate %} 
+{% endblock title %} 
 {% block content %}
-<div class="container mt-4" style="max-width: 1000px;">
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
+<div class="container mt-4" style="max-width: 1000px">
+  {% if messages %} {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+    {{ message }}
+  </div>
+  {% endfor %} {% endif %}
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
@@ -27,36 +23,54 @@
     <div class="text-end">
       <div class="mb-2">
         <span class="badge bg-light text-dark border">
-          {% blocktranslate with release=assignment.release %}Zveřejněno: {{ release }}{% endblocktranslate %}
+          {% blocktranslate with release=assignment.release %}Zveřejněno: {{release }}{% endblocktranslate %}
         </span>
       </div>
       <div>
         <span class="badge bg-warning text-dark border">
-          {% blocktranslate with deadline=assignment.deadline %}Termín: {{ deadline }}{% endblocktranslate %}
+          {% blocktranslate with deadline=assignment.deadline %}Termín: {{deadline }}{% endblocktranslate %}
         </span>
       </div>
     </div>
   </div>
 
   <div class="card shadow-sm mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div
+      class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2"
+    >
       <strong>{% translate "Detail zadání" %}</strong>
       <div class="d-flex flex-wrap gap-2">
-        <a href="{% url 'assignment_delete' assignment.pk %}" class="btn btn-sm btn-danger">
+        <a
+          href="{% url 'assignment_delete' assignment.pk %}"
+          class="btn btn-sm btn-danger"
+        >
           {% translate "Smazat zadání" %}
         </a>
-        <a href="{% url 'list_active' %}" class="btn btn-sm btn-outline-secondary">
+        <a
+          href="{% url 'list_active' %}"
+          class="btn btn-sm btn-outline-secondary"
+        >
           {% translate "Zpět na seznam" %}
         </a>
       </div>
     </div>
 
     <div class="card-body">
-      <div class="mb-2"><strong>{% translate "Předmět:" %}</strong> {{ assignment.subject }}</div>
-      <div class="mb-2"><strong>{% translate "Učitel:" %}</strong> {{ assignment.teacher }}</div>
-      <div class="mb-2"><strong>{% translate "Zveřejněno:" %}</strong> {{ assignment.release }}</div>
-      <div class="mb-2"><strong>{% translate "Termín odevzdání:" %}</strong> {{ assignment.deadline }}</div>
-      <div class="mb-3"><strong>{% translate "Maximální počet bodů:" %}</strong> {{ assignment.max_score }}</div>
+      <div class="mb-2">
+        <strong>{% translate "Předmět:" %}</strong> {{ assignment.subject }}
+      </div>
+      <div class="mb-2">
+        <strong>{% translate "Učitel:" %}</strong> {{ assignment.teacher }}
+      </div>
+      <div class="mb-2">
+        <strong>{% translate "Zveřejněno:" %}</strong> {{ assignment.release }}
+      </div>
+      <div class="mb-2">
+        <strong>{% translate "Termín odevzdání:" %}</strong> {{assignment.deadline }}
+      </div>
+      <div class="mb-3">
+        <strong>{% translate "Maximální počet bodů:" %}</strong> {{assignment.max_score }}
+      </div>
 
       <div class="mb-2"><strong>{% translate "Popis:" %}</strong></div>
       <div class="border rounded p-3 bg-white">
@@ -64,12 +78,18 @@
       </div>
 
       {% if assignment.files.exists %}
-        <div class="mb-2"><strong>{% translate "Přiložené soubory:" %}</strong></div>
-        <ul>
-          {% for f in assignment.files.all %}
-            <li><div class="mb-3"><a href="{{ f.get_file_path }}" download>{{ f }}</a></div></li>
-          {% endfor %}
-        </ul>
+      <div class="mb-2">
+        <strong>{% translate "Přiložené soubory:" %}</strong>
+      </div>
+      <ul>
+        {% for f in assignment.files.all %}
+        <li>
+          <div class="mb-3">
+            <a href="{{ f.get_file_path }}" download>{{ f }}</a>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
       {% endif %}
     </div>
   </div>
@@ -77,95 +97,98 @@
   <div class="card shadow-sm mb-4">
     <div class="card-header">
       <div class="row align-items-center">
-
         <div class="col">
           <strong>{% translate "Odevzdané úkoly" %}</strong>
         </div>
+<div class="col-auto">
+  <div class="d-flex align-items-center gap-3">
 
-        <div class="col-auto">
-          <div class="d-flex align-items-center gap-3">
+    {% if homeworks %}
+      {% if assignment.is_comments_generated %}
+        <span class="badge bg-success">
+          {% translate "Komentáře již byly vygenerovány" %}
+        </span>
 
-            {% if homeworks %}
-              <span class="badge bg-primary">
-                {% blocktranslate with count=homeworks|length %}Celkem: {{ count }}{% endblocktranslate %}
-              </span>
+      {% elif is_after_deadline %}
+        <form
+          method="post"
+          action="{% url 'assgn_make_comments' assignment.pk %}"
+          class="d-flex align-items-center gap-2 mb-0"
+        >
+          {% csrf_token %}
 
-              {% if assignment.is_comments_generated %}
-                <span class="badge bg-success">
-                  {% translate "Komentáře již byly vygenerovány" %}
-                </span>
-              {% else %}
-                <form method="post"
-                      action="{% url 'assgn_make_comments' assignment.pk %}"
-                      class="d-flex align-items-center gap-2 mb-0">
-                  {% csrf_token %}
-
-                  <div class="input-group input-group-sm" style="width: 140px;">
-                    <span class="input-group-text">{% translate "počet" %}</span>
-                    <input type="number"
-                           name="k"
-                           min="1"
-                           class="form-control"
-                           required>
-                  </div>
-
-                  <button type="submit" class="btn btn-sm btn-success">
-                    {% translate "Vygenerovat komentáře" %}
-                  </button>
-                </form>
-              {% endif %}
-
-            {% else %}
-              <span class="badge bg-secondary">
-                {% translate "0 odevzdaných" %}
-              </span>
-            {% endif %}
-
+          <div class="input-group input-group-sm" style="width:140px">
+            <span class="input-group-text">{% translate "počet" %}</span>
+            <input type="number" name="k" min="1" class="form-control" required>
           </div>
-        </div>
 
-      </div>
-    </div>
+          <button type="submit" class="btn btn-sm btn-success">
+            {% translate "Vygenerovat komentáře" %}
+          </button>
+        </form>
+
+      {% else %}
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small">
+            {% translate "Nelze vygenerovat komentáře před termínem." %}
+          </span>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <span class="badge bg-secondary">
+        {% translate "0 odevzdaných" %}
+      </span>
+    {% endif %}
+      <span class="badge bg-primary">
+        {% blocktranslate with count=homeworks|length %}
+        Celkem: {{ count }}
+        {% endblocktranslate %}
+      </span>
+  </div>
+</div>
 
     <div class="card-body">
       {% if homeworks %}
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>{% translate "Student" %}</th>
-                <th>{% translate "Odevzdáno" %}</th>
-                <th class="text-end">{% translate "Akce" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for hw in homeworks %}
-                <tr>
-                  <td>
-                    <strong>{{ hw.key.student.username }}</strong>
-                  </td>
-                  <td>
-                    <span class="badge bg-success">
-                      {{ hw.submitted|date:"d.m.Y H:i" }}
-                    </span>
-                  </td>
-                  <td class="text-end">
-                    <a href="{% url 'hw_detail' hw.pk %}" class="btn btn-sm btn-outline-primary">
-                      {% translate "Zobrazit řešení" %}
-                    </a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>{% translate "Student" %}</th>
+              <th>{% translate "Odevzdáno" %}</th>
+              <th class="text-end">{% translate "Akce" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for hw in homeworks %}
+            <tr>
+              <td>
+                <strong>{{ hw.key.student.first_name }} {{ hw.key.student.surname }}</strong>
+              </td>
+              <td>
+                <span class="badge bg-success">
+                  {{ hw.submitted|date:"d.m.Y H:i" }}
+                </span>
+              </td>
+              <td class="text-end">
+                <a
+                  href="{% url 'hw_detail' hw.pk %}"
+                  class="btn btn-sm btn-outline-primary"
+                >
+                  {% translate "Zobrazit řešení" %}
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
       {% else %}
-        <div class="alert alert-primary mb-0" role="alert">
-          {% translate "Zatím nikdo neodevzdal úkol." %}
-        </div>
+      <div class="alert alert-primary mb-0" role="alert">
+        {% translate "Zatím nikdo neodevzdal úkol." %}
+      </div>
       {% endif %}
     </div>
   </div>
-
 </div>
 {% endblock content %}

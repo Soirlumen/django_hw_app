@@ -27,18 +27,22 @@
       </div>
     </div>
 
-    <div class="d-flex flex-wrap gap-2">
-      <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
-        {% trans "Zpět na seznam" %}
+       {% if request.user == assignment.teacher %}
+      <a href="{% url 'assgn_detail_teacher' hw.key.assignment.pk %}" class="btn btn-sm btn-outline-secondary">
+        {% trans "Zpět na zadání"%}
       </a>
-    </div>
+    {% else %}
+      <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}" class="btn btn-sm btn-outline-secondary">
+        {% trans "Zpět na zadání"%}
+      </a>
+    {% endif %}
   </div>
 
   <div class="card shadow-sm mb-4">
     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
       <div>
         {% if request.user == hw.key.assignment.teacher %}
-          <strong>{% trans "Student:" %}</strong> {{ hw.key.student.username }}
+          <strong>{% trans "Student:" %}</strong> {{ hw.key.student.first_name }} {{ hw.key.student.surname }} 
         {% else %}
           <strong>{% trans "Řešení úkolu" %}</strong>
         {% endif %}

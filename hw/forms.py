@@ -8,23 +8,30 @@ from .widgets import CodeMirrorWidget
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-UPLOAD_HELP_TEXT = _("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
-    "number": settings.MAX_UPLOAD_FILES_NUMBER,
-    "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
-}
+# UPLOAD_HELP_TEXT = _("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
+#     "number": settings.MAX_UPLOAD_FILES_NUMBER,
+#     "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
+# }
 
-MARKDOWN_HELP_TEXT = format_html( _("Podporuje <a href='{url}'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
+# MARKDOWN_HELP_TEXT = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
  
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
 class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput())
-        super().__init__(*args, **kwargs)
-        kwargs.setdefault("label", _("Zvolit soubory"))
+
+        kwargs.setdefault("label", _("Přiložit soubory"))
         kwargs.setdefault(
-            "help_text",UPLOAD_HELP_TEXT)
+            "help_text",
+            _("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
+                "number": settings.MAX_UPLOAD_FILES_NUMBER,
+                "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
+            }
+        )
+        kwargs.setdefault("widget", MultipleFileInput())
+
+        super().__init__(*args, **kwargs)
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean
@@ -53,7 +60,10 @@ class MultipleFileField(forms.FileField):
 #vytvoření úkolu
 class CreateHomeworkForm(forms.ModelForm):
     filesimput = MultipleFileField(
-        help_text=UPLOAD_HELP_TEXT,
+        help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
+    "number": settings.MAX_UPLOAD_FILES_NUMBER,
+    "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
+},
         required=False,
         label=_("Přiložit soubory")
     )
@@ -75,7 +85,10 @@ class CreateHomeworkForm(forms.ModelForm):
 
 # úprava úkolu  
 class HomeworkForm(forms.ModelForm):
-    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label=_("Přiložit soubory"))
+    filesimput= MultipleFileField(help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
+    "number": settings.MAX_UPLOAD_FILES_NUMBER,
+    "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
+} ,required=False, label=_("Přiložit soubory"))
     
     def clean(self):
         cleaned_data = super().clean()
@@ -102,13 +115,17 @@ class HomeworkForm(forms.ModelForm):
 #vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):
     max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
-    filesimput= MultipleFileField(help_text=UPLOAD_HELP_TEXT ,required=False, label=_("Přiložit soubory"))
+    filesimput= MultipleFileField(help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
+    "number": settings.MAX_UPLOAD_FILES_NUMBER,
+    "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,} ,required=False, label=_("Přiložit soubory"))
+    
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super(AssignmentForm, self).__init__(*args, **kwargs)
         if self.user:
             self.fields["subject"].queryset = self.user.teacher_subjects
-            self.fields["description"].help_text = MARKDOWN_HELP_TEXT
+            self.fields["description"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
+        
         
     def clean_subject(self):
         subject = self.cleaned_data["subject"]
@@ -133,6 +150,7 @@ class AssignmentForm(forms.ModelForm):
             "deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "release": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
+
 #vyplnění hodnocení od učitele
 class EvaluationForm(forms.ModelForm):
     class Meta:
@@ -156,7 +174,7 @@ class EvaluationForm(forms.ModelForm):
 
         })
         self.fields["score"].help_text = (_("Maximální počet bodů je %(mb)s")%{"mb":self.instance.key.assignment.max_score})
-        self.fields["text_evaluation"].help_text = MARKDOWN_HELP_TEXT
+        self.fields["text_evaluation"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
     
 # pro vyplnění komentu
 class HomeworkStudentCommentForm(forms.ModelForm):
@@ -168,7 +186,7 @@ class HomeworkStudentCommentForm(forms.ModelForm):
         }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["comment"].help_text = MARKDOWN_HELP_TEXT
+        self.fields["comment"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
     
 
 # generování k-tic hodnotících k úkolu

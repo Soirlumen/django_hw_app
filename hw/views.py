@@ -71,7 +71,9 @@ def assgn_detail_teacher(request, pk):
     assignment=get_object_or_404(Assignment,pk=pk)
     homeworks = Homework.objects.filter(key__assignment=assignment)
     context={
-        "assignment": assignment,"homeworks": homeworks}
+        "assignment": assignment,
+        "homeworks": homeworks,
+        "is_after_deadline":assignment.is_after_deadline}
     
     return render(request, "homework/teacher_detail.html",context)
 
@@ -120,8 +122,10 @@ def assignment_create_view(request):
             obj_f.full_clean()
             obj_f.save()
             assignment.files.add(obj_f)
-
         return redirect("assgn_detail_teacher", pk=assignment.pk)
+    else:
+        messages.warning(request, "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole.")            
+
     return render(request, "homework/ass_create.html", {"form": form})
 
 @student_required
@@ -204,7 +208,7 @@ def assgn_delete_view(request, pk):
     if request.method == "POST":
         assgn.delete()
         return redirect("list_active")
-    context={"assgn": assgn}
+    context={"assgn": assgn,}
     return render(request,"homework/ass_delete_confirm.html",context)
 
 @login_required
@@ -360,13 +364,6 @@ def student_comment_detail_view(request, pk):
         "form": form,
     })
 
-def can_access_comment(user, comment_obj) -> bool:
-    return user.id in {
-        comment_obj.hw.key.student_id,
-        comment_obj.hw.key.assignment.teacher_id,
-        comment_obj.reviewer_id,
-    }
-
 @login_required
 def student_received_comment_detail_view(request, pk):
     comment_obj = get_object_or_404(
@@ -381,7 +378,7 @@ def student_received_comment_detail_view(request, pk):
     return render(request, "student_comments/received_detail.html", {
         "comment_obj": comment_obj,
         "assignment": comment_obj.hw.key.assignment,
-        "hw":comment_obj.hw.engrossment,
+        "hw":comment_obj.hw,
         "language":comment_obj.hw.programming_language,
     })
     

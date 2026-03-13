@@ -4,19 +4,42 @@
 
 {% block title %}{% translate "Vytvořit zadání" %}{% endblock title %}
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4" style="max-width: 900px;">
+    {% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
     <div class="card">
         <div class="card-header">
             <h5>{% translate "Vytvořit nové zadání" %}</h5>
         </div>
         <div class="card-body">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-primary mt-2">
-                    {% translate "Vytvořit zadání" %}
-                </button>
-            </form>
+           <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {{ form.title|as_crispy_field }}
+    {{ form.subject|as_crispy_field }}
+    {{ form.description|as_crispy_field }}
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ form.release|as_crispy_field }}
+        </div>
+        <div class="col-md-6">
+            {{ form.deadline|as_crispy_field }}
+        </div>
+    </div>
+
+    {{ form.max_score|as_crispy_field }}
+    {{ form.filesimput|as_crispy_field }}
+
+    <button type="submit" class="btn btn-primary mt-2">
+        {% translate "Vytvořit zadání" %}
+    </button>
+</form>
         </div>
     </div>
 </div>

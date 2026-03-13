@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load i18n %}
-
+{% load static %}
 {% block title %}{% trans "Upravit hodnocení k úkolu" %}{% endblock %}
-
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+{% endblock %}
 {% block content %}
 <div class="container mt-4" style="max-width: 1000px;">
   {% if messages %}
@@ -45,10 +48,23 @@
 
     <div class="card-body">
       <div class="mb-2"><strong>{% trans "Řešení:" %}</strong></div>
-      <div class="border rounded p-3 bg-white">
-        {{ hw.engrossment|linebreaks }}
-      </div>
+       <textarea
+        id="hw-code-viewer"
+        data-code-language="{{ hw.programming_language|default:'python' }}"
+      >{{ hw.engrossment }}</textarea>
     </div>
+    {% if hw.files.exists %}
+        <div class="mt-3 mb-2"><strong>{% trans "Přiložené soubory:" %}</strong></div>
+        <ul>
+          {% for f in hw.files.all %}
+            <li>
+              <div class="mb-2">
+                <a href="{{ f.get_file_path }}" download>{{ f }}</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
   </div>
 
   {% if request.user == hw.key.assignment.teacher %}
@@ -86,3 +102,10 @@
   {% endif %}
 </div>
 {% endblock content %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
+<script src="{% static 'hw/js/codemirror-readonly.js' %}"></script>
+{% endblock %}

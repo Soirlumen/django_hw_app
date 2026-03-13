@@ -9,7 +9,10 @@
     <div class="card mb-4">
         <div class="card-body">
             <p><strong>{% translate "Uživatelské jméno:" %}</strong> {{ request.user.username }}</p>
+            <p><strong>{% translate "Jméno:" %}</strong> {{ request.user.first_name }}</p>
+            <p><strong>{% translate "Příjmení:" %}</strong> {{ request.user.surname }}</p>
             <p><strong>{% translate "Email:" %}</strong> {{ request.user.email }}</p>
+            <p><strong>{% translate "Telefon:" %}</strong> {{ request.user.tel }}</p>
         </div>
     </div>
 

@@ -82,6 +82,9 @@ class Assignment(models.Model):
         ]
         verbose_name = _("Zadání")
         verbose_name_plural = _("Zadání")
+        
+    def get_url(self):
+        return reverse("assgn_detail_teacher", kwargs={"pk":self.pk})
 
 class Key(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_("Student"))

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 17:11+0100\n"
+"POT-Creation-Date: 2026-03-12 14:10+0100\n"
 "PO-Revision-Date: 2026-03-11 16:05+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English\n"
@@ -111,7 +110,11 @@ msgstr "Subject role assignment"
 msgid "Přiřazení rolí k předmětům"
 msgstr "Subject role assignments"
 
-#: .\hw\forms.py:12
+#: .\hw\forms.py:24 .\hw\forms.py:68 .\hw\forms.py:91 .\hw\forms.py:121
+msgid "Přiložit soubory"
+msgstr "Attach files"
+
+#: .\hw\forms.py:27 .\hw\forms.py:63 .\hw\forms.py:88 .\hw\forms.py:118
 #, python-format
 msgid ""
 "Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý "
@@ -120,59 +123,50 @@ msgstr ""
 "You can attach multiple files at once. Maximum of %(number)s files, each up "
 "to %(maxsize)s MB."
 
-#: .\hw\forms.py:20
-msgid "Podporuje"
-msgstr "Supports"
-
-#: .\hw\forms.py:30
-#, fuzzy
-#| msgid "Přiložit soubory"
-msgid "Zvolit soubory"
-msgstr "Attach files"
-
-#: .\hw\forms.py:48
+#: .\hw\forms.py:50
 #, python-format
 msgid "Najednou můžeš nahrát maximálně %(mf)s souborů."
 msgstr "You can upload a maximum of %(mf)s files at once."
 
-#: .\hw\forms.py:54
+#: .\hw\forms.py:56
 #, python-format
 msgid "Soubor %(file)s je příliš velký. Maximum je %(msm)s MB."
 msgstr "File %(file)s is too large. Maximum size is %(msm)s MB."
 
-#: .\hw\forms.py:63 .\hw\forms.py:83 .\hw\forms.py:110
-msgid "Přiložit soubory"
-msgstr "Attach files"
-
-#: .\hw\forms.py:71 .\hw\forms.py:90
+#: .\hw\forms.py:76 .\hw\forms.py:98
 msgid "Nemůžeš odevzdat úkol po termínu odevzdání!"
 msgstr "You cannot submit the assignment after the deadline!"
 
-#: .\hw\forms.py:97
+#: .\hw\forms.py:105
 #, python-format
 msgid "Celkem může být u odevzdání maximálně %(mnf)s souborů."
 msgstr "There can be a maximum of %(mnf)s files per submission."
 
-#: .\hw\forms.py:121
+#: .\hw\forms.py:127 .\hw\forms.py:175 .\hw\forms.py:187
+#, python-brace-format
+msgid "Podporuje <a href='{url}'>Markdown syntaxi</a>."
+msgstr "Supports <a href='{url}'>Markdown syntax</a>."
+
+#: .\hw\forms.py:132
 msgid "Na tomto předmětu nejsi veden jako učitel."
 msgstr "You are not listed as a teacher for this subject."
 
-#: .\hw\forms.py:129
+#: .\hw\forms.py:140
 #, python-format
 msgid "Můžeš přiložit maximálně %(mnf)s souborů."
 msgstr "You can attach a maximum of %(mnf)s files."
 
-#: .\hw\forms.py:152
+#: .\hw\forms.py:163
 #, python-format
 msgid "max score je %(maxscore)s"
 msgstr "max score is %(maxscore)s"
 
-#: .\hw\forms.py:163
+#: .\hw\forms.py:174
 #, python-format
 msgid "Maximální počet bodů je %(mb)s"
 msgstr "Maximum points is %(mb)s"
 
-#: .\hw\forms.py:172
+#: .\hw\forms.py:183
 msgid "Napiš zpětnou vazbu..."
 msgstr "Write feedback..."
 
@@ -408,14 +402,10 @@ msgid "Nemáš zapsané žádné předměty."
 msgstr "You are not enrolled in any subjects."
 
 #: .\templates\base.html:17
-#, fuzzy
-#| msgid "Programovací jazyk"
 msgid "Programovací úkoly"
 msgstr "Programming language"
 
 #: .\templates\base.html:25
-#, fuzzy
-#| msgid "Vytvořit nové zadání"
 msgid "Nové zadání"
 msgstr "Create new assignment"
 
@@ -441,8 +431,6 @@ msgid "Zadané úkoly"
 msgstr "Assigned tasks"
 
 #: .\templates\dashboard.html:13
-#, fuzzy
-#| msgid "Přiřazení úkolu"
 msgid "Přejít na úkoly"
 msgstr "Assignment allocation"
 
@@ -462,8 +450,6 @@ msgid "Akce"
 msgstr "Actions"
 
 #: .\templates\dashboard.html:34
-#, fuzzy
-#| msgid "Zadané úkoly"
 msgid "Zadat nový úkol"
 msgstr "Assigned tasks"
 
@@ -544,14 +530,10 @@ msgid "Přiložené soubory:"
 msgstr "Attached files:"
 
 #: .\templates\homework\hw_create.html:70
-#, fuzzy
-#| msgid "Max skóre:"
 msgid "Maximální skóre:"
 msgstr "Max score:"
 
 #: .\templates\homework\hw_create.html:78
-#, fuzzy
-#| msgid "Zobrazit řešení"
 msgid "Odevzdej řešení"
 msgstr "View solution"
 
@@ -560,8 +542,6 @@ msgid "Po deadline nelze přidávat řešení úkolu..."
 msgstr "You cannot add a solution to the task after the deadline..."
 
 #: .\templates\homework\hw_create.html:89
-#, fuzzy
-#| msgid "Odevzdat úkol"
 msgid "Odevzdat"
 msgstr "Submit"
 
@@ -918,12 +898,12 @@ msgstr "Password changed"
 msgid "Heslo bylo úspěšně změněno"
 msgstr "Password has been successfully changed"
 
-#: .\templates\registration\password_change_form.html:3
-#: .\templates\registration\password_change_form.html:5
+#: .\templates\registration\password_change_form.html:4
+#: .\templates\registration\password_change_form.html:6
 msgid "Změna hesla"
 msgstr "Change password"
 
-#: .\templates\registration\password_change_form.html:8
+#: .\templates\registration\password_change_form.html:9
 msgid "Změnit"
 msgstr "Change"
 
@@ -1017,6 +997,12 @@ msgstr "Detail"
 #: .\templates\student_comments\teacher_list.html:74
 msgid "Žádné komentáře tu nejsou."
 msgstr "There are no comments here."
+
+#~ msgid "Zvolit soubory"
+#~ msgstr "Attach files"
+
+#~ msgid "Podporuje"
+#~ msgstr "Supports"
 
 #, python-format
 #~ msgid ""

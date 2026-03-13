@@ -1,5 +1,4 @@
 from django.contrib import admin
-from hw.models import Subject
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, SubjectType

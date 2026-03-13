@@ -115,12 +115,15 @@
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form|crispy }}
-
+<div class="d-flex gap-3">
   <button type="submit" class="btn btn-primary">
     {% trans "Uložit změny" %}
-  </button>
+  </button><a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}"
+   class="btn btn-outline-secondary">
+  {% trans "Zrušit" %}
+</a></div>
 </form>
-
+<p><strong>{% trans "Přiložené soubory"%}</strong></p>
 {% for f in hw.files.all %}
   <li class="mb-2">
     <a href="{{ f.get_file_path }}" download>{{ f }}</a>
@@ -133,11 +136,6 @@
     </form>
   </li>
 {% endfor %}
-
-<a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}"
-   class="btn btn-outline-secondary">
-  {% trans "Zrušit" %}
-</a>
 
   </div>
 

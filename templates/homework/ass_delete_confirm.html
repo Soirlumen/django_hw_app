@@ -5,7 +5,7 @@
 {% block title %}{% trans "Smazat zadání" %}{% endblock title %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-4" style="max-width: 900px;">
     <div class="card shadow-sm border-danger">
         <div class="card-body">
             <h3 class="card-title text-danger mb-4">
@@ -17,8 +17,8 @@
                     <button type="submit" class="btn btn-danger">
                         {% trans "Ano, smazat" %}
                     </button>
-                    <a href="{% url 'list_active' %}" class="btn btn-secondary">
-                        {% trans "Zpět na seznam zadání" %}
+                    <a href="{% url 'assgn_detail_teacher' assgn.pk  %}" class="btn btn-secondary">
+                        {% trans "Zpět na zadání" %}
                     </a>
                 </div>
             </form>
