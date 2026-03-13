@@ -52,7 +52,11 @@
 </div>
   <div class="card shadow-sm mb-4">
     <div class="card-header">
+      {% if request.user == assignment.teacher %}
+      <strong>{% trans "Řešení úkolu od "%}{{ hw.key.student.first_name }} {{ hw.key.student.surname }}</strong>
+      {% else %}
       <strong>{% trans "Řešení úkolu"%}</strong>
+      {% endif %}
     </div>
     <div class="card-body">
       <textarea
