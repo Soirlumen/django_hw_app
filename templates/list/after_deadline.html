@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load crispy_forms_tags %}
 
 {% block title %}{% trans "Seznam úkolů" %}{% endblock title %}
 
@@ -48,6 +49,11 @@
 </div>
 
 <div class="card-body">
+          <form method="GET">
+     {{filter_t.form|crispy}}
+     <button type="submit" class="btn btn-outline-primary">Submit</button>
+     <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">Reset filtr</a>
+     </form>
 <div class="table-responsive">
 
 <table class="table table-bordered table-hover align-middle">
@@ -63,7 +69,7 @@
 
 <tbody>
 
-{% for a in assignments_teacher %}
+{% for a in filter_t.qs %}
 <tr>
 <td>{{ a.title }}</td>
 <td>{{ a.deadline }}</td>
@@ -104,6 +110,11 @@
 </div>
 
 <div class="card-body">
+          <form method="GET">
+     {{filter_s.form|crispy}}
+     <button type="submit" class="btn btn-outline-primary">Submit</button>
+     <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">Reset filtr</a>
+     </form>
 <div class="table-responsive">
 
 <table class="table table-bordered table-hover align-middle">
@@ -120,7 +131,7 @@
 
 <tbody>
 
-{% for assgn in assignments_student %}
+{% for assgn in filter_s.qs %}
 <tr>
 <td>{{ assgn.title }}</td>
 <td>{{ assgn.deadline }}</td>

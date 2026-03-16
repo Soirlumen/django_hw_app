@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     ## moje appky
     "hw",
     "accounts",
+    "news",
 ]
 
 MIDDLEWARE = [

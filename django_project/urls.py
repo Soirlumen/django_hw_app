@@ -11,6 +11,7 @@ urlpatterns += i18n_patterns(
     path("hw/", include("hw.urls")),
     path("", include("accounts.urls")), 
     path("accounts/", include("django.contrib.auth.urls")), 
+    path("news", include("news.urls")),
 )
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

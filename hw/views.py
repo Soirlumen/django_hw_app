@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
 from .shuffle import get_the_houmwrk
-from .filters import AssignmentFilter
+from .filters import AssignmentTFilter,AssignmentSFilter#,HomeworkCommentsFilter
 from django.utils.translation import gettext as _
 
 @teacher_required
@@ -22,8 +22,11 @@ def hw_teacher_list_before_release_view(request):
     now = timezone.now()
     subjects=request.user.teacher_subjects
     filtered_subjects=Assignment.objects.filter(subject__in=subjects,release__gt=now)
+    assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=filtered_subjects,user=request.user, prefix="teacher")
     context={
-        "filtered_subjects": filtered_subjects
+        "filtered_subjects": filtered_subjects,
+        'filter_t': assignemnt_filter_t,
+    
     }
     return render(request,"list/before_release.html",context)
 
@@ -31,20 +34,24 @@ def hw_teacher_list_before_release_view(request):
 def hw_list_active_view(request):
     assignments_teacher = []
     assignments_student = []
+    assignemnt_filter_s=[]
+    assignemnt_filter_t=[]
     now = timezone.now()
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
         assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
+        assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=assignments_teacher,user=request.user, prefix="teacher")
         
     # student
     if request.user.is_student:
         subjects = request.user.student_subjects
         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
-    f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
+        assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
             "assignments_teacher": assignments_teacher,
             "assignments_student": assignments_student,
-            'filter': f,
+            'filter_t': assignemnt_filter_t,
+            "filter_s":assignemnt_filter_s,
     }
     return render(request,"list/active.html",context)
 
@@ -52,17 +59,23 @@ def hw_list_active_view(request):
 def hw_list_after_deadline_view(request):
     assignments_teacher = []
     assignments_student = []
+    assignemnt_filter_s=[]
+    assignemnt_filter_t=[]
     now = timezone.now()
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
         assignments_teacher = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
+        assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=assignments_teacher,user=request.user, prefix="teacher")
     # student
     if request.user.is_student:
         subjects = request.user.student_subjects
         assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
+        assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
         "assignments_teacher": assignments_teacher,
         "assignments_student": assignments_student,
+        'filter_t': assignemnt_filter_t,
+        "filter_s":assignemnt_filter_s,
             }
     return render(request,"list/after_deadline.html",context)
 
@@ -394,9 +407,11 @@ def teacher_comments_list_view(request):
     comments=HomeworkStudentComment.objects.select_related(
     "hw__key__assignment","reviewer").order_by(
     "hw__key__assignment","reviewer")
+    #comments_filter=HomeworkCommentsFilter(request.GET,queryset=comments)
     pending_count = comments.filter(comment="").count()
     return render(request,"student_comments/teacher_list.html",{
         "comments":comments,
         "pending_count":pending_count,
+        #"cf":comments_filter,
     })
     
