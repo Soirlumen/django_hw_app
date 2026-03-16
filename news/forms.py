@@ -3,10 +3,11 @@ from .models import NewsPost
 from django.utils.translation import gettext_lazy as _
 
 
-class CustomUserCreationForm(forms.ModelForm):
+class CreateEditPost(forms.ModelForm):
     class Meta:
         model = NewsPost
-        fields = ("announcement")
+        fields = ("announcement",)
         help_texts = {
             "announcement": _("Zadejte text svého oznámení")
         }
+    

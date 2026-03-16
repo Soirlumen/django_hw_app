@@ -183,7 +183,7 @@ def hw_create_view(request):
 
             return redirect("assgn_detail_student", pk=assignment.pk)
         else:
-            messages.error(request, "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole.")
+            messages.warning(request, "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole.")
             print(form.errors)
             print(form.non_field_errors())
     else:

@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import CustomUserCreationForm
+from news.models import NewsPost
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -25,4 +26,5 @@ def profile_view(request):
 
 @login_required
 def dashboard_view(request):
-    return render(request, "dashboard.html")
+    three_posts=NewsPost.objects.order_by("-date")[:3]
+    return render(request, "dashboard.html",{"posts":three_posts})
