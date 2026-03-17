@@ -52,7 +52,7 @@
           <form method="GET">
      {{filter_t.form|crispy}}
      <button type="submit" class="btn btn-outline-primary">Submit</button>
-     <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">Reset filtr</a>
+     <a href="{% url 'list_after_deadline' %}" class="btn btn-outline-secondary">Reset filtr</a>
      </form>
 <div class="table-responsive">
 
@@ -113,7 +113,7 @@
           <form method="GET">
      {{filter_s.form|crispy}}
      <button type="submit" class="btn btn-outline-primary">Submit</button>
-     <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">Reset filtr</a>
+     <a href="{% url 'list_after_deadline' %}" class="btn btn-outline-secondary">Reset filtr</a>
      </form>
 <div class="table-responsive">
 
@@ -135,7 +135,7 @@
 <tr>
 <td>{{ assgn.title }}</td>
 <td>{{ assgn.deadline }}</td>
-<td>{{ assgn.subject.name }}</td>
+<td>{{ assgn.subject }}</td>
 <td>{{ assgn.teacher }}</td>
 
 <td>

@@ -9,9 +9,7 @@
     <div class="card shadow-sm border-danger">
         <div class="card-body">
             <h3 class="card-title text-danger mb-4">
-                {% blocktrans trimmed with hw_key=hw.key %}
-                Opravdu chcete smazat hodnocení k úkolu „{{ hw_key }}“?
-                {% endblocktrans %}
+                {% blocktrans trimmed with hw_key=hw.key %}Opravdu chcete smazat hodnocení k úkolu „{{ hw_key }}“?{% endblocktrans %}
             </h3>
 
             <form method="post">

@@ -50,10 +50,7 @@
                         <span class="badge bg-secondary me-2">{% trans "Neodevzdáno" %}</span>
                       {% endif %}
 
-                      {% blocktrans with student_first=comment.hw.key.student.first_name student_last=comment.hw.key.student.surname %}
-                        Komentář k řešení úkolu studenta: {{ student_first }} {{ student_last }}
-                      {% endblocktrans %}
-                    </div>
+                      {% trans "Komentář k řešení úkolu studenta:"%} {{ student_first }} {{ student_last }}
 
                     <a
                       href="{% url 'received_comment_detail' comment.pk %}"

@@ -49,9 +49,7 @@
       </div>
       <div>
         <span class="badge bg-success">
-          {% blocktrans with date=hw.submitted|date:"d.m.Y H:i" %}
-          Odevzdáno: {{ date }}
-          {% endblocktrans %}
+          {% blocktrans with date=hw.submitted|date:"d.m.Y H:i" %}Odevzdáno: {{ date }}{% endblocktrans %}
         </span>
       </div>
     </div>
@@ -104,11 +102,7 @@
         {% if hw.text_evaluation or hw.score %}
           {% if hw.score %}
             <div class="mb-3">
-              <span class="badge bg-secondary">
-                {% blocktrans with score=hw.score max=hw.key.assignment.max_score %}
-                Skóre: {{ score }} / {{ max }}
-                {% endblocktrans %}
-              </span>
+              <span class="badge bg-secondary">{%Skóre:%} {{ score }} / {{ max }}</span>
             </div>
           {% endif %}
 
@@ -123,9 +117,7 @@
             </div>
           {% endif %}
         {% else %}
-          <div class="alert alert-primary mb-0" role="alert">
-            {% trans "Tento úkol zatím není ohodnocený." %}
-          </div>
+          <div class="alert alert-primary mb-0" role="alert">{% trans "Tento úkol zatím není ohodnocený." %}</div>
         {% endif %}
       </div>
     </div>
@@ -135,9 +127,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <strong>{% trans "Komentáře od spolužáků" %}</strong>
           <span class="badge bg-primary">
-            {% blocktrans with count=comments|length %}
-            Celkem: {{ count }}
-            {% endblocktrans %}
+            {% blocktrans with count=comments|length %}Celkem: {{ count }}{% endblocktrans %}
           </span>
         </div>
 
@@ -147,9 +137,7 @@
               <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
                   <strong>
-                    {% blocktrans with num=forloop.counter %}
-                    Komentář #{{ num }}
-                    {% endblocktrans %}
+                    {% blocktrans with num=forloop.counter %}Komentář #{{ num }}{% endblocktrans %}
                   </strong>
                   <div class="text-muted small">
                     {% if c.comment %}

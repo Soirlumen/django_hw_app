@@ -137,10 +137,10 @@ def assignment_create_view(request):
                 obj_f.save()
                 assignment.files.add(obj_f)
 
-            messages.success(request, "Úkol byl úspěšně vytvořen.")
+            messages.success(request, _("Úkol byl úspěšně vytvořen."))
             return redirect("assgn_detail_teacher", pk=assignment.pk)
 
-        messages.warning(request, "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole.")
+        messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
 
     else:
         form = AssignmentForm(user=request.user)
@@ -162,7 +162,7 @@ def hw_create_view(request):
     hw = Homework.objects.filter(key=key).first()
 
     if hw:
-        messages.warning(request, "Úkol už byl odevzdán, nelze ho odeslat znovu.")
+        messages.warning(request, _("Úkol už byl odevzdán, nelze ho odeslat znovu."))
         return redirect(hw.get_assgn_student_url())
 
     if request.method == "POST":
@@ -183,7 +183,7 @@ def hw_create_view(request):
 
             return redirect("assgn_detail_student", pk=assignment.pk)
         else:
-            messages.warning(request, "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole.")
+            messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
             print(form.errors)
             print(form.non_field_errors())
     else:
@@ -254,19 +254,19 @@ def homework_file_remove(request, hw_pk, file_pk):
     hw = get_object_or_404(Homework, pk=hw_pk)
     file_obj = get_object_or_404(CodeFile, pk=file_pk)
     if request.user != hw.key.student:
-        messages.error(request, "Tento soubor nemůžeš odebrat.")
+        messages.error(request, _("Tento soubor nemůžeš odebrat."))
         return redirect(hw.get_assgn_student_url())
     if hw.is_after_deadline:
-        messages.error(request, "Po deadline už nelze soubory odebírat.")
+        messages.error(request, _("Po deadline už nelze soubory odebírat."))
         return redirect(hw.get_assgn_student_url())
     if not hw.files.filter(pk=file_obj.pk).exists():
-        messages.error(request, "Soubor u tohoto odevzdání neexistuje.")
+        messages.error(request, _("Soubor u tohoto odevzdání neexistuje."))
         return redirect(hw.get_assgn_student_url())
 
     hw.files.remove(file_obj)
     delete_file_if_unused(file_obj)
 
-    messages.success(request, "Soubor byl odebrán.")
+    messages.success(request, _("Soubor byl odebrán."))
     return redirect("homework_update", pk=hw.pk)
 
 @own_required(Homework,'key__assignment__teacher')
@@ -307,23 +307,23 @@ def assignment_make_comments_view(request, pk):
 
     form = MakeCommentsForm(request.POST)
     if not form.is_valid():
-        messages.warning(request, "Neplatná hodnota k.")
+        messages.warning(request, _("Neplatná hodnota k."))
         return redirect("assgn_detail_teacher", pk=assignment.pk)
     if assignment.is_comments_generated:
-        messages.warning(request, "Komentáře byly již vygenerovány!")
+        messages.warning(request, _("Komentáře byly již vygenerovány!"))
         return redirect("assgn_detail_teacher", pk=assignment.pk)        
 
     k = form.cleaned_data["k"]
 
     if n < 2:
-        messages.warning(request, "Musí existovat alespoň 2 odevzdané domácí úkoly.")
+        messages.warning(request, _("Musí existovat alespoň 2 odevzdané domácí úkoly."))
         return redirect("assgn_detail_teacher", pk=assignment.pk)
 
     if k > n - 1:
-        messages.error(request, f"k je moc velké. Maximum je {n-1} (odevzdaných je {n}).")
+        messages.error(request, _("k je moc velké. Maximum je %(num1)s (odevzdaných je %(num2)s).")%{"num1":n-1,"num2":n})
         return redirect("assgn_detail_teacher", pk=assignment.pk)
     if assignment.deadline > timezone.now():
-        messages.warning(request, "Nemůžete generovat komentáře před deadline!")
+        messages.warning(request, _("Nemůžete generovat komentáře před deadline!"))
         return redirect("assgn_detail_teacher", pk=assignment.pk)
 
     pairs = get_the_houmwrk(submitted_hws, k)
@@ -339,7 +339,7 @@ def assignment_make_comments_view(request, pk):
     with transaction.atomic():
         HomeworkStudentComment.objects.bulk_create(to_create, ignore_conflicts=True)
 
-    messages.success(request, "Komentáře byly vygenerovány.")
+    messages.success(request, _("Komentáře byly vygenerovány."))
     return redirect("assgn_detail_teacher", pk=assignment.pk)
 
 @student_required
@@ -369,10 +369,10 @@ def student_comment_detail_view(request, pk):
         if form.is_valid():
             form.instance.submitter = timezone.now()
             form.save()
-            messages.success(request, "Komentář uložen.")
+            messages.success(request, _("Komentář uložen."))
             return redirect("student_comment_detail", pk=comment_obj.pk)
         else:
-            messages.error(request, "Formulář obsahuje chyby.")
+            messages.error(request, _("Formulář obsahuje chyby."))
     else:
         form = HomeworkStudentCommentForm(instance=comment_obj)
 
