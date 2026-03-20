@@ -4,6 +4,7 @@ from .forms import (CreateHomeworkForm,
                     AssignmentForm, 
                     EvaluationForm,MakeCommentsForm,
                     HomeworkStudentCommentForm,
+                    AssignemntEdit,
                     )
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -24,7 +25,6 @@ def hw_teacher_list_before_release_view(request):
     filtered_subjects=Assignment.objects.filter(subject__in=subjects,release__gt=now)
     assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=filtered_subjects,user=request.user, prefix="teacher")
     context={
-        "filtered_subjects": filtered_subjects,
         'filter_t': assignemnt_filter_t,
     
     }
@@ -48,8 +48,6 @@ def hw_list_active_view(request):
         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
         assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
-            "assignments_teacher": assignments_teacher,
-            "assignments_student": assignments_student,
             'filter_t': assignemnt_filter_t,
             "filter_s":assignemnt_filter_s,
     }
@@ -70,10 +68,9 @@ def hw_list_after_deadline_view(request):
     if request.user.is_student:
         subjects = request.user.student_subjects
         assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
+        
         assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
-        "assignments_teacher": assignments_teacher,
-        "assignments_student": assignments_student,
         'filter_t': assignemnt_filter_t,
         "filter_s":assignemnt_filter_s,
             }
@@ -90,6 +87,26 @@ def assgn_detail_teacher(request, pk):
     
     return render(request, "homework/teacher_detail.html",context)
 
+@own_required(Assignment,'teacher')
+def assgn_edit_view(request,pk):
+    assignment=get_object_or_404(Assignment,pk=pk)
+    if request.method=="POST":
+        form=AssignemntEdit(request.POST,request.FILES,instance=assignment)
+        if form.is_valid():
+            edit_as=form.save(commit=False)
+            files = form.cleaned_data["filesimput"]
+            for f in files:
+                obj_f=CodeFile(file=f)
+                obj_f.full_clean()
+                obj_f.save()
+                edit_as.files.add(obj_f)
+            return redirect(assignment.get_url())
+    else:
+            form=AssignemntEdit(instance=assignment)
+    context={"form": form, "as": assignment,}
+    return render(request,"homework/as_update.html",context)
+            
+    
 @student_required
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
@@ -196,8 +213,6 @@ def hw_create_view(request):
         "is_after_deadline": is_after_deadline,
     }
     return render(request, "homework/hw_create.html", context)
-
-
 
 # @student_required
 @own_required(Homework,'key__student')

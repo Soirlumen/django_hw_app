@@ -20,7 +20,8 @@ from .views import (
     student_comment_detail_view,
     student_received_comment_detail_view,
     teacher_comments_list_view,
-    homework_file_remove
+    homework_file_remove,
+    assgn_edit_view,
 
 )
 
@@ -31,6 +32,7 @@ urlpatterns = [
     path("list/after_deadline/", hw_list_after_deadline_view, name="list_after_deadline"),
     #path("assignment/<int:pk>/", assgn_detail_view, name="assgn_detail"),
     path("homework/<int:pk>/", hw_detail_view, name="hw_detail"),
+    path("assignment/<int:pk>/editas/",assgn_edit_view,name="assgn_edit"),
     path("homework/createass/", assignment_create_view, name="ass_create"),
     path("homework/submithw/", hw_create_view, name="hw_submit"),
     path("homework/<int:pk>/update/", hw_update_view, name="homework_update"),

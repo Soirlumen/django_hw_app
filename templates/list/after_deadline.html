@@ -40,7 +40,7 @@
 </ul>
 
 {% if user.is_teacher %}
-{% if assignments_teacher %}
+{% if filter_t.qs %}
 
 <div class="card mb-4">
 
@@ -101,7 +101,7 @@
 {% endif %}
 
 {% if user.is_student %}
-{% if assignments_student %}
+{% if filter_s.qs %}
 
 <div class="card mb-4">
 
@@ -110,7 +110,7 @@
 </div>
 
 <div class="card-body">
-          <form method="GET">
+     <form method="GET">
      {{filter_s.form|crispy}}
      <button type="submit" class="btn btn-outline-primary">Submit</button>
      <a href="{% url 'list_after_deadline' %}" class="btn btn-outline-secondary">Reset filtr</a>

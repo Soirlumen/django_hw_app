@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load markdown_extras %}
+{% load i18n %}
+
+{% block title %}{% trans "Upravit úkol" %}{% endblock %}
+
+{% block content %}
+{{ form.media }}
+
+<div class="container mt-4" style="max-width: 900px;">
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} mb-3" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="card shadow-sm">
+
+  <div class="card-header">
+    <strong>
+      {% blocktrans trimmed with title=as %}
+      Upravit úkol: {{ title }}
+      {% endblocktrans %}
+    </strong>
+  </div>
+
+  <div class="card-body">
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form|crispy }}
+<div class="d-flex gap-3">
+  <button type="submit" class="btn btn-primary">
+    {% trans "Uložit změny" %}
+  </button><a href="{% url 'assgn_detail_teacher' as.pk %}"
+   class="btn btn-outline-secondary">
+  {% trans "Zrušit" %}
+</a></div>
+</form>
+<p><strong>{% trans "Přiložené soubory"%}</strong></p>
+{% for f in as.files.all %}
+  <li class="mb-2">
+    <a href="{{ f.get_file_path }}" download>{{ f }}</a>
+
+    <form method="post" action="{% url 'homework_file_remove' as.pk f.pk %}" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-outline-danger">
+        {% trans "Odebrat" %}
+      </button>
+    </form>
+  </li>
+{% endfor %}
+
+  </div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -42,9 +42,13 @@
       <div class="d-flex flex-wrap gap-2">
         <a
           href="{% url 'assignment_delete' assignment.pk %}"
-          class="btn btn-sm btn-danger"
-        >
+          class="btn btn-sm btn-danger">
           {% translate "Smazat zadání" %}
+        </a>
+         <a
+          href="{% url 'assgn_edit' assignment.pk %}"
+          class="btn btn-sm btn-warning">
+          {% translate "Upravit zadání" %}
         </a>
         <a
           href="{% url 'list_active' %}"

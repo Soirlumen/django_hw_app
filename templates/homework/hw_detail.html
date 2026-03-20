@@ -102,7 +102,7 @@
         {% if hw.text_evaluation or hw.score %}
           {% if hw.score %}
             <div class="mb-3">
-              <span class="badge bg-secondary">{%Skóre:%} {{ score }} / {{ max }}</span>
+              <span class="badge bg-secondary">{%trans "Skóre:"%} {{ hw.score }} / {{ max }}</span>
             </div>
           {% endif %}
 
