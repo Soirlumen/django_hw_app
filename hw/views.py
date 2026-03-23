@@ -17,6 +17,7 @@ from django.db import transaction
 from .shuffle import get_the_houmwrk
 from .filters import AssignmentTFilter,AssignmentSFilter#,HomeworkCommentsFilter
 from django.utils.translation import gettext as _
+from django.db.models import Exists, OuterRef
 
 @teacher_required
 def hw_teacher_list_before_release_view(request):
@@ -47,6 +48,15 @@ def hw_list_active_view(request):
         subjects = request.user.student_subjects
         assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
         assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
+        subjects = request.user.student_subjects
+        homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"),key__student=request.user)
+        assignments_student = Assignment.objects.filter(subject__in=subjects,release__lte=now,deadline__gt=now).annotate(is_submitted=Exists(homework_exists))
+        assignemnt_filter_s = AssignmentSFilter(
+            request.GET,
+            queryset=assignments_student,
+            user=request.user,
+            prefix="student"
+        )
     context={
             'filter_t': assignemnt_filter_t,
             "filter_s":assignemnt_filter_s,
@@ -83,7 +93,8 @@ def assgn_detail_teacher(request, pk):
     context={
         "assignment": assignment,
         "homeworks": homeworks,
-        "is_after_deadline":assignment.is_after_deadline}
+        "is_after_deadline":assignment.is_after_deadline,
+        "is_before_release":assignment.is_before_release,}
     
     return render(request, "homework/teacher_detail.html",context)
 

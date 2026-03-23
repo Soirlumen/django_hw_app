@@ -72,6 +72,9 @@ class Assignment(models.Model):
     def is_after_deadline(self)->bool:
         return timezone.now()>self.deadline
     @property
+    def is_before_release(self)->bool:
+        return timezone.now()<self.release
+    @property
     def is_comments_generated(self)->bool:
         return HomeworkStudentComment.objects.filter(hw__key__assignment=self).exists()
     def total_files(self)->int:

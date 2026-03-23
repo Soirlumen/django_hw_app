@@ -65,6 +65,7 @@
 <th>{% trans "Deadline" %}</th>
 <th>{% trans "Předmět" %}</th>
 <th>{% trans "Zobrazit řešení" %}</th>
+
 </tr>
 </thead>
 
@@ -81,6 +82,7 @@
 {% trans "Zobrazit" %}
 </a>
 </td>
+
 
 </tr>
 {% endfor %}
@@ -128,6 +130,7 @@
 <th>{% trans "Předmět" %}</th>
 <th>{% trans "Učitel" %}</th>
 <th>{% trans "Detail úkolu" %}</th>
+<th>{% trans "Stav" %}</th>
 </tr>
 </thead>
 
@@ -146,7 +149,13 @@
 {% trans "Zobrazit" %}
 </a>
 </td>
-
+<td>
+{% if assgn.is_submitted %}
+    <span class="text-success">✅ {% trans "Odevzdáno" %}</span>
+{% else %}
+    <span class="text-danger">❌ {% trans "Neodevzdáno" %}</span>
+{% endif %}
+</td>
 </tr>
 {% endfor %}
 

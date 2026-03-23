@@ -45,11 +45,13 @@
           class="btn btn-sm btn-danger">
           {% translate "Smazat zadání" %}
         </a>
+        {% if is_before_release %}
          <a
           href="{% url 'assgn_edit' assignment.pk %}"
           class="btn btn-sm btn-warning">
           {% translate "Upravit zadání" %}
         </a>
+        {% endif %}
         <a
           href="{% url 'list_active' %}"
           class="btn btn-sm btn-outline-secondary"

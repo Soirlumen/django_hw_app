@@ -52,11 +52,10 @@
   <li class="dropdown-item">
 {% get_available_languages as LANGUAGES %}
     {% get_language_info_list for LANGUAGES as langs %}
-    
-    {% for lang in langs %}
-        <a  href="/{{ lang.code }}{{ request.get_full_path|slice:'3:' }}">{{ lang.code|upper }}</a>
-        {% if not forloop.last %}|{% endif %}
-    {% endfor %}
+{% for lang in langs %}
+    <a href="/{{ lang.code }}{{ request.get_full_path|slice:'3:' }}"><img src="{% static 'flags/' %}{{ lang.code }}.png" width="20" alt="{{ lang.code }}"></a>
+{% if not forloop.last %}|{% endif %}
+{% endfor %}
   </li>
   <li>
     <form action="{% url 'logout' %}" method="post">

@@ -167,7 +167,10 @@ class AssignemntEdit(forms.ModelForm):
     class Meta:
         model=Assignment
         fields=("title","description","release","deadline", "max_score")        
-
+        widgets = {
+            "deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "release": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
 #vyplnění hodnocení od učitele
 class EvaluationForm(forms.ModelForm):
     class Meta:
