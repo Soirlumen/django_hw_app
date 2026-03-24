@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-23 13:16+0100\n"
+"POT-Creation-Date: 2026-03-24 11:29+0100\n"
 "PO-Revision-Date: 2026-03-11 16:05+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English\n"
@@ -87,7 +87,7 @@ msgid "Vyučující"
 msgstr "Teacher"
 
 #: .\accounts\models.py:43 .\hw\models.py:33 .\hw\models.py:55
-#: .\templates\list\active.html:66 .\templates\list\active.html:128
+#: .\templates\list\active.html:66 .\templates\list\active.html:130
 #: .\templates\list\after_deadline.html:65
 #: .\templates\list\after_deadline.html:126
 #: .\templates\list\before_release.html:64
@@ -145,7 +145,7 @@ msgstr "You cannot submit the assignment after the deadline!"
 msgid "Celkem může být u zadání maximálně %(mnf)s souborů."
 msgstr "A total of up to %(mnf)s files can be submitted."
 
-#: .\hw\forms.py:120 .\hw\forms.py:154 .\hw\forms.py:197 .\hw\forms.py:209
+#: .\hw\forms.py:120 .\hw\forms.py:154 .\hw\forms.py:199 .\hw\forms.py:211
 #, python-brace-format
 msgid "Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."
 msgstr "Supports <a href='{url}' target='_blank'>Markdown syntax</a>."
@@ -159,26 +159,26 @@ msgstr "You are not listed as a teacher for this subject."
 msgid "Můžeš přiložit maximálně %(mnf)s souborů."
 msgstr "You can attach up to %(mnf)s files."
 
-#: .\hw\forms.py:162
+#: .\hw\forms.py:164
 #, python-format
 msgid "Celkem může být u odevzdání maximálně %(mnf)s souborů."
 msgstr "A total of up to %(mnf)s files can be submitted."
 
-#: .\hw\forms.py:165
+#: .\hw\forms.py:167
 msgid "Nelze editovat zadání, jestliže je již aktivní."
 msgstr ""
 
-#: .\hw\forms.py:185
+#: .\hw\forms.py:187
 #, python-format
 msgid "max score je %(maxscore)s"
 msgstr "Maximum score: %(maxscore)s"
 
-#: .\hw\forms.py:196
+#: .\hw\forms.py:198
 #, python-format
 msgid "Maximální počet bodů je %(mb)s"
 msgstr "The maximum number of points is %(mb)s"
 
-#: .\hw\forms.py:205
+#: .\hw\forms.py:207
 msgid "Napiš zpětnou vazbu..."
 msgstr "Write feedback..."
 
@@ -318,6 +318,7 @@ msgid "Přiložené soubory"
 msgstr "Attached files"
 
 #: .\hw\models.py:125 .\templates\homework\teacher_detail.html:151
+#: .\templates\list\active.html:154
 #: .\templates\student_comments\teacher_list.html:48
 msgid "Odevzdáno"
 msgstr "Submitted"
@@ -384,74 +385,81 @@ msgstr "Student comment"
 msgid "Studentské komentáře"
 msgstr "Student comments"
 
-#: .\hw\views.py:158
+#: .\hw\views.py:115
+#, fuzzy
+#| msgid "Heslo bylo úspěšně změněno"
+msgid "Úkol byl úspěšně upraven."
+msgstr "Your password has been successfully changed."
+
+#: .\hw\views.py:117 .\hw\views.py:174 .\hw\views.py:217 .\news\views.py:32
+#: .\news\views.py:53
+msgid "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."
+msgstr ""
+
+#: .\hw\views.py:171
 #, fuzzy
 #| msgid "Heslo bylo úspěšně změněno"
 msgid "Úkol byl úspěšně vytvořen."
 msgstr "Your password has been successfully changed."
 
-#: .\hw\views.py:161 .\hw\views.py:204 .\news\views.py:32 .\news\views.py:53
-msgid "Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."
-msgstr ""
-
-#: .\hw\views.py:183
+#: .\hw\views.py:196
 msgid "Úkol už byl odevzdán, nelze ho odeslat znovu."
 msgstr ""
 
-#: .\hw\views.py:273
+#: .\hw\views.py:286
 msgid "Tento soubor nemůžeš odebrat."
 msgstr ""
 
-#: .\hw\views.py:276
+#: .\hw\views.py:289
 msgid "Po deadline už nelze soubory odebírat."
 msgstr ""
 
-#: .\hw\views.py:279
+#: .\hw\views.py:292
 msgid "Soubor u tohoto odevzdání neexistuje."
 msgstr ""
 
-#: .\hw\views.py:285
+#: .\hw\views.py:298
 msgid "Soubor byl odebrán."
 msgstr ""
 
-#: .\hw\views.py:326
+#: .\hw\views.py:339
 msgid "Neplatná hodnota k."
 msgstr ""
 
-#: .\hw\views.py:329
+#: .\hw\views.py:342
 #, fuzzy
 #| msgid "Komentáře již byly vygenerovány"
 msgid "Komentáře byly již vygenerovány!"
 msgstr "Comments have already been generated"
 
-#: .\hw\views.py:335
+#: .\hw\views.py:348
 msgid "Musí existovat alespoň 2 odevzdané domácí úkoly."
 msgstr ""
 
-#: .\hw\views.py:339
+#: .\hw\views.py:352
 #, python-format
 msgid "k je moc velké. Maximum je %(num1)s (odevzdaných je %(num2)s)."
 msgstr ""
 
-#: .\hw\views.py:342
+#: .\hw\views.py:355
 #, fuzzy
 #| msgid "Nelze vygenerovat komentáře před termínem."
 msgid "Nemůžete generovat komentáře před deadline!"
 msgstr "Cannot generate comments before the deadline."
 
-#: .\hw\views.py:358
+#: .\hw\views.py:371
 #, fuzzy
 #| msgid "Komentáře již byly vygenerovány"
 msgid "Komentáře byly vygenerovány."
 msgstr "Comments have already been generated"
 
-#: .\hw\views.py:388
+#: .\hw\views.py:401
 #, fuzzy
 #| msgid "Komentář"
 msgid "Komentář uložen."
 msgstr "Comment was saved."
 
-#: .\hw\views.py:391
+#: .\hw\views.py:404
 msgid "Formulář obsahuje chyby."
 msgstr "The form contains errors."
 
@@ -689,14 +697,14 @@ msgid "Popis:"
 msgstr "Description:"
 
 #: .\templates\homework\hw_create.html:56
-#: .\templates\homework\hw_detail.html:66
+#: .\templates\homework\hw_detail.html:65
 #: .\templates\homework\hw_evaluation_update.html:57
 #: .\templates\homework\hw_update.html:82
 #: .\templates\homework\student_detail.html:66
-#: .\templates\homework\student_detail.html:128
+#: .\templates\homework\student_detail.html:131
 #: .\templates\homework\teacher_detail.html:88
-#: .\templates\student_comments\detail.html:38
-#: .\templates\student_comments\received_detail.html:68
+#: .\templates\student_comments\detail.html:42
+#: .\templates\student_comments\received_detail.html:69
 msgid "Přiložené soubory:"
 msgstr "Attached files:"
 
@@ -737,76 +745,76 @@ msgstr "Submitted: %(date)s"
 msgid "Řešení:"
 msgstr "Solution:"
 
-#: .\templates\homework\hw_detail.html:83
+#: .\templates\homework\hw_detail.html:82
 #: .\templates\homework\hw_evaluation_update.html:73
 msgid "Hodnocení"
 msgstr "Assessment"
 
-#: .\templates\homework\hw_detail.html:88
+#: .\templates\homework\hw_detail.html:87
 #: .\templates\homework\hw_evaluation_update.html:78
 msgid "Upravit hodnocení"
 msgstr "Edit evaluation"
 
-#: .\templates\homework\hw_detail.html:91
+#: .\templates\homework\hw_detail.html:90
 #: .\templates\homework\hw_evaluation_delete_confirm.html:5
 #: .\templates\homework\hw_evaluation_update.html:81
 msgid "Smazat hodnocení"
 msgstr "Delete evaluation"
 
-#: .\templates\homework\hw_detail.html:96
+#: .\templates\homework\hw_detail.html:95
 #: .\templates\homework\hw_evaluation_update.html:86
 msgid "Ohodnotit úkol"
 msgstr "Grade homework"
 
-#: .\templates\homework\hw_detail.html:105
+#: .\templates\homework\hw_detail.html:104
 #, fuzzy
 #| msgid "Max skóre:"
 msgid "Skóre:"
 msgstr "Max score:"
 
-#: .\templates\homework\hw_detail.html:110
+#: .\templates\homework\hw_detail.html:109
 msgid "Slovní hodnocení:"
 msgstr "Verbal assessment"
 
-#: .\templates\homework\hw_detail.html:116
+#: .\templates\homework\hw_detail.html:115
 msgid "Slovní hodnocení zatím není vyplněné."
 msgstr "No comment has been written yet."
 
-#: .\templates\homework\hw_detail.html:120
+#: .\templates\homework\hw_detail.html:119
 msgid "Tento úkol zatím není ohodnocený."
 msgstr "This homework hasn't been graded yet."
 
-#: .\templates\homework\hw_detail.html:128
-#: .\templates\homework\student_detail.html:154
+#: .\templates\homework\hw_detail.html:127
+#: .\templates\homework\student_detail.html:157
 msgid "Komentáře od spolužáků"
 msgstr "Comments from peers"
 
-#: .\templates\homework\hw_detail.html:130
-#: .\templates\homework\student_detail.html:156
+#: .\templates\homework\hw_detail.html:129
+#: .\templates\homework\student_detail.html:159
 #: .\templates\homework\teacher_detail.html:138
 #, python-format
 msgid "Celkem: %(count)s"
 msgstr "Total: %(count)s"
 
-#: .\templates\homework\hw_detail.html:140
-#: .\templates\homework\student_detail.html:164
+#: .\templates\homework\hw_detail.html:139
+#: .\templates\homework\student_detail.html:167
 #, python-format
 msgid "Komentář #%(num)s"
 msgstr "Comment #%(num)s"
 
-#: .\templates\homework\hw_detail.html:144
-#: .\templates\homework\student_detail.html:167
+#: .\templates\homework\hw_detail.html:143
+#: .\templates\homework\student_detail.html:170
 msgid "Vyplněno"
 msgstr "Completed"
 
-#: .\templates\homework\hw_detail.html:146
-#: .\templates\homework\student_detail.html:169
+#: .\templates\homework\hw_detail.html:145
+#: .\templates\homework\student_detail.html:172
 msgid "Čeká na vyplnění"
 msgstr "Waiting to be fill out"
 
-#: .\templates\homework\hw_detail.html:158
-#: .\templates\homework\student_detail.html:181 .\templates\list\active.html:81
-#: .\templates\list\active.html:146 .\templates\list\after_deadline.html:80
+#: .\templates\homework\hw_detail.html:157
+#: .\templates\homework\student_detail.html:184 .\templates\list\active.html:82
+#: .\templates\list\active.html:149 .\templates\list\after_deadline.html:80
 #: .\templates\list\after_deadline.html:143
 #: .\templates\list\before_release.html:80
 msgid "Zobrazit"
@@ -829,7 +837,7 @@ msgstr "Edit assignment evaluation"
 
 #: .\templates\homework\hw_evaluation_update.html:30
 #: .\templates\homework\student_detail.html:90
-#: .\templates\homework\student_detail.html:193
+#: .\templates\homework\student_detail.html:196
 #: .\templates\homework\teacher_detail.html:59
 #: .\templates\student_comments\detail.html:28
 #: .\templates\student_comments\received_detail.html:39
@@ -894,7 +902,7 @@ msgstr "Your submitted assignment"
 msgid "Skóre: %(score)s / %(max_score)s"
 msgstr " Score: %(score)s / %(max_score)s"
 
-#: .\templates\homework\student_detail.html:141
+#: .\templates\homework\student_detail.html:144
 msgid "Hodnocení od učitele"
 msgstr "Teacher's feedback"
 
@@ -972,7 +980,7 @@ msgstr "Active assignments"
 msgid "Po termínu"
 msgstr "Past deadline"
 
-#: .\templates\list\active.html:64 .\templates\list\active.html:126
+#: .\templates\list\active.html:64 .\templates\list\active.html:128
 #: .\templates\list\after_deadline.html:63
 #: .\templates\list\after_deadline.html:124
 #: .\templates\list\before_release.html:62
@@ -984,31 +992,40 @@ msgstr "Title"
 msgid "Deadline"
 msgstr "Deadline"
 
-#: .\templates\list\active.html:99 .\templates\list\after_deadline.html:97
+#: .\templates\list\active.html:101 .\templates\list\after_deadline.html:97
 msgid "Žádná vytvořená zadání..."
 msgstr "No assignments created yet..."
 
-#: .\templates\list\active.html:111 .\templates\list\after_deadline.html:109
+#: .\templates\list\active.html:113 .\templates\list\after_deadline.html:109
 msgid "Zadané úkoly"
 msgstr "Assigned assignments"
 
-#: .\templates\list\active.html:127 .\templates\list\after_deadline.html:125
+#: .\templates\list\active.html:129 .\templates\list\after_deadline.html:125
 msgid "Termín"
 msgstr "Deadline"
 
-#: .\templates\list\active.html:129 .\templates\list\after_deadline.html:127
+#: .\templates\list\active.html:131 .\templates\list\after_deadline.html:127
 msgid "Učitel"
 msgstr "Teacher"
 
-#: .\templates\list\active.html:130 .\templates\list\after_deadline.html:128
+#: .\templates\list\active.html:132 .\templates\list\after_deadline.html:128
 msgid "Detail úkolu"
 msgstr "Assignment details"
 
-#: .\templates\list\active.html:164 .\templates\list\after_deadline.html:160
+#: .\templates\list\active.html:133
+msgid "Stav"
+msgstr ""
+
+#: .\templates\list\active.html:156
+#: .\templates\student_comments\teacher_list.html:50
+msgid "Neodevzdáno"
+msgstr "Not submitted"
+
+#: .\templates\list\active.html:173 .\templates\list\after_deadline.html:160
 msgid "Žádné zadané úkoly"
 msgstr "No assigned assignments"
 
-#: .\templates\list\active.html:173 .\templates\list\after_deadline.html:169
+#: .\templates\list\active.html:182 .\templates\list\after_deadline.html:169
 msgid "Buuu... nejsi přihlášen :<"
 msgstr "Boo... you're not logged in :<"
 
@@ -1070,11 +1087,11 @@ msgstr "deadline"
 msgid "Řešení (anonymně)"
 msgstr "Solution (anonymous)"
 
-#: .\templates\student_comments\detail.html:52
+#: .\templates\student_comments\detail.html:56
 msgid "Tvůj komentář"
 msgstr "Your comment"
 
-#: .\templates\student_comments\detail.html:58
+#: .\templates\student_comments\detail.html:62
 msgid "Uložit komentář"
 msgstr "Save comment"
 
@@ -1094,11 +1111,11 @@ msgstr "Comment from peer (anonymous)"
 msgid "Řešení úkolu od "
 msgstr "Homework solution by "
 
-#: .\templates\student_comments\received_detail.html:83
+#: .\templates\student_comments\received_detail.html:84
 msgid "Text komentáře"
 msgstr "Comment text"
 
-#: .\templates\student_comments\received_detail.html:90
+#: .\templates\student_comments\received_detail.html:91
 msgid "Komentář zatím nebyl vyplněn."
 msgstr "No comment has been written yet."
 
@@ -1122,10 +1139,6 @@ msgstr "⏳ Pending"
 #: .\templates\student_comments\student_list.html:56
 msgid "Nemáš přidělené žádné komentáře."
 msgstr "You have no assigned comments."
-
-#: .\templates\student_comments\teacher_list.html:50
-msgid "Neodevzdáno"
-msgstr "Not submitted"
 
 #: .\templates\student_comments\teacher_list.html:53
 msgid "Komentář k řešení úkolu studenta:"
