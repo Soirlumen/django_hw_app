@@ -122,8 +122,11 @@
           {% endif %}
         </div>
         <div class="card-body">
+          {% if submitted_homework.programming_language == "markdown" %}
+           {{ submitted_homework.engrossment|markdown|safe }}
+          {% else %}
           <textarea id="hw-code-viewer" data-code-language="{{ submitted_homework.programming_language|default:'python' }}">{{ submitted_homework.engrossment }}</textarea>
-
+          {% endif %}
           {% if submitted_homework.files.exists %}
             <div class="mb-2"><strong>{% translate "Přiložené soubory:" %}</strong></div>
             <ul>
@@ -201,6 +204,7 @@
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
 <script src="{% static 'hw/js/codemirror-readonly.js' %}"></script>
 {% endblock %}

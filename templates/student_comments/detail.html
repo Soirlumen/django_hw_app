@@ -32,7 +32,11 @@
   <div class="card shadow-sm mb-4">
     <div class="card-header"><strong>{% trans "Řešení (anonymně)"%}</strong></div>
     <div class="card-body">
+       {% if hw.programming_language == "markdown" %}
+           {{ hw.engrossment|markdown|safe }}
+          {% else %}
       <textarea id="hw-code-viewer" data-code-language="{{ hw.programming_language|default:'python' }}">{{ hw.engrossment }}</textarea>
+      {% endif %}
     </div>
      {% if hw.files.exists %}
         <div class="mt-3 mb-2"><strong>{% trans "Přiložené soubory:" %}</strong></div>

@@ -106,12 +106,15 @@ def assgn_edit_view(request,pk):
         if form.is_valid():
             edit_as=form.save(commit=False)
             files = form.cleaned_data["filesimput"]
+            edit_as.save()
             for f in files:
                 obj_f=CodeFile(file=f)
                 obj_f.full_clean()
                 obj_f.save()
                 edit_as.files.add(obj_f)
+                messages.success(request, _("Úkol byl úspěšně upraven."))
             return redirect(assignment.get_url())
+        messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
     else:
             form=AssignemntEdit(instance=assignment)
     context={"form": form, "as": assignment,}
