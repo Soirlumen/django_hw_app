@@ -46,7 +46,7 @@
   <li class="mb-2">
     <a href="{{ f.get_file_path }}" download>{{ f }}</a>
 
-    <form method="post" action="{% url 'homework_file_remove' as.pk f.pk %}" class="d-inline">
+    <form method="post" action="{% url 'assignenmt_file_remove' as.pk f.pk %}" class="d-inline">
       {% csrf_token %}
       <button type="submit" class="btn btn-sm btn-outline-danger">
         {% trans "Odebrat" %}

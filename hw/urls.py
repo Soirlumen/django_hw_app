@@ -22,7 +22,7 @@ from .views import (
     teacher_comments_list_view,
     homework_file_remove,
     assgn_edit_view,
-
+    assignenmt_file_remove,
 )
 
 urlpatterns = [
@@ -48,4 +48,6 @@ urlpatterns = [
     path("received-comment/<int:pk>/", student_received_comment_detail_view, name="received_comment_detail"),
     path("students-comments/",teacher_comments_list_view,name="teacher_comment_list"),
     path("homework/<int:hw_pk>/file/<int:file_pk>/remove/", homework_file_remove, name="homework_file_remove"),
+    path("assignment/<int:pk>/file/<int:file_pk>/remove/", assignenmt_file_remove, name="assignenmt_file_remove"),
+    
 ]

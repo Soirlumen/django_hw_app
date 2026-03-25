@@ -306,6 +306,28 @@ def homework_file_remove(request, hw_pk, file_pk):
     messages.success(request, _("Soubor byl odebrán."))
     return redirect("homework_update", pk=hw.pk)
 
+@login_required
+@require_POST
+def assignenmt_file_remove(request, pk, file_pk):
+    asgn = get_object_or_404(Assignment, pk=pk)
+    file_obj = get_object_or_404(CodeFile, pk=file_pk)
+    if request.user != asgn.teacher:
+        messages.error(request, _("Tento soubor nemůžeš odebrat."))
+        return redirect(asgn.get_url())
+    if not asgn.is_before_release:
+        messages.error(request, _("Z aktivních zadání už nelze soubory odebírat."))
+        return redirect(asgn.get_url())
+    if not asgn.files.filter(pk=file_obj.pk).exists():
+        messages.error(request, _("Soubor u tohoto zadání neexistuje."))
+        return redirect(asgn.get_url())
+
+    asgn.files.remove(file_obj)
+    delete_file_if_unused(file_obj)
+
+    messages.success(request, _("Soubor byl odebrán."))
+    return redirect("assgn_edit", pk=asgn.pk)
+
+
 @own_required(Homework,'key__assignment__teacher')
 def edit_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
