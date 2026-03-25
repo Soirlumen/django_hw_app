@@ -151,9 +151,7 @@ class AssignemntEdit(forms.ModelForm):
 } ,required=False, label=_("Přiložit soubory"))
     def __init__(self, *args, **kwargs):
         super(AssignemntEdit, self).__init__(*args, **kwargs)
-        self.fields["description"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)  
-        self.fields["release"].input_formats = ("%Y-%m-%dT%H:%M",)
-        self.fields["deadline"].input_formats = ("%Y-%m-%dT%H:%M",)      
+        self.fields["description"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)        
     def clean(self):
         cleaned_data = super().clean()
         new_files = cleaned_data.get("filesimput", [])
@@ -168,11 +166,12 @@ class AssignemntEdit(forms.ModelForm):
         return cleaned_data
     class Meta:
         model=Assignment
-        fields=("title","description","release","deadline", "max_score")        
+        fields=("title","description","release","deadline", "max_score")
         widgets = {
-            "deadline": forms.DateTimeInput(attrs={"type": "datetime-local"},format="%Y-%m-%dT%H:%M"),
-            "release": forms.DateTimeInput(attrs={"type": "datetime-local"},format="%Y-%m-%dT%H:%M"),
+            "deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "release": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
+
 #vyplnění hodnocení od učitele
 class EvaluationForm(forms.ModelForm):
     class Meta:

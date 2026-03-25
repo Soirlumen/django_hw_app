@@ -7,7 +7,7 @@ from django.db.models import UniqueConstraint
 from django.conf import settings
 import os
 from django.utils.translation import gettext_lazy as _
-
+from django.utils.text import slugify
 
 YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
@@ -25,6 +25,15 @@ def validate_file_size(value):
     _("Maximální velikost jednoho souboru je %(maxsize)s MB.")% {"maxsize": f"{settings.MAX_UPLOAD_FILE_SIZE_MB:.0f}"})
 
 
+def codefile_upload(instance, filename):
+    user = getattr(instance, "_upload_user", None)
+    assignment = getattr(instance, "_upload_assignment", None)
+
+    username = slugify(user.username) if user else "unknown-user"
+    assignment_name = slugify(assignment.title) if assignment else "unknown-assignment"
+
+    return os.path.join(username, assignment_name, filename)
+
 class Subject(models.Model):
     year = models.IntegerField(
         choices=YEAR_CHOICES, default=datetime.datetime.now().year,verbose_name=_("Rok"),help_text=_("Rok vyučovaného předmětu."),)
@@ -36,7 +45,10 @@ class Subject(models.Model):
         return str(self.name).upper()+"-"+ str(self.year)
 
 class CodeFile(models.Model):
-    file=models.FileField(upload_to="uploads/",validators=[validate_file_size],verbose_name=_("Soubor"))
+    file = models.FileField(
+        upload_to=codefile_upload,
+        validators=[validate_file_size],
+        verbose_name=_("Soubor"),)
     class Meta:
         verbose_name = _("Soubor")
         verbose_name_plural = _("Soubory")

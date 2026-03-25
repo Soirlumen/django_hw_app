@@ -108,7 +108,9 @@ def assgn_edit_view(request,pk):
             files = form.cleaned_data["filesimput"]
             edit_as.save()
             for f in files:
-                obj_f=CodeFile(file=f)
+                obj_f = CodeFile(file=f)
+                obj_f._upload_user = request.user
+                obj_f._upload_assignment = assignment
                 obj_f.full_clean()
                 obj_f.save()
                 edit_as.files.add(obj_f)
@@ -164,6 +166,8 @@ def assignment_create_view(request):
             files = form.cleaned_data.get("filesimput", [])
             for f in files:
                 obj_f = CodeFile(file=f)
+                obj_f._upload_user = request.user
+                obj_f._upload_assignment = assignment
                 obj_f.full_clean()
                 obj_f.save()
                 assignment.files.add(obj_f)
@@ -208,6 +212,8 @@ def hw_create_view(request):
             files = form.cleaned_data.get("filesimput", [])
             for f in files:
                 obj_f = CodeFile(file=f)
+                obj_f._upload_user = request.user
+                obj_f._upload_assignment = assignment
                 obj_f.full_clean()
                 obj_f.save()
                 hwform.files.add(obj_f)
@@ -240,7 +246,9 @@ def hw_update_view(request, pk):
             edit_hw.save()
             files = form.cleaned_data["filesimput"]
             for f in files:
-                obj_f=CodeFile(file=f)
+                obj_f = CodeFile(file=f)
+                obj_f._upload_user = request.user
+                obj_f._upload_assignment = hw.key.assignment
                 obj_f.full_clean()
                 obj_f.save()
                 edit_hw.files.add(obj_f)
