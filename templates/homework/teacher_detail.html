@@ -56,12 +56,8 @@
           {% translate "Upravit zadání" %}
         </a>
         {% endif %}
-        <a
-          href="{% url 'list_active' %}"
-          class="btn btn-sm btn-outline-secondary"
-        >
-          {% translate "Zpět na seznam" %}
-        </a>
+        <a href="{% url 'list_active' %}" class="btn btn-sm btn-outline-secondary">
+          {% translate "Zpět na seznam" %}</a>
       </div>
     </div>
 
@@ -195,5 +191,8 @@
     {% endif %}
   </div>
 {% endif %}
+</div>
+<a href="{% url 'list_active' %}" class="btn btn-sm btn-outline-secondary">
+          {% translate "Zpět na seznam" %}</a>
 </div>
 {% endblock content %}
