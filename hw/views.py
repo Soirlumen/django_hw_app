@@ -46,17 +46,9 @@ def hw_list_active_view(request):
     # student
     if request.user.is_student:
         subjects = request.user.student_subjects
-        assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
-        assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
-        subjects = request.user.student_subjects
         homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"),key__student=request.user)
         assignments_student = Assignment.objects.filter(subject__in=subjects,release__lte=now,deadline__gt=now).annotate(is_submitted=Exists(homework_exists))
-        assignemnt_filter_s = AssignmentSFilter(
-            request.GET,
-            queryset=assignments_student,
-            user=request.user,
-            prefix="student"
-        )
+        assignemnt_filter_s = AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
             'filter_t': assignemnt_filter_t,
             "filter_s":assignemnt_filter_s,
@@ -77,8 +69,8 @@ def hw_list_after_deadline_view(request):
     # student
     if request.user.is_student:
         subjects = request.user.student_subjects
-        assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
-        
+        homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"),key__student=request.user)
+        assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now).annotate(is_submitted=Exists(homework_exists))
         assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
         'filter_t': assignemnt_filter_t,

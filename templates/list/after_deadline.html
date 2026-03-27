@@ -126,9 +126,9 @@
 <th>{% trans "Předmět" %}</th>
 <th>{% trans "Učitel" %}</th>
 <th>{% trans "Detail úkolu" %}</th>
+<th>{% trans "Stav" %}</th>
 </tr>
 </thead>
-
 <tbody>
 
 {% for assgn in filter_s.qs %}
@@ -137,11 +137,17 @@
 <td>{{ assgn.deadline }}</td>
 <td>{{ assgn.subject }}</td>
 <td>{{ assgn.teacher }}</td>
-
 <td>
 <a href="{% url 'assgn_detail_student' pk=assgn.pk %}" class="btn btn-sm btn-outline-primary">
 {% trans "Zobrazit" %}
 </a>
+</td>
+<td>
+{% if assgn.is_submitted %}
+    <span class="text-success">✅ {% trans "Odevzdáno" %}</span>
+{% else %}
+    <span class="text-danger">❌ {% trans "Neodevzdáno" %}</span>
+{% endif %}
 </td>
 </tr>
 {% endfor %}
