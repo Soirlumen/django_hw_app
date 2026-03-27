@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="max-width: 1000px;">
+<div class="container mt-4" style="max-width: 900px;">
   {% if messages %}
     {% for message in messages %}
       <div class="alert alert-{{ message.tags }} mb-3" role="alert">
@@ -101,7 +101,7 @@
         {% if hw.text_evaluation or hw.score %}
           {% if hw.score %}
             <div class="mb-3">
-              <span class="badge bg-secondary">{%trans "Skóre:"%} {{ hw.score }} / {{ max }}</span>
+              <span class="badge bg-secondary">{%trans "Skóre:"%} {{ hw.score }} / {{ hw.key.assignment.max_score }}</span>
             </div>
           {% endif %}
 

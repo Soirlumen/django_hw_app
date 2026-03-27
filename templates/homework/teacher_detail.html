@@ -23,7 +23,11 @@
     <div class="text-end">
       <div class="mb-2">
         <span class="badge bg-light text-dark border">
-          {% blocktranslate with release=assignment.release %}Zveřejněno: {{release }}{% endblocktranslate %}
+          {% if is_before_release %}
+          {% trans "Bude zveřejněno:" %} {{assignment.release}}
+          {% else %}
+          {% trans "Zveřejněno:" %} {{assignment.release}}
+          {% endif %}
         </span>
       </div>
       <div>
@@ -69,7 +73,11 @@
         <strong>{% translate "Učitel:" %}</strong> {{ assignment.teacher }}
       </div>
       <div class="mb-2">
+        {% if is_before_release %}
+        <strong>{% translate "Bude zveřejněno:" %}</strong> {{ assignment.release }}
+        {% else %}
         <strong>{% translate "Zveřejněno:" %}</strong> {{ assignment.release }}
+        {% endif %}
       </div>
       <div class="mb-2">
         <strong>{% translate "Termín odevzdání:" %}</strong> {{assignment.deadline }}
@@ -99,6 +107,8 @@
       {% endif %}
     </div>
   </div>
+{%if is_before_release %}
+{% else %}
 <div class="card shadow-sm mb-4">
   <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
     <strong>{% translate "Odevzdané úkoly" %}</strong>
@@ -184,5 +194,6 @@
       </div>
     {% endif %}
   </div>
+{% endif %}
 </div>
 {% endblock content %}

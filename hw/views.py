@@ -379,7 +379,7 @@ def assignment_make_comments_view(request, pk):
         return redirect("assgn_detail_teacher", pk=assignment.pk)
 
     if k > n - 1:
-        messages.error(request, _("k je moc velké. Maximum je %(num1)s (odevzdaných je %(num2)s).")%{"num1":n-1,"num2":n})
+        messages.warning(request, _("k je moc velké. Maximum je %(num1)s (odevzdaných je %(num2)s).")%{"num1":n-1,"num2":n})
         return redirect("assgn_detail_teacher", pk=assignment.pk)
     if assignment.deadline > timezone.now():
         messages.warning(request, _("Nemůžete generovat komentáře před deadline!"))
