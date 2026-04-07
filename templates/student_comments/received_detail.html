@@ -80,8 +80,23 @@
   </div>
 
   <div class="card shadow-sm mb-4">
-    <div class="card-header">
-      <strong>{% trans "Text komentáře"%}</strong>
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+    <strong>
+      {% trans "Text komentáře od" %}
+      {% if request.user == assignment.teacher %}
+        {{ comment_obj.reviewer }}
+      {% endif %}
+    </strong>
+  </div>
+
+  {% if comment_obj.comment %}
+    <div>
+      <span class="badge bg-secondary">
+        {{ comment_obj.submitter }}
+      </span>
+    </div>
+  {% endif %}
     </div>
     <div class="card-body">
       <div class="border rounded p-3 bg-white">

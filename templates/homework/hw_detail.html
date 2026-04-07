@@ -136,11 +136,15 @@
               <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
                   <strong>
-                    {% blocktrans with num=forloop.counter %}Komentář #{{ num }}{% endblocktrans %}
+                    {% if request.user == assignment.teacher %}
+                    {% trans "Komentář od" %} {{c.reviewer}}
+                    {% else %}
+                    {% blocktrans with num=forloop.counter %}Komentář #{{ num }} | {% endblocktrans %}
+                    {% endif %}
                   </strong>
                   <div class="text-muted small">
                     {% if c.comment %}
-                      {% trans "Vyplněno" %}
+                      {% trans "Vyplněno" %} {{c.submitter}}
                     {% else %}
                       {% trans "Čeká na vyplnění" %}
                     {% endif %}

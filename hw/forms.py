@@ -3,7 +3,6 @@ from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
-from django.utils.functional import lazy
 from .widgets import CodeMirrorWidget
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -111,6 +110,12 @@ class AssignmentForm(forms.ModelForm):
     filesimput= MultipleFileField(help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
     "number": settings.MAX_UPLOAD_FILES_NUMBER,
     "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,} ,required=False, label=_("Přiložit soubory"))
+    release = forms.DateTimeField(
+        input_formats=["%Y-%m-%dT%H:%M"],
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"},format="%Y-%m-%dT%H:%M"),)
+    deadline = forms.DateTimeField(
+        input_formats=["%Y-%m-%dT%H:%M"],
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"},format="%Y-%m-%dT%H:%M"),)
     
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -139,16 +144,18 @@ class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
         fields = ("title", "subject", "description", "release", "deadline", "max_score")
-        widgets = {
-            "deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "release": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-        }
         
 class AssignemntEdit(forms.ModelForm):
     filesimput= MultipleFileField(help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
     "number": settings.MAX_UPLOAD_FILES_NUMBER,
     "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
 } ,required=False, label=_("Přiložit soubory"))
+    release = forms.DateTimeField(
+        input_formats=["%Y-%m-%dT%H:%M"],
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"},format="%Y-%m-%dT%H:%M"),)
+    deadline = forms.DateTimeField(
+        input_formats=["%Y-%m-%dT%H:%M"],
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"},format="%Y-%m-%dT%H:%M"),)
     def __init__(self, *args, **kwargs):
         super(AssignemntEdit, self).__init__(*args, **kwargs)
         self.fields["description"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)        
@@ -167,10 +174,6 @@ class AssignemntEdit(forms.ModelForm):
     class Meta:
         model=Assignment
         fields=("title","description","release","deadline", "max_score")
-        widgets = {
-            "deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "release": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-        }
 
 #vyplnění hodnocení od učitele
 class EvaluationForm(forms.ModelForm):

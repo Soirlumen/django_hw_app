@@ -165,6 +165,7 @@ class HomeworkStudentComment(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        self.submitter = timezone.now()
         return super().save(*args, **kwargs)
 
     class Meta:
