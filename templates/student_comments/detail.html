@@ -19,15 +19,24 @@
     {% endfor %}
   {% endif %}
 
-  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-    <div>
-      <h2 class="mb-0">{{ assignment.title }}</h2>
-      <div class="text-muted">{% trans "Anonymní řešení spolužáka"%} • {% trans "termín"%} {{ assignment.deadline|date:"d.m.Y H:i" }}</div>
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+  <div>
+    <h2 class="mb-0">{{ assignment.title }}</h2>
+    <div class="text-muted">
+      {% trans "Anonymní řešení spolužáka"%} • 
+      {% trans "termín"%} {{ assignment.deadline|date:"d.m.Y H:i" }}
     </div>
+  </div>
+  <div class="d-flex gap-2">
     <a href="{% url 'student_comment_list' %}" class="btn btn-sm btn-outline-secondary">
       {% trans "Zpět na seznam"%}
     </a>
+    <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}" class="btn btn-sm btn-outline-secondary">
+      {% trans "Zpět na zadání"%}
+    </a>
   </div>
+
+</div>
 
   <div class="card shadow-sm mb-4">
     <div class="card-header"><strong>{% trans "Řešení (anonymně)"%}</strong></div>
