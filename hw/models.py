@@ -164,9 +164,13 @@ class HomeworkStudentComment(models.Model):
             raise ValidationError(_("Hodnotitel  nemůže být autor zadání úkolu."))
 
     def save(self, *args, **kwargs):
+        # vynucuji clean v save, takže se submitter nastaví až po validaci
         self.full_clean()
         self.submitter = timezone.now()
         return super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"Comment: {self.reviewer} of hw {self.hw}"
 
     class Meta:
         constraints = [

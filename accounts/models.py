@@ -24,7 +24,6 @@ class CustomUser(AbstractUser):
     @property
     def teacher_subjects(self):
         return self.subjects.filter(subject_type__role="teacher")
-
     @property
     def student_subjects(self):
         return self.subjects.filter(subject_type__role="student")
