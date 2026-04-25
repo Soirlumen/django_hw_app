@@ -3,11 +3,11 @@ from .setUp import BaseHWTestCase
 class TestPages200(BaseHWTestCase):
      def test_profile_view(self):
           self.assertTrue(self.client.login(username="teacher", password="pass"))
-          response=self.client.get("/accounts/")
+          response=self.client.get("/cs/accounts/")
           self.assertEqual(response.status_code,200)
      def test_dashboard_view(self):
           self.assertTrue(self.client.login(username="teacher", password="pass"))
-          response=self.client.get("/")
+          response=self.client.get("/cs/")
           self.assertEqual(response.status_code,200)
           
 class TestPagesBadAccess(BaseHWTestCase):

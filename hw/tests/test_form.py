@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
 
-
 class TestAssignmentForm(BaseHWTestCase):
      def test_valid_form(self):
           form_data = {
@@ -100,6 +99,15 @@ class TestAssignemntEdit(BaseHWTestCase):
           form=AssignemntEdit(data=form_data, instance=self.assignment)
           self.assertFalse(form.is_valid())
           self.assertIn("Nelze editovat zadání, jestliže je již aktivní.", str(form.errors))     
+          
+class TestCreateHomeworkForm(BaseHWTestCase):
+     def test_homework_form_valid(self):
+          form_data={
+               "engrossment":"Odevzdaný úkol",
+               "programming_language":"python",
+          }
+          form=CreateHomeworkForm(data=form_data, assignment=self.assignment)
+          self.assertTrue(form.is_valid())
 
 class TestMultipleFileField(TestCase):
      def setUp(self):
