@@ -123,13 +123,14 @@ class AssignmentForm(forms.ModelForm):
         if self.user:
             self.fields["subject"].queryset = self.user.teacher_subjects
             self.fields["description"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
+            self.fields["subject"].error_messages['invalid_choice'] = _("Na tomto předmětu nejsi veden jako učitel.")
         
-        
-    def clean_subject(self):
-        subject = self.cleaned_data["subject"]
-        if self.user and not subject.subject_type.filter(user=self.user, role="teacher").exists():
-            raise forms.ValidationError(_("Na tomto předmětu nejsi veden jako učitel."))
-        return subject
+    def clean_release_deadline(self):
+        release = self.cleaned_data.get("release")
+        deadline = self.cleaned_data.get("deadline")
+        if release and deadline and deadline < release:
+            raise ValidationError(_("Termín odevzdání nemůže být dříve než zveřejnění"))
+        return release, deadline
     def clean(self):
         cleaned_data = super().clean()
         new_files = cleaned_data.get("filesimput", [])
