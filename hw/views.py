@@ -458,11 +458,9 @@ def teacher_comments_list_view(request):
     comments=HomeworkStudentComment.objects.select_related(
     "hw__key__assignment","reviewer").order_by(
     "hw__key__assignment","reviewer")
-    #comments_filter=HomeworkCommentsFilter(request.GET,queryset=comments)
     pending_count = comments.filter(comment="").count()
     return render(request,"student_comments/teacher_list.html",{
         "comments":comments,
         "pending_count":pending_count,
-        #"cf":comments_filter,
     })
     

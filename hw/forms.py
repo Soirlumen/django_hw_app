@@ -1,5 +1,5 @@
 from django import forms
-from .models import Homework, Assignment, HomeworkStudentComment
+from .models import Homework, Assignment, HomeworkStudentComment, LANGUAGE_CHOICES
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html
@@ -61,11 +61,16 @@ class CreateHomeworkForm(forms.ModelForm):
     )
     def __init__(self, *args, **kwargs):
         self.assignment = kwargs.pop("assignment", None)
+        self.user= kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields["programming_language"].error_messages['invalid_choice'] = _("Neplatný programovací jazyk.")
     def clean(self):
         cleaned_data = super().clean()
         if self.assignment and timezone.now() > self.assignment.deadline:
             raise ValidationError(_("Nemůžeš odevzdat úkol po termínu odevzdání!"))
+        if not self.user:
+            raise ValidationError(_("Chybí autor úkolu."))
         return cleaned_data
 
     class Meta:
@@ -95,6 +100,7 @@ class HomeworkForm(forms.ModelForm):
         if current_files_count + len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
             raise ValidationError(_(
                 "Celkem může být u zadání maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER})
+            
         return cleaned_data
  
     class Meta:
@@ -139,6 +145,8 @@ class AssignmentForm(forms.ModelForm):
             raise ValidationError(
                _("Můžeš přiložit maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER}
             )
+        if not self.user:
+            raise ValidationError(_("Chybí autor zadání."))
 
         return cleaned_data
 

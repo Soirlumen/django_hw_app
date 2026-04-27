@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import sys
 from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -143,7 +144,6 @@ STORAGES = {
     },
 }
 
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
@@ -163,3 +163,13 @@ MAX_UPLOAD_FILE_SIZE_MB =2
 MAX_UPLOAD_FILE_SIZE = MAX_UPLOAD_FILE_SIZE_MB *(1024**2) 
 MAX_UPLOAD_FILES_NUMBER = 5 
 MAX_HOMEWORK_LENGTH = 30000
+
+if 'test' in sys.argv:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.InMemoryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }

@@ -1,10 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from hw.models import Subject, Assignment, Key, Homework, HomeworkStudentComment, CodeFile
 from accounts.models import CustomUser, SubjectType
 from django.utils import timezone
 from datetime import timedelta
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+@override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
 class BaseHWTestCase(TestCase):
     def setUp(self):
         self.teacher = CustomUser.objects.create_user(
@@ -96,3 +97,4 @@ class BaseHWTestCase(TestCase):
             engrossment="Testovací odevzdaný úkol2",
             submitted=now,
         )
+    

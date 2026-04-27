@@ -1,18 +1,15 @@
 from django.urls import path
 from .views import (
     assgn_delete_view,
-    #hw_list_view,
     hw_list_active_view,
     hw_list_after_deadline_view,
     hw_teacher_list_before_release_view,
     hw_update_view,
-    #assgn_detail_view,
     assgn_detail_stud,
     assgn_detail_teacher,
     hw_create_view,
     assignment_create_view,
     hw_detail_view,
-    #create_evaluation_view,
     edit_evaluation_view,
     delete_evaluation_view,
     assignment_make_comments_view,
@@ -24,30 +21,25 @@ from .views import (
     assgn_edit_view,
     assignenmt_file_remove,
 )
-
 urlpatterns = [
-    #path("", hw_list_view, name="list"),
     path("list/active/", hw_list_active_view, name="list_active"),
     path("list/before_release/", hw_teacher_list_before_release_view, name="list_before_release"),
     path("list/after_deadline/", hw_list_after_deadline_view, name="list_after_deadline"),
-    #path("assignment/<int:pk>/", assgn_detail_view, name="assgn_detail"),
     path("homework/<int:pk>/", hw_detail_view, name="hw_detail"),
     path("assignment/<int:pk>/editas/",assgn_edit_view,name="assgn_edit"),
-    path("homework/createass/", assignment_create_view, name="ass_create"),
-    path("homework/submithw/", hw_create_view, name="hw_submit"),
+    path("homework/createassignment/", assignment_create_view, name="ass_create"),
+    path("homework/create_hw/", hw_create_view, name="hw_create"),
     path("homework/<int:pk>/update/", hw_update_view, name="homework_update"),
     path("homework/<int:pk>/delete_asgn/", assgn_delete_view, name="assignment_delete"),
-    #path("homework/<int:pk>/evaluate/", create_evaluation_view, name="evaluate_homework"),
     path("homework/<int:pk>/evaluate_update/", edit_evaluation_view, name="evaluate_edit"),
     path("homework/<int:pk>/delete_evaluation/",delete_evaluation_view,name="evaluate_delete",),
     path("assignmentt/<int:pk>/",assgn_detail_teacher,name="assgn_detail_teacher",),
     path("assignments/<int:pk>/",assgn_detail_stud,name="assgn_detail_student",),
-    path("assignment/<int:pk>/make-comments/", assignment_make_comments_view, name="assgn_make_comments"),
+    path("assignment/<int:pk>/make-comments/", assignment_make_comments_view, name="assgn_make_comments"), #není vlastní stránka
     path("my-comments/", student_comment_list_view, name="student_comment_list"),
     path("my-comments/<int:pk>/", student_comment_detail_view, name="student_comment_detail"),
     path("received-comment/<int:pk>/", student_received_comment_detail_view, name="received_comment_detail"),
     path("students-comments/",teacher_comments_list_view,name="teacher_comment_list"),
-    path("homework/<int:hw_pk>/file/<int:file_pk>/remove/", homework_file_remove, name="homework_file_remove"),
-    path("assignment/<int:pk>/file/<int:file_pk>/remove/", assignenmt_file_remove, name="assignenmt_file_remove"),
-    
+    path("homework/<int:hw_pk>/file/<int:file_pk>/remove/", homework_file_remove, name="homework_file_remove"), #není vlastní stránka
+    path("assignment/<int:pk>/file/<int:file_pk>/remove/", assignenmt_file_remove, name="assignenmt_file_remove"), #není vlastní stránka
 ]

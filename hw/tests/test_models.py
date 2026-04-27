@@ -1,5 +1,5 @@
 from .setUp import BaseHWTestCase
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from hw.models import Assignment, Key, Subject, CodeFile, HomeworkStudentComment
 from django.utils import timezone
 from datetime import timedelta
@@ -13,7 +13,8 @@ class TestSubject(TestCase):
         self.subject=Subject(year=1980, name="INTA")
     def test_to_str(self):
         self.assertEqual(str(self.subject), "INTA-1980")
-        
+
+@override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')        
 class TestAssignment(BaseHWTestCase):
     def test_to_str(self):
         self.assertEqual(str(self.assignment),"Domácí úkol 1")
@@ -58,6 +59,8 @@ class TestAssignment(BaseHWTestCase):
         url='/cs/hw/assignmentt/1/'
         self.assertIsInstance(self.assignment.get_url(),str)
         self.assertIn(self.assignment.get_url(),url)
+
+@override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
 
 class TestCodeFile(BaseHWTestCase):
     def test_to_str(self):

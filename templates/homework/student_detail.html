@@ -82,7 +82,7 @@
               {% translate "Již nelze odevzdat" %}
             </a>
           {% else %}
-            <a href="{% url 'hw_submit' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
+            <a href="{% url 'hw_create' %}?assgn_id={{ hwdetail.pk }}" class="btn btn-primary">
               {% translate "Odevzdat úkol" %}
             </a>
           {% endif %}

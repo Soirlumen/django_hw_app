@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
 
+@override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
 class TestAssignmentForm(BaseHWTestCase):
      def test_valid_form(self):
           form_data = {
@@ -59,6 +60,19 @@ class TestAssignmentForm(BaseHWTestCase):
           form = AssignmentForm(data=form_data, user=self.teacher)
           self.assertFalse(form.is_valid())
           self.assertIn("Termín odevzdání nemůže být dříve než zveřejnění", str(form.errors))
+     def test_no_user(self): #další chybka
+          self.assignment.release = timezone.now() + timedelta(minutes=10)
+          form_data={
+               "title": self.assignment.title,
+               "subject": self.assignment.subject.pk,
+               "description": self.assignment.description,
+               "release": (timezone.now() + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M"),
+               "deadline": (timezone.now() + timedelta(days=7)).strftime("%Y-%m-%dT%H:%M"),
+               "max_score": self.assignment.max_score
+          }
+          form=AssignmentForm(data=form_data, instance=self.assignment)
+          self.assertFalse(form.is_valid())   
+          self.assertIn("Chybí autor zadání.", str(form.errors)) 
 
 class TestAssignemntEdit(BaseHWTestCase):
      def test_assignment_edit_deadline_before_release(self):
@@ -98,7 +112,8 @@ class TestAssignemntEdit(BaseHWTestCase):
           }
           form=AssignemntEdit(data=form_data, instance=self.assignment)
           self.assertFalse(form.is_valid())
-          self.assertIn("Nelze editovat zadání, jestliže je již aktivní.", str(form.errors))     
+          self.assertIn("Nelze editovat zadání, jestliže je již aktivní.", str(form.errors)) 
+
           
 class TestCreateHomeworkForm(BaseHWTestCase):
      def test_homework_form_valid(self):
@@ -108,7 +123,26 @@ class TestCreateHomeworkForm(BaseHWTestCase):
           }
           form=CreateHomeworkForm(data=form_data, assignment=self.assignment)
           self.assertTrue(form.is_valid())
+     def test_homework_form_invalid_programming_language(self):
+          form_data={
+               "engrossment":"Odevzdaný úkol",
+               "programming_language":"ruby",
+          }
+          form=CreateHomeworkForm(data=form_data, assignment=self.assignment)
+          self.assertFalse(form.is_valid())
+          self.assertIn("Neplatný programovací jazyk.", str(form.errors))
+          
+          
+     def test_no_user(self): #další chybka
+          form_data={
+               "engrossment":"Odevzdaný úkol",
+               "programming_language":"python",
+          }
+          form=CreateHomeworkForm(data=form_data, assignment=self.assignment)
+          self.assertFalse(form.is_valid())
+          self.assertIn("Chybí autor úkolu.", str(form.errors))
 
+@override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
 class TestMultipleFileField(TestCase):
      def setUp(self):
           self.field = MultipleFileField(required=False)
@@ -139,3 +173,4 @@ class TestMultipleFileField(TestCase):
           cleaned_data1=self.field.clean([])
           self.assertEqual(cleaned_data,[])
           self.assertEqual(cleaned_data1,[])
+          
