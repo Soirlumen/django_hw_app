@@ -133,7 +133,7 @@ class TestCreateHomeworkForm(BaseHWTestCase):
           self.assertIn("Neplatný programovací jazyk.", str(form.errors))
           
           
-     def test_no_user(self): #další chybka
+     def test_no_user(self): # další chybka
           form_data={
                "engrossment":"Odevzdaný úkol",
                "programming_language":"python",
