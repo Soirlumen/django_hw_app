@@ -115,27 +115,35 @@
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form|crispy }}
-<div class="d-flex gap-3">
-  <button type="submit" class="btn btn-primary">
-    {% trans "Uložit změny" %}
-  </button><a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}"
-   class="btn btn-outline-secondary">
-  {% trans "Zrušit" %}
-</a></div>
-</form>
-<p><strong>{% trans "Přiložené soubory"%}</strong></p>
-{% for f in hw.files.all %}
-  <li class="mb-2">
-    <a href="{{ f.get_file_path }}" download>{{ f }}</a>
 
-    <form method="post" action="{% url 'homework_file_remove' hw.pk f.pk %}" class="d-inline">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-sm btn-outline-danger">
-        {% trans "Odebrat" %}
-      </button>
-    </form>
-  </li>
-{% endfor %}
+  {% if hw.files.exists %}
+    <div class="mb-3">
+      <label class="form-label d-block"><strong>{% trans "Aktuálně nahrané soubory (zaškrtnutím odeberete):" %}</strong></label>
+      <ul class="list-unstyled">
+        {% for f in hw.files.all %}
+          <li class="mb-2 border p-2 rounded bg-light d-flex justify-content-between align-items-center">
+            <a href="{{ f.get_file_path }}" download>{{ f }}</a>
+            <div class="form-check text-danger">
+              <input class="form-check-input" type="checkbox" name="remove_files" value="{{ f.pk }}" id="remove_file_{{ f.pk }}">
+              <label class="form-check-label small" for="remove_file_{{ f.pk }}">
+                {% trans "Odebrat" %}
+              </label>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div class="d-flex gap-3 mt-3">
+    <button type="submit" class="btn btn-primary">
+      {% trans "Uložit změny" %}
+    </button>
+    <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}" class="btn btn-outline-secondary">
+      {% trans "Zrušit" %}
+    </a>
+  </div>
+</form>
 
   </div>
 

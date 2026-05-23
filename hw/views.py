@@ -99,6 +99,15 @@ def assgn_edit_view(request,pk):
             edit_as=form.save(commit=False)
             files = form.cleaned_data["filesimput"]
             edit_as.save()
+            
+            remove_files_ids = request.POST.getlist("remove_files")
+            if remove_files_ids:
+                for file_pk in remove_files_ids:
+                    file_obj = assignment.files.filter(pk=file_pk).first()
+                    if file_obj:
+                        assignment.files.remove(file_obj)
+                        delete_file_if_unused(file_obj) # čistící funkce
+                        
             for f in files:
                 obj_f = CodeFile(file=f)
                 obj_f._upload_user = request.user
@@ -193,7 +202,7 @@ def hw_create_view(request):
         return redirect(hw.get_assgn_student_url())
 
     if request.method == "POST":
-        form = CreateHomeworkForm(request.POST, request.FILES, assignment=assignment)
+        form = CreateHomeworkForm(request.POST, request.FILES, assignment=assignment, user=request.user)
         if form.is_valid():
             hwform = form.save(commit=False)
             hwform.key = key
@@ -216,7 +225,7 @@ def hw_create_view(request):
             print(form.errors)
             print(form.non_field_errors())
     else:
-        form = CreateHomeworkForm(assignment=assignment)
+        form = CreateHomeworkForm(assignment=assignment, user=request.user)
 
     is_after_deadline = timezone.now() > assignment.deadline
     context = {
@@ -231,12 +240,21 @@ def hw_create_view(request):
 def hw_update_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
     if request.method == "POST":
-        form = HomeworkForm(request.POST,request.FILES, instance=hw)
+        form = HomeworkForm(request.POST, request.FILES, instance=hw)
         if form.is_valid():
             edit_hw = form.save(commit=False)
             edit_hw.submitted = timezone.now()
             edit_hw.save()
-            files = form.cleaned_data["filesimput"]
+
+            remove_files_ids = request.POST.getlist("remove_files")
+            if remove_files_ids:
+                for file_pk in remove_files_ids:
+                    file_obj = hw.files.filter(pk=file_pk).first()
+                    if file_obj:
+                        hw.files.remove(file_obj)
+                        delete_file_if_unused(file_obj) # čistící funkce
+
+            files = form.cleaned_data.get("filesimput", [])
             for f in files:
                 obj_f = CodeFile(file=f)
                 obj_f._upload_user = request.user
@@ -244,12 +262,14 @@ def hw_update_view(request, pk):
                 obj_f.full_clean()
                 obj_f.save()
                 edit_hw.files.add(obj_f)
+
+            messages.success(request, _("Změny byly úspěšně uloženy."))
             return redirect(hw.get_assgn_student_url())
     else:
         form = HomeworkForm(instance=hw)
-    context={"form": form, "hw": hw}
-    return render(request,"homework/hw_update.html",context)
-
+    
+    context = {"form": form, "hw": hw}
+    return render(request, "homework/hw_update.html", context)
 @own_required(Assignment,'teacher')
 def assgn_delete_view(request, pk):
     assgn = get_object_or_404(Assignment, pk=pk)
@@ -276,49 +296,6 @@ def hw_detail_view(request, pk):
 def delete_file_if_unused(codefile):
     if not codefile.homework_set.exists() and not codefile.assignment_set.exists():
         codefile.delete()
-
-@login_required
-@require_POST
-def homework_file_remove(request, hw_pk, file_pk):
-    hw = get_object_or_404(Homework, pk=hw_pk)
-    file_obj = get_object_or_404(CodeFile, pk=file_pk)
-    if request.user != hw.key.student:
-        messages.error(request, _("Tento soubor nemůžeš odebrat."))
-        return redirect(hw.get_assgn_student_url())
-    if hw.is_after_deadline:
-        messages.error(request, _("Po deadline už nelze soubory odebírat."))
-        return redirect(hw.get_assgn_student_url())
-    if not hw.files.filter(pk=file_obj.pk).exists():
-        messages.error(request, _("Soubor u tohoto odevzdání neexistuje."))
-        return redirect(hw.get_assgn_student_url())
-
-    hw.files.remove(file_obj)
-    delete_file_if_unused(file_obj)
-
-    messages.success(request, _("Soubor byl odebrán."))
-    return redirect("homework_update", pk=hw.pk)
-
-@login_required
-@require_POST
-def assignenmt_file_remove(request, pk, file_pk):
-    asgn = get_object_or_404(Assignment, pk=pk)
-    file_obj = get_object_or_404(CodeFile, pk=file_pk)
-    if request.user != asgn.teacher:
-        messages.error(request, _("Tento soubor nemůžeš odebrat."))
-        return redirect(asgn.get_url())
-    if not asgn.is_before_release:
-        messages.error(request, _("Z aktivních zadání už nelze soubory odebírat."))
-        return redirect(asgn.get_url())
-    if not asgn.files.filter(pk=file_obj.pk).exists():
-        messages.error(request, _("Soubor u tohoto zadání neexistuje."))
-        return redirect(asgn.get_url())
-
-    asgn.files.remove(file_obj)
-    delete_file_if_unused(file_obj)
-
-    messages.success(request, _("Soubor byl odebrán."))
-    return redirect("assgn_edit", pk=asgn.pk)
-
 
 @own_required(Homework,'key__assignment__teacher')
 def edit_evaluation_view(request, pk):
@@ -454,9 +431,10 @@ def student_received_comment_detail_view(request, pk):
     
 @teacher_required
 def teacher_comments_list_view(request):
-    #subjects=request.user.teacher_subjects.all()
+    subjects=request.user.teacher_subjects.all()
     comments=HomeworkStudentComment.objects.select_related(
-    "hw__key__assignment","reviewer").order_by(
+    "hw__key__assignment","reviewer").filter(
+        hw__key__assignment__subject__in=subjects).order_by(
     "hw__key__assignment","reviewer")
     pending_count = comments.filter(comment="").count()
     return render(request,"student_comments/teacher_list.html",{
