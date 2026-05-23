@@ -3,13 +3,16 @@
 {% load markdown_extras %}
 {% load i18n %}
 {% load static %}
-{% block title %}{% trans "Upravit hodnocení k úkolu" %}{% endblock %}
+
+{% block title %}{% trans "Upravit hodnocení komentáře" %}{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
 {% endblock %}
+
 {% block content %}
-<div class="container mt-4" style="max-width: 1000px;">
+<div class="container mt-4" style="max-width: 900px;">
   {% if messages %}
     {% for message in messages %}
       <div class="alert alert-{{ message.tags }} mb-3" role="alert">
@@ -20,24 +23,23 @@
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
-      <h2 class="mb-1">{% trans "Odevzdaný úkol" %}</h2>
+      <h2 class="mb-1">{% trans "Komentář k úkolu" %}</h2>
       <div class="text-muted">
-        {{ hw.key.assignment.title }} • {{ hw.key.assignment.subject }}
+        {{ assignment.title }} • {% trans "Komentář od:" %} {{ comment.reviewer.first_name }} {{ comment.reviewer.surname }}
       </div>
     </div>
 
     <div class="d-flex flex-wrap gap-2">
-      <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
-        {% trans "Zpět na seznam" %}
+      <a href="{% url 'received_comment_detail' comment.pk %}" class="btn btn-outline-secondary">
+        {% trans "Zrušit a zpět" %}
       </a>
     </div>
   </div>
 
-  <!-- PRVNÍ KARTA: Odevzdaný úkol -->
   <div class="card shadow-sm mb-4">
     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
       <div>
-        <strong>{% trans "Student:" %}</strong> {{ hw.key.student.username }}
+        <strong>{% trans "Řešení úkolu od:" %}</strong> {{ hw.key.student.first_name }} {{ hw.key.student.surname }}
       </div>
       <div>
         <span class="badge bg-success">
@@ -51,14 +53,12 @@
     <div class="card-body">
       <div class="mb-2"><strong>{% trans "Řešení:" %}</strong></div>
       
-      <!-- Sjednoceno na objekt 'hw' (měl jsi tu submitted_homework) -->
       {% if hw.programming_language == "markdown" %}
         {{ hw.engrossment|markdown|safe }}
       {% else %}
         <textarea id="hw-code-viewer" data-code-language="{{ hw.programming_language|default:'python' }}">{{ hw.engrossment }}</textarea> 
       {% endif %}
 
-      <!-- Tady byl ten zdvojený a useknutý div, teď už je to čisté -->
       {% if hw.files.exists %}
         <div class="mt-3 mb-2"><strong>{% trans "Přiložené soubory:" %}</strong></div>
         <ul>
@@ -71,36 +71,25 @@
           {% endfor %}
         </ul>
       {% endif %}
+    </div> </div> <div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+      <strong>{% trans "Text studentského komentáře" %}</strong>
+    </div>
+    <div class="card-body">
+      <div class="border rounded p-3 bg-white">
+        {% if comment.comment %}
+          {{ comment.comment|markdown|safe }}
+        {% else %}
+          <span class="text-muted">{% trans "Komentář zatím nebyl vyplněn." %}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
-      {% if hw.notes %}
-        <div class="mt-3 mb-2"><strong>{% trans "Poznámky pro učitele:" %}</strong></div>
-        <div class="border rounded p-3 bg-light">
-          {{ hw.notes|markdown|safe }}
-        </div>
-      {% endif %}
-    </div> <!-- /card-body -->
-  </div> <!-- /card (Uzavření celé první karty) -->
-
-  <!-- DRUHÁ KARTA: Hodnocení pro učitele -->
   {% if request.user == hw.key.assignment.teacher %}
     <div class="card shadow-sm mb-4">
-      <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-        <strong>{% trans "Hodnocení" %}</strong>
-
-        {% if hw.text_evaluation or hw.score %}
-          <div class="d-flex flex-wrap gap-2">
-            <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-sm btn-outline-primary">
-              {% trans "Upravit hodnocení" %}
-            </a>
-            <a href="{% url 'evaluate_delete' hw.pk %}" class="btn btn-sm btn-danger">
-              {% trans "Smazat hodnocení" %}
-            </a>
-          </div>
-        {% else %}
-          <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-sm btn-primary">
-            {% trans "Ohodnotit úkol" %}
-          </a>
-        {% endif %}
+      <div class="card-header bg-light">
+        <strong>{% trans "Poznámka vyučujícího" %}</strong>
       </div>
 
       <div class="card-body">
@@ -109,14 +98,13 @@
           {{ form|crispy }}
 
           <button type="submit" class="btn btn-success mt-2">
-            {% trans "Odeslat hodnocení" %}
+            {% trans "Oleslat hodnocení" %}
           </button>
         </form>
       </div>
     </div>
   {% endif %}
-</div> <!-- /container -->
-{% endblock content %}
+</div> {% endblock content %}
 
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>

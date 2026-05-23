@@ -5,9 +5,9 @@ from .forms import (CreateHomeworkForm,
                     EvaluationForm,MakeCommentsForm,
                     HomeworkStudentCommentForm,
                     AssignemntEdit,
+                    CommentTeacherMarkForm,
                     )
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.decorators import teacher_required, student_required, own_required
 from django.http import HttpResponseForbidden,HttpResponseBadRequest,Http404
@@ -270,6 +270,7 @@ def hw_update_view(request, pk):
     
     context = {"form": form, "hw": hw}
     return render(request, "homework/hw_update.html", context)
+
 @own_required(Assignment,'teacher')
 def assgn_delete_view(request, pk):
     assgn = get_object_or_404(Assignment, pk=pk)
@@ -395,7 +396,7 @@ def student_comment_detail_view(request, pk):
     if request.method == "POST":
         form = HomeworkStudentCommentForm(request.POST, instance=comment_obj)
         if form.is_valid():
-            form.instance.submitter = timezone.now()
+            form.instance.submitted = timezone.now()
             form.save()
             messages.success(request, _("Komentář uložen."))
             return redirect("student_comment_detail", pk=comment_obj.pk)
@@ -427,14 +428,32 @@ def student_received_comment_detail_view(request, pk):
         "assignment": comment_obj.hw.key.assignment,
         "hw":comment_obj.hw,
         "language":comment_obj.hw.programming_language,
+        "mark": comment_obj.mark,
     })
+    
+def teacher_comment_mark_view(request, pk):
+    comment = get_object_or_404(HomeworkStudentComment, pk=pk)
+    if request.method == "POST":
+        form = CommentTeacherMarkForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Označení uloženo."))
+            return redirect("received_comment_detail", pk=comment.pk)
+        else:
+            messages.error(request, _("Formulář obsahuje chyby."))
+    return render(request, "student_comments/teacher_mark_form.html", {
+        "comment": comment,
+        "hw":comment.hw,
+        "form": CommentTeacherMarkForm(instance=comment),
+    })
+    
+
     
 @teacher_required
 def teacher_comments_list_view(request):
-    subjects=request.user.teacher_subjects.all()
     comments=HomeworkStudentComment.objects.select_related(
     "hw__key__assignment","reviewer").filter(
-        hw__key__assignment__subject__in=subjects).order_by(
+        hw__key__assignment__teacher=request.user).order_by(
     "hw__key__assignment","reviewer")
     pending_count = comments.filter(comment="").count()
     return render(request,"student_comments/teacher_list.html",{

@@ -45,7 +45,7 @@
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                       {% if comment.comment %}
-                        <span class="badge bg-success me-2">{% trans "Odevzdáno" %} ({{comment.submitter}})</span>
+                        <span class="badge bg-success me-2">{% trans "Odevzdáno" %} ({{comment.submitted}})</span>
                       {% else %}
                         <span class="badge bg-secondary me-2">{% trans "Neodevzdáno" %}</span>
                       {% endif %}
@@ -58,6 +58,12 @@
                     >
                       {% trans "Detail" %}
                     </a>
+                    </div>
+                    {% if comment.is_marked %}
+                      <span class="badge bg-warning text-dark">
+                        {{ comment.mark }}
+                      </span>
+                    {% endif %}
                   </li>
                 {% endfor %}
               </ul>

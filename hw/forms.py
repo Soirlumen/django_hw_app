@@ -75,7 +75,7 @@ class CreateHomeworkForm(forms.ModelForm):
 
     class Meta:
         model = Homework
-        fields = ("programming_language", "engrossment")
+        fields = ("programming_language", "engrossment","notes")
         widgets = {
             "engrossment": CodeMirrorWidget()
         }
@@ -105,7 +105,7 @@ class HomeworkForm(forms.ModelForm):
  
     class Meta:
         model = Homework
-        fields = ("programming_language","engrossment",)
+        fields = ("programming_language","engrossment","notes")
         widgets= {
             "engrossment": CodeMirrorWidget()
         }
@@ -225,3 +225,8 @@ class HomeworkStudentCommentForm(forms.ModelForm):
 # generování k-tic hodnotících k úkolu
 class MakeCommentsForm(forms.Form):
     k=forms.IntegerField(min_value=1)
+    
+class CommentTeacherMarkForm(forms.ModelForm):
+    class Meta:
+        model=HomeworkStudentComment
+        fields=["mark"]

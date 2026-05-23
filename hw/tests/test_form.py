@@ -121,14 +121,14 @@ class TestCreateHomeworkForm(BaseHWTestCase):
                "engrossment":"Odevzdaný úkol",
                "programming_language":"python",
           }
-          form=CreateHomeworkForm(data=form_data, assignment=self.assignment)
+          form=CreateHomeworkForm(data=form_data, assignment=self.assignment,user=self.student)
           self.assertTrue(form.is_valid())
      def test_homework_form_invalid_programming_language(self):
           form_data={
                "engrossment":"Odevzdaný úkol",
                "programming_language":"ruby",
           }
-          form=CreateHomeworkForm(data=form_data, assignment=self.assignment)
+          form=CreateHomeworkForm(data=form_data, assignment=self.assignment, user=self.student)
           self.assertFalse(form.is_valid())
           self.assertIn("Neplatný programovací jazyk.", str(form.errors))
           

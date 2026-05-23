@@ -134,6 +134,7 @@ class Homework(models.Model):
     engrossment = models.TextField(verbose_name=_("Řešení"),help_text=_("Napište své řešení úkolu."),)  # solution ale hustští
     #files=models.ManyToManyField(CodeFile,blank=True, null=True)
     files=models.ManyToManyField(CodeFile,blank=True, verbose_name=_("Přiložené soubory"),)
+    notes = models.TextField(blank=True, default="",verbose_name=_("Poznámky"),help_text=_("Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."),)
     submitted = models.DateTimeField(null=True, blank=True,verbose_name=_("Odevzdáno"),)
     ## část pro učitele
     score = models.PositiveSmallIntegerField(null=True, blank=True,verbose_name=_("Počet bodů"), help_text=_("Počet bodů přidělený vyučujícím."),)
@@ -155,8 +156,9 @@ class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE,verbose_name=_("Úkol"),)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,verbose_name=_("Hodnotitel"),)
     comment = models.TextField(blank=True, default="",max_length=30000,verbose_name=_("Komentář"),help_text=_("Napište zpětnou vazbu k úkolu."))
-    submitter=models.DateTimeField(null=True, blank=True,verbose_name=_("Odesláno"))
-
+    submitted=models.DateTimeField(null=True, blank=True,verbose_name=_("Odesláno"))
+    # pro učitele
+    mark=models.CharField(max_length=100, blank=True, default="", verbose_name=_("Označení"), help_text=_("Označení komentáře pro lepší přehled. Například 'špatný kód', 'nefunguje', 'výborné řešení' apod."),)
     def clean(self):
         if self.hw.key.student_id == self.reviewer_id:
             raise ValidationError(_("Hodnotitel nemůže být autor domácího úkolu."))
@@ -164,13 +166,16 @@ class HomeworkStudentComment(models.Model):
             raise ValidationError(_("Hodnotitel  nemůže být autor zadání úkolu."))
 
     def save(self, *args, **kwargs):
-        # vynucuji clean v save, takže se submitter nastaví až po validaci
+        # vynucuji clean v save, takže se submitted nastaví až po validaci
         self.full_clean()
-        self.submitter = timezone.now()
+        self.submitted = timezone.now()
         return super().save(*args, **kwargs)
     
     def __str__(self):
         return f"Comment: {self.reviewer} of hw {self.hw}"
+    
+    def is_marked(self):
+        return bool(self.mark)
 
     class Meta:
         constraints = [

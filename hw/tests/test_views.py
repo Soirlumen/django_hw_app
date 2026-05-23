@@ -101,10 +101,3 @@ class TestViewPOST(BaseHWTestCase):
         response=self.client.post(url)
         self.assertEqual(response.status_code,302)
         self.assertFalse(Assignment.objects.filter(pk=self.assignment.pk).exists())
-    def test_homework_file_remove(self):
-        self.client.force_login(self.student)
-        url=reverse("homework_file_remove",kwargs={'hw_pk':self.homework.pk, 'file_pk': self.codefile.pk})
-        response=self.client.post(url)
-        self.assertEqual(response.status_code,302)
-        print(self.homework.total_files())
-        self.assertFalse(self.homework.files.filter(pk=self.codefile.pk).exists())

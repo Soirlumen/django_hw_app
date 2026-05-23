@@ -149,8 +149,8 @@ class TestHomeworkStudentComment(BaseHWTestCase):
                                          reviewer=self.student2,
                                         comment="cool")
         comment.save()
-        self.assertIsNotNone(comment.submitter)
-        self.assertLess((timezone.now() - comment.submitter).total_seconds(), 5)# plus par sekund nevim jak je rychlý testik
+        self.assertIsNotNone(comment.submitted)
+        self.assertLess((timezone.now() - comment.submitted).total_seconds(), 5)# plus par sekund nevim jak je rychlý testik
         
     def test_cannot_review_own_assgn(self):
         comment = HomeworkStudentComment(hw=self.homework, reviewer=self.assignment.teacher, comment="nejlepší co jsem kdy viděl")
