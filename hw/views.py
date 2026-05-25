@@ -18,6 +18,8 @@ from .shuffle import get_the_houmwrk
 from .filters import AssignmentTFilter,AssignmentSFilter#,HomeworkCommentsFilter
 from django.utils.translation import gettext as _
 from django.db.models import Exists, OuterRef
+from django.db.models import Count, Q
+
 
 @teacher_required
 def hw_teacher_list_before_release_view(request):
@@ -446,18 +448,47 @@ def teacher_comment_mark_view(request, pk):
         "hw":review.hw,
         "form": CommentTeacherMarkForm(instance=review),
     })
-    
 
-    
 @teacher_required
 def teacher_comments_list_view(request):
-    reviews=HomeworkStudentComment.objects.select_related(
-    "hw__key__assignment","reviewer").filter(
-        hw__key__assignment__teacher=request.user).order_by(
-    "hw__key__assignment","reviewer")
-    pending_count = reviews.filter(comment="").count()
-    return render(request,"student_comments/teacher_list.html",{
-        "comments":reviews,
-        "pending_count":pending_count,
-    })
+    """Přehled všech peer-review řazený od nejnovějšího deadline."""
     
+    # 1. Nejdříve vytáhneme recenzenty s počty pro jednotlivá zadání
+    # Chceme vědět: Pro toto assignment_id a tohoto reviewer_id -> kolik je celkem a kolik hotových?
+    stats = (
+        HomeworkStudentComment.objects
+        .filter(hw__key__assignment__teacher=request.user)
+        .values('hw__key__assignment_id', 'reviewer_id')
+        .annotate(
+            total_count=Count('id'),
+            filled_count=Count('id', filter=~Q(comment="")) 
+        )
+    )
+    
+    stats_dict = {
+        (item['hw__key__assignment_id'], item['reviewer_id']): (item['filled_count'], item['total_count'])
+        for item in stats
+    }
+    reviews = (
+        HomeworkStudentComment.objects
+        .select_related("hw__key__assignment", "hw__key__student", "reviewer")
+        .filter(hw__key__assignment__teacher=request.user)
+        .order_by(
+            "-hw__key__assignment__deadline",
+            "hw__key__assignment_id",
+            "reviewer_id"
+        )
+    )
+    
+    for review in reviews:
+        key = (review.hw.key.assignment_id, review.reviewer_id)
+        filled, total = stats_dict.get(key, (0, 0))
+        review.reviewer_filled_count = filled
+        review.reviewer_total_count = total
+
+    pending_count = reviews.filter(comment="").count()
+    
+    return render(request, "student_comments/teacher_list.html", {
+        "comments": reviews,
+        "pending_count": pending_count,
+    })
