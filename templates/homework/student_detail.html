@@ -182,11 +182,11 @@
 
                   <div class="d-flex align-items-center gap-2">
                     {% if c.comment %}
-                      <span class="badge bg-success">✓</span><a class="btn btn-sm btn-outline-primary" href="{% url 'received_comment_detail' c.pk %}">
+                      <span class="badge bg-success">✓</span><a class="btn btn-sm btn-outline-primary" href="{% url 'comment_feedback_detail' c.pk %}">
                       {% translate "Zobrazit" %}
                     </a>
                     {% else %}
-                      <span class="badge bg-secondary">⏳</span><a class="btn btn-sm btn-outline-secondary disabled" href="{% url 'received_comment_detail' c.pk %}">
+                      <span class="badge bg-secondary">⏳</span><a class="btn btn-sm btn-outline-secondary disabled" href="{% url 'comment_feedback_detail' c.pk %}">
                       {% translate "Nebylo ještě vyplněno" %}
                     </a>
                     {% endif %}

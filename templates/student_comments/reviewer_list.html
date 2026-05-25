@@ -30,7 +30,7 @@
           {% for c in group.list %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
 
-              <a href="{% url 'student_comment_detail' c.pk %}" class="text-decoration-none">
+              <a href="{% url 'reviewer_form' c.pk %}" class="text-decoration-none">
                 {% blocktrans with counter=forloop.counter %}Komentář č. {{ counter }}{% endblocktrans %}
               </a>
 

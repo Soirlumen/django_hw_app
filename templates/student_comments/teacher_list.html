@@ -53,7 +53,7 @@
                       {% trans "Komentář k řešení úkolu studenta:"%} {{ student_first }} {{ student_last }}
 
                     <a
-                      href="{% url 'received_comment_detail' comment.pk %}"
+                      href="{% url 'comment_feedback_detail' comment.pk %}"
                       class="btn btn-sm btn-outline-primary"
                     >
                       {% trans "Detail" %}

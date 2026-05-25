@@ -372,92 +372,92 @@ def assignment_make_comments_view(request, pk):
     return redirect("assgn_detail_teacher", pk=assignment.pk)
 
 @student_required
-def student_comment_list_view(request):
-    comments = (
+def reviewer_list_view(request):
+    reviews = (
         HomeworkStudentComment.objects
         .filter(reviewer=request.user)
         .select_related("hw__key__assignment")
         .order_by("hw__key__assignment__deadline", "id")
     )
-    pending_count = comments.filter(comment="").count()
-    return render(request, "student_comments/student_list.html", {
-        "comments": comments,
+    pending_count = reviews.filter(comment="").count()
+    return render(request, "student_comments/reviewer_list.html", {
+        "comments": reviews,
         "pending_count": pending_count,
     })
 
 
 @own_required(HomeworkStudentComment,"reviewer")
-def student_comment_detail_view(request, pk):
-    comment_obj = get_object_or_404(
+def reviewer_form_view(request, pk):
+    review = get_object_or_404(
         HomeworkStudentComment.objects.select_related("hw__key__assignment"),
         pk=pk,
         reviewer=request.user,  
     )
     if request.method == "POST":
-        form = HomeworkStudentCommentForm(request.POST, instance=comment_obj)
+        form = HomeworkStudentCommentForm(request.POST, instance=review)
         if form.is_valid():
             form.instance.submitted = timezone.now()
             form.save()
             messages.success(request, _("Komentář uložen."))
-            return redirect("student_comment_detail", pk=comment_obj.pk)
+            return redirect("reviewer_form", pk=review.pk)
         else:
             messages.error(request, _("Formulář obsahuje chyby."))
     else:
-        form = HomeworkStudentCommentForm(instance=comment_obj)
+        form = HomeworkStudentCommentForm(instance=review)
 
-    return render(request, "student_comments/detail.html", {
-        "comment_obj": comment_obj,
-        "hw": comment_obj.hw,
-        "assignment": comment_obj.hw.key.assignment,
+    return render(request, "student_comments/reviewer_form.html", {
+        "comment_obj": review,
+        "hw": review.hw,
+        "assignment": review.hw.key.assignment,
         "form": form,
     })
 
 @login_required
-def student_received_comment_detail_view(request, pk):
-    comment_obj = get_object_or_404(
+def comment_feedback_detail_view(request, pk):
+    review = get_object_or_404(
         HomeworkStudentComment.objects.select_related("hw__key__student", "hw__key__assignment"),
         pk=pk,
     )
-    is_student=comment_obj.hw.key.student_id==request.user.id
-    is_teacher=comment_obj.hw.key.assignment.teacher==request.user
+    is_student=review.hw.key.student_id==request.user.id
+    is_teacher=review.hw.key.assignment.teacher==request.user
     if not (is_student or is_teacher):
         raise Http404()
 
-    return render(request, "student_comments/received_detail.html", {
-        "comment_obj": comment_obj,
-        "assignment": comment_obj.hw.key.assignment,
-        "hw":comment_obj.hw,
-        "language":comment_obj.hw.programming_language,
-        "mark": comment_obj.mark,
+    return render(request, "student_comments/feedback_detail.html", {
+        "comment_obj": review,
+        "assignment": review.hw.key.assignment,
+        "hw":review.hw,
+        "language":review.hw.programming_language,
+        "mark": review.mark,
     })
     
 def teacher_comment_mark_view(request, pk):
-    comment = get_object_or_404(HomeworkStudentComment, pk=pk)
+    review = get_object_or_404(HomeworkStudentComment, pk=pk)
     if request.method == "POST":
-        form = CommentTeacherMarkForm(request.POST, instance=comment)
+        form = CommentTeacherMarkForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
             messages.success(request, _("Označení uloženo."))
-            return redirect("received_comment_detail", pk=comment.pk)
+            return redirect("comment_feedback_detail", pk=review.pk)
         else:
             messages.error(request, _("Formulář obsahuje chyby."))
     return render(request, "student_comments/teacher_mark_form.html", {
-        "comment": comment,
-        "hw":comment.hw,
-        "form": CommentTeacherMarkForm(instance=comment),
+        "comment": review,
+        "hw":review.hw,
+        "form": CommentTeacherMarkForm(instance=review),
     })
     
 
     
 @teacher_required
 def teacher_comments_list_view(request):
-    comments=HomeworkStudentComment.objects.select_related(
+    reviews=HomeworkStudentComment.objects.select_related(
     "hw__key__assignment","reviewer").filter(
         hw__key__assignment__teacher=request.user).order_by(
     "hw__key__assignment","reviewer")
-    pending_count = comments.filter(comment="").count()
+    pending_count = reviews.filter(comment="").count()
     return render(request,"student_comments/teacher_list.html",{
-        "comments":comments,
+        "comments":reviews,
         "pending_count":pending_count,
     })
     
