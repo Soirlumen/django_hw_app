@@ -1,13 +1,12 @@
 ## Setup
 ```bash
 pip install -r requirements.txt
-py manage.py makemigrations
 py manage.py migrate
 ```
 
 ## Načtení testovacích dat
 ```bash
-py manage.py loaddata fixtures/testdata.json
+py manage.py loaddata fixtures/databaze.json --exclude contenttypes --exclude auth.Permission --exclude admin --exclude sessions
 ```
 
 ## Spuštění serveru
