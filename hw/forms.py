@@ -1,5 +1,5 @@
 from django import forms
-from .models import Homework, Assignment, HomeworkStudentComment, LANGUAGE_CHOICES
+from .models import Homework, Assignment, HomeworkStudentComment
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.html import format_html

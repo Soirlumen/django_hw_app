@@ -16,6 +16,7 @@ LANGUAGE_CHOICES = (
     ("python", "Python"),
     ("text/x-c++src", "C++"),
     ("text/x-java", "Java"),
+    ("pascal", "Pascal"),
     ("markdown", "Markdown"),
     ("null", _("Prostý text")),
 )

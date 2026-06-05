@@ -28,6 +28,7 @@ class CodeMirrorWidget(forms.Textarea):
             "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js",
             "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js",
             "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js",
+            "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/pascal/pascal.min.js",
 
             # useful addons
             "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js",
