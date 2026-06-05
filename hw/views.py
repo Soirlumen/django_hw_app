@@ -42,14 +42,14 @@ def hw_list_active_view(request):
     now = timezone.now()
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
-        assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now)
+        assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now).order_by("deadline")
         assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=assignments_teacher,user=request.user, prefix="teacher")
         
     # student
     if request.user.is_student:
         subjects = request.user.student_subjects
         homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"),key__student=request.user)
-        assignments_student = Assignment.objects.filter(subject__in=subjects,release__lte=now,deadline__gt=now).annotate(is_submitted=Exists(homework_exists))
+        assignments_student = Assignment.objects.filter(subject__in=subjects,release__lte=now,deadline__gt=now).annotate(is_submitted=Exists(homework_exists)).order_by("deadline")
         assignemnt_filter_s = AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
             'filter_t': assignemnt_filter_t,
@@ -66,13 +66,13 @@ def hw_list_after_deadline_view(request):
     now = timezone.now()
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
-        assignments_teacher = Assignment.objects.filter(subject__in=subjects, deadline__lte=now)
+        assignments_teacher = Assignment.objects.filter(subject__in=subjects, deadline__lte=now).order_by("-deadline")
         assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=assignments_teacher,user=request.user, prefix="teacher")
     # student
     if request.user.is_student:
         subjects = request.user.student_subjects
         homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"),key__student=request.user)
-        assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now).annotate(is_submitted=Exists(homework_exists))
+        assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now).annotate(is_submitted=Exists(homework_exists)).order_by("-deadline")
         assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
     context={
         'filter_t': assignemnt_filter_t,
