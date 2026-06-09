@@ -62,6 +62,16 @@ class BaseHWTestCase(TestCase):
             submitted=now,
         )
         
+        self.assignment_before_release = Assignment.objects.create(
+            title="Domácí úkol před zveřejněním",
+            subject=self.subject,
+            teacher=self.teacher,
+            description="Testovací zadání",
+            max_score=10,
+            release=now + timedelta(days=1),
+            deadline=now + timedelta(days=2),
+        )
+        
         self.homework.files.add(self.codefile)
 
         self.homework2 = Homework.objects.create(

@@ -115,12 +115,16 @@
 
     {% if submitted_homework %}
       <div class="card shadow-sm mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <strong>{% translate "Tvůj odevzdaný úkol" %}</strong> v programovacím jazyce <strong>{{ submitted_homework.programming_language|default:"-" }}</strong>
-          {% if submitted_homework.score %}
-            <span class="badge bg-success">{% blocktranslate with score=submitted_homework.score max_score=hwdetail.max_score %}Skóre: {{ score }} / {{ max_score }}{% endblocktranslate %}</span>
-          {% endif %}
-        </div>
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <strong>{% translate "Tvůj odevzdaný úkol" %}</strong> v programovacím jazyce <strong>{{ submitted_homework.programming_language|default:"-" }}</strong>
+    </div>
+    {% if submitted_homework.score %}
+      <span class="badge bg-success">
+        {% blocktranslate with score=submitted_homework.score max_score=hwdetail.max_score %}Skóre: {{ score }} / {{ max_score }}{% endblocktranslate %}
+      </span>
+    {% endif %}
+  </div>
         <div class="card-body">
           {% if submitted_homework.programming_language == "markdown" %}
            {{ submitted_homework.engrossment|markdown|safe }}

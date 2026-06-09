@@ -1,6 +1,6 @@
 from .setUp import BaseHWTestCase
 from django.urls import reverse
-from hw.models import Assignment, CodeFile
+from hw.models import Assignment
 
 class TestHWViewStatus200(BaseHWTestCase):
     def assert_get_200(self, user, url_name, template_name=None, **kwargs):
@@ -63,16 +63,16 @@ class TestHWViewStatus200(BaseHWTestCase):
         self.assert_get_200(self.teacher,"evaluate_delete", template_name="homework/hw_evaluation_delete_confirm.html",pk=self.homework.pk)
 
     def test_student_comment_list_200(self):
-        self.assert_get_200(self.student, "student_comment_list", template_name="student_comments/student_list.html")
+        self.assert_get_200(self.student, "student_comment_list", template_name="student_comments/reviewer_list.html")
 
     def test_student_comment_detail_s_200(self):
-        self.assert_get_200(self.student, "student_comment_detail", template_name="student_comments/detail.html", pk=self.studentComment2.pk)
+        self.assert_get_200(self.student, "reviewer_form", template_name="student_comments/reviewer_form.html", pk=self.studentComment2.pk)
 
     def test_received_comment_detail_200(self):
-        self.assert_get_200(self.teacher,"received_comment_detail", template_name="student_comments/received_detail.html",pk=self.studentComment.pk,)
+        self.assert_get_200(self.teacher,"comment_feedback_detail", template_name="student_comments/feedback_detail.html",pk=self.studentComment.pk,)
     
     def test_received_comment_detail_s_200(self):
-        self.assert_get_200(self.student,"received_comment_detail", template_name="student_comments/received_detail.html",pk=self.studentComment.pk,)
+        self.assert_get_200(self.student,"comment_feedback_detail", template_name="student_comments/feedback_detail.html",pk=self.studentComment.pk,)
 
     def test_teacher_comments_list_200(self):
         self.assert_get_200(self.teacher, "teacher_comment_list", template_name="student_comments/teacher_list.html")
@@ -93,6 +93,9 @@ class TestHWViewStatus403(BaseHWTestCase):
         self.assert_get_403(self.student,"ass_create")
     def test_assignment_edit_403_student(self):
         self.assert_get_403(self.student,"assgn_edit",pk=self.assignment.pk)
+        
+    def test_student_cannot_access_assignment_before_release_403(self):
+        self.assert_get_403(self.student,"assgn_detail_student",pk=self.assignment_before_release.pk)
         
 class TestViewPOST(BaseHWTestCase):
     def test_assignment_delete_POST(self):

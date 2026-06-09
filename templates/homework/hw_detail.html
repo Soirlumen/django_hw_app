@@ -27,12 +27,12 @@
       </div>
     </div>
 
-       {% if request.user == assignment.teacher %}
-      <a href="{% url 'assgn_detail_teacher' hw.key.assignment.pk %}" class="btn btn-sm btn-outline-secondary">
+       {% if request.user == hw.key.student %}
+        <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}" class="btn btn-sm btn-outline-secondary">
         {% trans "Zpět na zadání"%}
       </a>
     {% else %}
-      <a href="{% url 'assgn_detail_student' hw.key.assignment.pk %}" class="btn btn-sm btn-outline-secondary">
+      <a href="{% url 'assgn_detail_teacher' hw.key.assignment.pk %}" class="btn btn-sm btn-outline-secondary">
         {% trans "Zpět na zadání"%}
       </a>
     {% endif %}

@@ -129,6 +129,8 @@ def assgn_edit_view(request,pk):
 @student_required
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
+    if assignment.is_before_release:
+        return HttpResponseForbidden("Toto zadání ještě nebylo zveřejněno.")
     key, created = Key.objects.get_or_create(
         student=request.user,
         assignment=assignment
@@ -195,6 +197,8 @@ def hw_create_view(request):
 
     if assignment.subject not in request.user.student_subjects:
         return HttpResponseForbidden("Nemáš přístup k tomuto předmětu.")
+    if assignment.is_before_release:
+        return HttpResponseForbidden("Nelze přidat úkol k nezveřejněnému zadání.")
 
     key, created = Key.objects.get_or_create(student=request.user, assignment=assignment)
     hw = Homework.objects.filter(key=key).first()

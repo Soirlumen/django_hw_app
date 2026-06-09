@@ -71,13 +71,18 @@ class CreateHomeworkForm(forms.ModelForm):
             raise ValidationError(_("Nemůžeš odevzdat úkol po termínu odevzdání!"))
         if not self.user:
             raise ValidationError(_("Chybí autor úkolu."))
+        
+        engrossment = (cleaned_data or {}).get("engrossment") or getattr(self, "engrossment", "")
+        if len(engrossment) > 30000:
+            raise ValidationError({"engrossment": _("Řešení je příliš dlouhé. Maximální délka je 150000 znaků.")})
         return cleaned_data
 
     class Meta:
         model = Homework
         fields = ("programming_language", "engrossment","notes")
         widgets = {
-            "engrossment": CodeMirrorWidget()
+            "engrossment": CodeMirrorWidget(attrs={'maxlength': '30000'}),
+            "notes": forms.Textarea(attrs={'maxlength': '30000'}),
         }
 
 # úprava úkolu  
@@ -93,6 +98,9 @@ class HomeworkForm(forms.ModelForm):
 
         if timezone.now() > deadline:
             raise ValidationError(_("Nemůžeš odevzdat úkol po termínu odevzdání!"))
+        engrossment = (cleaned_data or {}).get("engrossment") or getattr(self, "engrossment", "")
+        if len(engrossment) > 30000:
+            raise ValidationError({"engrossment": _("Řešení je příliš dlouhé. Maximální délka je 150000 znaků.")})
 
         new_files = cleaned_data.get("filesimput", [])
         current_files_count = self.instance.total_files() if self.instance.pk else 0
@@ -107,7 +115,8 @@ class HomeworkForm(forms.ModelForm):
         model = Homework
         fields = ("programming_language","engrossment","notes")
         widgets= {
-            "engrossment": CodeMirrorWidget()
+            "engrossment": CodeMirrorWidget(attrs={'maxlength': '30000'}),
+            "notes": forms.Textarea(attrs={'maxlength': '30000'}),
         }
           
 #vytvoření zadání úkolu
@@ -135,7 +144,7 @@ class AssignmentForm(forms.ModelForm):
         release = self.cleaned_data.get("release")
         deadline = self.cleaned_data.get("deadline")
         if release and deadline and deadline < release:
-            raise ValidationError(_("Termín odevzdání nemůže být dříve než zveřejnění"))
+            raise ValidationError({"release":_("Termín odevzdání nemůže být dříve než zveřejnění")})
         return release, deadline
     def clean(self):
         cleaned_data = super().clean()
@@ -153,6 +162,9 @@ class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
         fields = ("title", "subject", "description", "release", "deadline", "max_score")
+        widgets = {
+            "description": forms.Textarea(attrs={'maxlength': '30000'}),
+            }
         
 class AssignemntEdit(forms.ModelForm):
     filesimput= MultipleFileField(help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
@@ -183,6 +195,9 @@ class AssignemntEdit(forms.ModelForm):
     class Meta:
         model=Assignment
         fields=("title","description","release","deadline", "max_score")
+        widgets = {
+            "description": forms.Textarea(attrs={'maxlength': '50000'}),
+            }
 
 #vyplnění hodnocení od učitele
 class EvaluationForm(forms.ModelForm):

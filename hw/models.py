@@ -132,10 +132,10 @@ class Homework(models.Model):
     key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False,verbose_name=_("Klíč úkol-student"))
     programming_language = models.CharField(max_length=32,choices=LANGUAGE_CHOICES, default="python", 
                                             verbose_name=_("Programovací jazyk"), help_text=_("Vyberte programovací jazyk, ve kterém napíšete řešení úkolu."),)
-    engrossment = models.TextField(verbose_name=_("Řešení"),help_text=_("Napište své řešení úkolu."),)  # solution ale hustští
+    engrossment = models.TextField(verbose_name=_("Řešení"),help_text=_("Napište své řešení úkolu."),max_length=30000)  # solution ale hustští
     #files=models.ManyToManyField(CodeFile,blank=True, null=True)
     files=models.ManyToManyField(CodeFile,blank=True, verbose_name=_("Přiložené soubory"),)
-    notes = models.TextField(blank=True, default="",verbose_name=_("Poznámky"),help_text=_("Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."),)
+    notes = models.TextField(blank=True, default="",verbose_name=_("Poznámky"),help_text=_("Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."),max_length=30000)
     submitted = models.DateTimeField(null=True, blank=True,verbose_name=_("Odevzdáno"),)
     ## část pro učitele
     score = models.PositiveSmallIntegerField(null=True, blank=True,verbose_name=_("Počet bodů"), help_text=_("Počet bodů přidělený vyučujícím."),)
