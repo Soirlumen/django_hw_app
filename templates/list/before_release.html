@@ -62,7 +62,7 @@
 <th>{% trans "Název" %}</th>
 <th>{% trans "Deadline" %}</th>
 <th>{% trans "Předmět" %}</th>
-<th>{% trans "Zobrazit řešení" %}</th>
+<th>{% trans "Učitel" %}</th>
 </tr>
 </thead>
 
@@ -71,15 +71,10 @@
 {% for a in filter_t.qs %}
 <tr>
 
-<td>{{ a.title }}</td>
+<td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}">{{ a.title }}</a></td>
 <td>{{ a.deadline }}</td>
 <td>{{ a.subject }}</td>
-
-<td>
-<a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">
-{% trans "Zobrazit" %}
-</a>
-</td>
+<td>{{ a.teacher }}</td>
 
 </tr>
 {% endfor %}
