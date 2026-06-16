@@ -85,7 +85,16 @@
   {% csrf_token %}
   {{ form.non_field_errors }}
   {{ form|crispy }}
-  <button type="submit" class="btn btn-success mt-2">{% trans "Odevzdat"%}</button>
+  <div class="d-flex gap-3 mt-3 align-items-center">
+    <button type="submit" class="btn btn-success">
+        {% trans "Odevzdat" %}
+    </button>
+
+    <a href="{% url 'assgn_detail_student' hwdetail.pk %}"
+       class="btn btn-outline-secondary">
+        {% trans "Zpět na zadání" %}
+    </a>
+</div>
 </form>
       {% endif %}
     </div>

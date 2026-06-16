@@ -10,10 +10,11 @@ from .forms import (CreateHomeworkForm,
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.decorators import teacher_required, student_required, own_required
-from django.http import HttpResponseForbidden,HttpResponseBadRequest,Http404
+from django.http import HttpResponseBadRequest,Http404
 from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
+from django.core.exceptions import PermissionDenied
 from .shuffle import get_the_houmwrk
 from .filters import AssignmentTFilter,AssignmentSFilter#,HomeworkCommentsFilter
 from django.utils.translation import gettext as _
@@ -130,7 +131,7 @@ def assgn_edit_view(request,pk):
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
     if assignment.is_before_release:
-        return HttpResponseForbidden("Toto zadání ještě nebylo zveřejněno.")
+        return PermissionDenied("Toto zadání ještě nebylo zveřejněno.")
     key, created = Key.objects.get_or_create(
         student=request.user,
         assignment=assignment
@@ -163,7 +164,7 @@ def assignment_create_view(request):
             assignment = form.save(commit=False)
 
             if assignment.subject not in request.user.teacher_subjects:
-                return HttpResponseForbidden("Nelze přidávat úkoly do tohoto předmětu!!")
+                return PermissionDenied("Nelze přidávat úkoly do tohoto předmětu!!")
 
             assignment.teacher = request.user
             assignment.save()
@@ -196,9 +197,9 @@ def hw_create_view(request):
     assignment = get_object_or_404(Assignment, pk=assgn_id)
 
     if assignment.subject not in request.user.student_subjects:
-        return HttpResponseForbidden("Nemáš přístup k tomuto předmětu.")
+        return PermissionDenied("Nemáš přístup k tomuto předmětu.")
     if assignment.is_before_release:
-        return HttpResponseForbidden("Nelze přidat úkol k nezveřejněnému zadání.")
+        return PermissionDenied("Nelze přidat úkol k nezveřejněnému zadání.")
 
     key, created = Key.objects.get_or_create(student=request.user, assignment=assignment)
     hw = Homework.objects.filter(key=key).first()
@@ -293,7 +294,7 @@ def hw_detail_view(request, pk):
     is_student = request.user == homework.key.student
     is_subject_teacher = request.user.is_teacher and homework.key.assignment.subject in request.user.teacher_subjects
     if not (is_student or is_subject_teacher):
-        return HttpResponseForbidden("Nemáš přístup k tomuto domácímu úkolu.")
+        return PermissionDenied("Nemáš přístup k tomuto domácímu úkolu.")
     context={"hw": homework,
              "assignment": homework.key.assignment,
              "comments":comments,

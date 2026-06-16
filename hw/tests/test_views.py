@@ -1,6 +1,7 @@
 from .setUp import BaseHWTestCase
 from django.urls import reverse
 from hw.models import Assignment
+from django.test import override_settings
 
 class TestHWViewStatus200(BaseHWTestCase):
     def assert_get_200(self, user, url_name, template_name=None, **kwargs):
@@ -78,10 +79,13 @@ class TestHWViewStatus200(BaseHWTestCase):
         self.assert_get_200(self.teacher, "teacher_comment_list", template_name="student_comments/teacher_list.html")
         
 class TestHWViewStatus403(BaseHWTestCase):
-    def assert_get_403(self, user, url_name, **kwargs):
-        self.client.force_login(user)
-        response = self.client.get(reverse(url_name, kwargs=kwargs))
+    @override_settings(DEBUG=False, ALLOWED_HOSTS=['testserver'])
+    def assert_get_403(self):
+        self.client.force_login(self.student)
+        response = self.client.get(reverse("list_before_release"))
         self.assertEqual(response.status_code, 403)
+        # self.assertTemplateUsed(response, "403.html")
+        # self.assertContains(response, "ahojda")
 
     def test_list_before_release_403_student(self):
         self.assert_get_403(self.student, "list_before_release")

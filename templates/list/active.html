@@ -64,7 +64,7 @@
 <th>{% trans "Název" %}</th>
 <th>{% trans "Deadline" %}</th>
 <th>{% trans "Předmět" %}</th>
-<th>{% trans "Zobrazit řešení" %}</th>
+<th>{% trans "Učitel" %}</th>
 
 </tr>
 </thead>
@@ -73,16 +73,11 @@
 
 {% for a in filter_t.qs %}
 <tr>
-<td>{{ a.title }}</td>
+<td><a href="{% url 'assgn_detail_teacher' pk=a.pk %}">
+{{ a.title }}</a></td>
 <td>{{ a.deadline }}</td>
 <td>{{ a.subject }}</td>
-
-<td>
-<a href="{% url 'assgn_detail_teacher' pk=a.pk %}" class="btn btn-sm btn-outline-primary">
-{% trans "Zobrazit" %}
-</a>
-</td>
-
+<td>{{a.teacher}}</td>
 
 </tr>
 {% endfor %}
@@ -129,7 +124,6 @@
 <th>{% trans "Termín" %}</th>
 <th>{% trans "Předmět" %}</th>
 <th>{% trans "Učitel" %}</th>
-<th>{% trans "Detail úkolu" %}</th>
 <th>{% trans "Stav" %}</th>
 </tr>
 </thead>
@@ -137,18 +131,12 @@
 <tbody>
 
 {% for assgn in filter_s.qs %}
-<tr>
 
-<td>{{ assgn.title }}</td>
+<tr>
+<td><a href="{% url 'assgn_detail_student' pk=assgn.pk %}">{{ assgn.title }}</a></td>
 <td>{{ assgn.deadline }}</td>
 <td>{{ assgn.subject }}</td>
 <td>{{ assgn.teacher }}</td>
-
-<td>
-<a href="{% url 'assgn_detail_student' pk=assgn.pk %}" class="btn btn-sm btn-outline-primary">
-{% trans "Zobrazit" %}
-</a>
-</td>
 <td>
 {% if assgn.is_submitted %}
     <span class="text-success">✅ {% trans "Odevzdáno" %}</span>
