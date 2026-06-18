@@ -9,16 +9,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, False),
     DATABASE_URL=(str, f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-    SECRET_KEY=(str, "your-secret-key")
+    SECRET_KEY=(str, "your-secret-key"),
+    ALLOWED_HOSTS=(list, "*"),
+    DJANGO_USE_HTTPS=(bool, False),
+    STATIC_ROOT=(Path, BASE_DIR / "staticfiles"),
+    MEDIA_ROOT=(Path, BASE_DIR / "media"),
 )
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
-# DEBUG = False
-ALLOWED_HOSTS = ["*"]
-# ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 env_file = BASE_DIR / '.env'
 if os.path.exists(env_file):
@@ -123,7 +125,7 @@ LOCALE_PATHS = [
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"] 
-STATIC_ROOT = BASE_DIR / "staticfiles" 
+STATIC_ROOT = env.path("STATIC_ROOT")
 
 STORAGES = {
     "default": {
@@ -146,7 +148,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 PHONENUMBER_DEFAULT_REGION = "CZ" 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = env.path("MEDIA_ROOT")
 
 # omezení souborů
 MAX_UPLOAD_FILE_SIZE_MB =2
@@ -163,3 +165,14 @@ if 'test' in sys.argv:
             "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
+
+# Security
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_PATH = "/"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_PATH = "/"
+if os.getenv("DJANGO_USE_HTTPS") == "True":
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
