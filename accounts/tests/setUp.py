@@ -1,6 +1,6 @@
 from django.test import TestCase
-from hw.models import *
-from accounts.models import *
+from hw.models import Assignment, Key, Subject
+from accounts.models import CustomUser, SubjectType
 from django.utils import timezone
 from datetime import timedelta
 

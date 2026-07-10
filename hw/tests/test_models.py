@@ -56,9 +56,9 @@ class TestAssignment(BaseHWTestCase):
         self.assignment.files.remove(self.codefile)
         self.assertEqual(self.assignment.total_files(),0)
     def test_get_url(self):
-        url='/cs/hw/assignmentt/1/'
-        self.assertIsInstance(self.assignment.get_url(),str)
-        self.assertIn(self.assignment.get_url(),url)
+        self.assertIsInstance(self.assignment.get_url(), str)
+        expected_url = f'/cs/hw/assignmentt/{self.assignment.pk}/'
+        self.assertEqual(self.assignment.get_url(), expected_url)
 
 @override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
 
@@ -124,12 +124,10 @@ class TestHomework(BaseHWTestCase):
         self.assertEqual(str(self.homework), str_hw)
     def test_total_files(self):
         self.assertEqual(self.homework.total_files(), 1)
-    def test_get_aasgn_student_url(self):
-        url='/cs/hw/assignments/1/'
-        self.assertIsInstance(url, str)
-        self.assertIn("hw", url)
-        self.assertIn(str(self.assignment.pk), url)
-        self.assertIn("assignments", url) # najde to stránku zadání pro studenty
+    def test_get_assgn_student_url(self):
+        expected_url = f'/cs/hw/assignments/{self.assignment.pk}/'
+        self.assertIsInstance(expected_url, str)
+        self.assertEqual(self.homework.get_assgn_student_url(), expected_url)
     def test_is_after_deadline(self):
         self.assertEqual(self.assignment.is_after_deadline, False)
         self.assignment.deadline=timezone.now() - timedelta(days=1)

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Seznam úkolů" %}{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if user.is_authenticated %}
+        {% if message %}
+            <div class="alert alert-info">
+                {{ message }}
+            </div>
+        {% endif %}
+
+        <ul class="nav nav-tabs mb-4">
+            {% if user.is_teacher %}
+                <li class="nav-item">
+                    <a class="nav-link {% if current_status == 'before_release' %}active{% endif %}" href="{% url 'list_before_release' %}">
+                        {% trans "Před zveřejněním" %}
+                    </a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link {% if current_status == 'active' %}active{% endif %}" href="{% url 'list_active' %}">
+                    {% trans "Aktivní úkoly" %}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if current_status == 'after_deadline' %}active{% endif %}" href="{% url 'list_after_deadline' %}">
+                    {% trans "Po termínu" %}
+                </a>
+            </li>
+        </ul>
+
+        {% if user.is_teacher %}
+            {% if filter_t.qs %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">{% trans "Zadání" %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" class="mb-4">
+                            {{ filter_t.form|crispy }}
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="submit" class="btn btn-outline-primary">{% trans "Hledat" %}</button>
+                                <a href="{% url reset_url_name %}" class="btn btn-outline-secondary">{% trans "Reset filtr" %}</a>
+                            </div>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{% trans "Název" %}</th>
+                                        <th>{% trans "Deadline" %}</th>
+                                        <th>{% trans "Předmět" %}</th>
+                                        <th>{% trans "Učitel" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for a in filter_t.qs %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'assgn_detail_teacher' pk=a.pk %}">
+                                                    {{ a.title }}
+                                                </a>
+                                            </td>
+                                            <td>{{ a.deadline }}</td>
+                                            <td>{{ a.subject }}</td>
+                                            <td>{{ a.teacher }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-primary mb-4">
+                    {% trans "Žádná vytvořená zadání..." %}
+                </div>
+            {% endif %}
+        {% endif %}
+     {% if current_status == 'before_release' %}
+     {% else %}
+        {% if user.is_student %}
+            {% if filter_s.qs %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">{% trans "Zadané úkoly" %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" class="mb-4">
+                            {{ filter_s.form|crispy }}
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="submit" class="btn btn-outline-primary">{% trans "Hledat" %}</button>
+                                <a href="{% url reset_url_name %}" class="btn btn-outline-secondary">{% trans "Reset filtr" %}</a>
+                            </div>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{% trans "Název" %}</th>
+                                        <th>{% trans "Termín" %}</th>
+                                        <th>{% trans "Předmět" %}</th>
+                                        <th>{% trans "Učitel" %}</th>
+                                        <th>{% trans "Stav" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assgn in filter_s.qs %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'assgn_detail_student' pk=assgn.pk %}">
+                                                    {{ assgn.title }}
+                                                </a>
+                                            </td>
+                                            <td>{{ assgn.deadline }}</td>
+                                            <td>{{ assgn.subject }}</td>
+                                            <td>{{ assgn.teacher }}</td>
+                                            <td>
+                                                {% if assgn.is_submitted %}
+                                                    <span class="text-success">✅ {% trans "Odevzdáno" %}</span>
+                                                {% else %}
+                                                    <span class="text-danger">❌ {% trans "Neodevzdáno" %}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-primary mb-4">
+                    {% trans "Žádné zadané úkoly" %}
+                </div>
+            {% endif %}
+         {% endif %}   
+        {% endif %}
+
+    {% else %}
+        <div class="alert alert-warning">
+            {% trans "Buuu... nejsi přihlášen :<" %}
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

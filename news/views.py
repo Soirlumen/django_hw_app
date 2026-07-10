@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from accounts.decorators import teacher_required, student_required, own_required
 from django.http import Http404
 from django.contrib import messages
 from django.utils import timezone

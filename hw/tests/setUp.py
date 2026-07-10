@@ -1,9 +1,11 @@
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from hw.models import Subject, Assignment, Key, Homework, HomeworkStudentComment, CodeFile
 from accounts.models import CustomUser, SubjectType
 from django.utils import timezone
 from datetime import timedelta
 from django.core.files.uploadedfile import SimpleUploadedFile
+from news.models import NewsPost
 
 @override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
 class BaseHWTestCase(TestCase):
@@ -14,6 +16,8 @@ class BaseHWTestCase(TestCase):
             first_name="Adam",
             surname="Břídil",
         )
+        
+        
         self.student = CustomUser.objects.create_user(
             username="student",
             password="pass",
@@ -107,4 +111,45 @@ class BaseHWTestCase(TestCase):
             engrossment="Testovací odevzdaný úkol2",
             submitted=now,
         )
-    
+        
+        self.superuser = CustomUser.objects.create_superuser(
+            username="admin",
+            password="pass",
+            first_name="Ilja",
+            surname="Jakovenku",
+        )
+        
+        self.news_post = NewsPost.objects.create(
+            announcement="pog",
+               date=timezone.now(),)
+    def assert_get_200(self, user, url_name, template_name=None, **kwargs):
+        self.client.force_login(user)
+        url_kwargs = {}
+        if 'pk' in kwargs:
+            url_kwargs['pk'] = kwargs.pop('pk')
+        url = url = reverse(url_name, kwargs=url_kwargs)
+        response = self.client.get(url, data=kwargs)
+        self.assertEqual(response.status_code, 200)
+        if template_name:
+                self.assertTemplateUsed(response, template_name)
+                
+    def assert_get_403(self, user, url_name, **kwargs):
+        """
+        Pomocná metoda ověřující, že uživatel dostane korektní HTTP status 403.
+        """
+        self.client.force_login(user)
+        url = reverse(url_name, kwargs=kwargs)
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 403)
+    def assert_get_404(self, user, url_name, **kwargs):
+        """
+        Pomocná metoda ověřující, že uživatel dostane korektní HTTP status 404.
+        """
+        self.client.force_login(user)
+        url = reverse(url_name, kwargs=kwargs)
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 404)

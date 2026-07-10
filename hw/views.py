@@ -21,65 +21,72 @@ from django.utils.translation import gettext as _
 from django.db.models import Exists, OuterRef
 from django.db.models import Count, Q
 
-
 @teacher_required
 def hw_teacher_list_before_release_view(request):
     now = timezone.now()
-    subjects=request.user.teacher_subjects
-    filtered_subjects=Assignment.objects.filter(subject__in=subjects,release__gt=now)
-    assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=filtered_subjects,user=request.user, prefix="teacher")
-    context={
-        'filter_t': assignemnt_filter_t,
+    subjects = request.user.teacher_subjects
+    filtered_subjects = Assignment.objects.filter(subject__in=subjects, release__gt=now)
+    assignemnt_filter_t = AssignmentTFilter(request.GET, queryset=filtered_subjects, user=request.user, prefix="teacher")
     
+    context = {
+        'filter_t': assignemnt_filter_t,
+        'current_status': 'before_release',  # aktivní záložka
+        'reset_url_name': 'list_before_release',  # Pro reset tlačítko
     }
-    return render(request,"list/before_release.html",context)
+    return render(request, "list/assignment_list.html", context)
+
 
 @login_required
 def hw_list_active_view(request):
-    assignments_teacher = []
-    assignments_student = []
-    assignemnt_filter_s=[]
-    assignemnt_filter_t=[]
+    assignemnt_filter_s = None
+    assignemnt_filter_t = None
     now = timezone.now()
+    
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
         assignments_teacher = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now).order_by("deadline")
-        assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=assignments_teacher,user=request.user, prefix="teacher")
+        assignemnt_filter_t = AssignmentTFilter(request.GET, queryset=assignments_teacher, user=request.user, prefix="teacher")
         
-    # student
     if request.user.is_student:
         subjects = request.user.student_subjects
-        homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"),key__student=request.user)
-        assignments_student = Assignment.objects.filter(subject__in=subjects,release__lte=now,deadline__gt=now).annotate(is_submitted=Exists(homework_exists)).order_by("deadline")
-        assignemnt_filter_s = AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
-    context={
-            'filter_t': assignemnt_filter_t,
-            "filter_s":assignemnt_filter_s,
+        homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"), key__student=request.user)
+        assignments_student = Assignment.objects.filter(subject__in=subjects, release__lte=now, deadline__gt=now).annotate(is_submitted=Exists(homework_exists)).order_by("deadline")
+        assignemnt_filter_s = AssignmentSFilter(request.GET, queryset=assignments_student, user=request.user, prefix="student")
+        
+    context = {
+        'filter_t': assignemnt_filter_t,
+        'filter_s': assignemnt_filter_s,
+        'current_status': 'active',
+        'reset_url_name': 'list_active',
     }
-    return render(request,"list/active.html",context)
+    return render(request, "list/assignment_list.html", context)
+
 
 @login_required
 def hw_list_after_deadline_view(request):
-    assignments_teacher = []
-    assignments_student = []
-    assignemnt_filter_s=[]
-    assignemnt_filter_t=[]
+    assignemnt_filter_s = None
+    assignemnt_filter_t = None
     now = timezone.now()
+    
     if request.user.is_teacher:
         subjects = request.user.teacher_subjects
         assignments_teacher = Assignment.objects.filter(subject__in=subjects, deadline__lte=now).order_by("-deadline")
-        assignemnt_filter_t=AssignmentTFilter(request.GET,queryset=assignments_teacher,user=request.user, prefix="teacher")
-    # student
+        assignemnt_filter_t = AssignmentTFilter(request.GET, queryset=assignments_teacher, user=request.user, prefix="teacher")
+        
     if request.user.is_student:
         subjects = request.user.student_subjects
-        homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"),key__student=request.user)
+        homework_exists = Homework.objects.filter(key__assignment=OuterRef("pk"), key__student=request.user)
         assignments_student = Assignment.objects.filter(subject__in=subjects, deadline__lte=now).annotate(is_submitted=Exists(homework_exists)).order_by("-deadline")
-        assignemnt_filter_s=AssignmentSFilter(request.GET,queryset=assignments_student,user=request.user,prefix="student")
-    context={
+        assignemnt_filter_s = AssignmentSFilter(request.GET, queryset=assignments_student, user=request.user, prefix="student")
+        
+    context = {
         'filter_t': assignemnt_filter_t,
-        "filter_s":assignemnt_filter_s,
-            }
-    return render(request,"list/after_deadline.html",context)
+        'filter_s': assignemnt_filter_s,
+        'current_status': 'after_deadline',
+        'reset_url_name': 'list_after_deadline',
+    }
+    return render(request, "list/assignment_list.html", context)
+
 
 @teacher_required
 def assgn_detail_teacher(request, pk):
@@ -131,7 +138,7 @@ def assgn_edit_view(request,pk):
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
     if assignment.is_before_release:
-        return PermissionDenied("Toto zadání ještě nebylo zveřejněno.")
+        raise PermissionDenied("Toto zadání ještě nebylo zveřejněno.")
     key, created = Key.objects.get_or_create(
         student=request.user,
         assignment=assignment

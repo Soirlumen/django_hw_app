@@ -23,10 +23,10 @@ class CustomUser(AbstractUser):
         return self.subject_type.filter(role="student").exists()
     @property
     def teacher_subjects(self):
-        return self.subjects.filter(subject_type__role="teacher")
+        return self.subjects.filter(subject_type__user=self, subject_type__role="teacher")
     @property
     def student_subjects(self):
-        return self.subjects.filter(subject_type__role="student")
+        return self.subjects.filter(subject_type__user=self, subject_type__role="student")
     class Meta:
         verbose_name = _("Uživatel")
         verbose_name_plural = _("Uživatelé")

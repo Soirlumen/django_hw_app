@@ -1,34 +1,23 @@
 from .setUp import BaseHWTestCase
 from django.urls import reverse
 from hw.models import Assignment
-from django.test import override_settings
+from django.test import modify_settings
 
 class TestHWViewStatus200(BaseHWTestCase):
-    def assert_get_200(self, user, url_name, template_name=None, **kwargs):
-        self.client.force_login(user)
-        url_kwargs = {}
-        if 'pk' in kwargs:
-            url_kwargs['pk'] = kwargs.pop('pk')
-        url = url = reverse(url_name, kwargs=url_kwargs)
-        response = self.client.get(url, data=kwargs)
-        self.assertEqual(response.status_code, 200)
-        if template_name:
-                self.assertTemplateUsed(response, template_name)
-
     def test_list_active_200(self):
-        self.assert_get_200(self.teacher, "list_active", template_name="list/active.html")
+        self.assert_get_200(self.teacher, "list_active", template_name="list/assignment_list.html")
 
     def test_list_after_deadline_200(self):
-        self.assert_get_200(self.teacher, "list_after_deadline", template_name="list/after_deadline.html")
+        self.assert_get_200(self.teacher, "list_after_deadline", template_name="list/assignment_list.html")
 
     def test_list_active_S_200(self):
-        self.assert_get_200(self.student, "list_active", template_name="list/active.html")
+        self.assert_get_200(self.student, "list_active", template_name="list/assignment_list.html")
 
     def test_list_after_deadline_s_200(self):
-        self.assert_get_200(self.student, "list_after_deadline", template_name="list/after_deadline.html")
+        self.assert_get_200(self.student, "list_after_deadline", template_name="list/assignment_list.html")
 
     def test_list_before_release_200_teacher(self):
-        self.assert_get_200(self.teacher, "list_before_release", template_name="list/before_release.html")
+        self.assert_get_200(self.teacher, "list_before_release", template_name="list/assignment_list.html")
 
     def test_assignment_teacher_detail_200(self):
         self.assert_get_200(self.teacher,"assgn_detail_teacher",template_name="homework/teacher_detail.html",pk=self.assignment.pk)
@@ -78,29 +67,26 @@ class TestHWViewStatus200(BaseHWTestCase):
     def test_teacher_comments_list_200(self):
         self.assert_get_200(self.teacher, "teacher_comment_list", template_name="student_comments/teacher_list.html")
         
+@modify_settings(MIDDLEWARE={
+    'remove': 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+})
 class TestHWViewStatus403(BaseHWTestCase):
-    @override_settings(DEBUG=False, ALLOWED_HOSTS=['testserver'])
-    def assert_get_403(self):
-        self.client.force_login(self.student)
-        response = self.client.get(reverse("list_before_release"))
-        self.assertEqual(response.status_code, 403)
-        # self.assertTemplateUsed(response, "403.html")
-        # self.assertContains(response, "ahojda")
 
     def test_list_before_release_403_student(self):
         self.assert_get_403(self.student, "list_before_release")
 
     def test_assignment_teacher_detail_403_student(self):
-        self.assert_get_403(self.student,"assgn_detail_teacher",pk=self.assignment.pk)
+        self.assert_get_403(self.student, "assgn_detail_teacher", pk=self.assignment.pk)
 
     def test_assignment_create_403_student(self):
-        self.assert_get_403(self.student,"ass_create")
+        self.assert_get_403(self.student, "ass_create")
+
     def test_assignment_edit_403_student(self):
-        self.assert_get_403(self.student,"assgn_edit",pk=self.assignment.pk)
+        self.assert_get_403(self.student, "assgn_edit", pk=self.assignment.pk)
         
     def test_student_cannot_access_assignment_before_release_403(self):
-        self.assert_get_403(self.student,"assgn_detail_student",pk=self.assignment_before_release.pk)
-        
+        self.assert_get_403(self.student, "assgn_detail_student", pk=self.assignment_before_release.pk)
+              
 class TestViewPOST(BaseHWTestCase):
     def test_assignment_delete_POST(self):
         self.client.force_login(self.teacher)
