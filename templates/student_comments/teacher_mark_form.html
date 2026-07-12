@@ -54,7 +54,7 @@
       <div class="mb-2"><strong>{% trans "Řešení:" %}</strong></div>
       
       {% if hw.programming_language == "markdown" %}
-        {{ hw.engrossment|markdown|safe }}
+        {{ hw.engrossment|markdown }}
       {% else %}
         <textarea id="hw-code-viewer" data-code-language="{{ hw.programming_language|default:'python' }}">{{ hw.engrossment }}</textarea> 
       {% endif %}
@@ -78,7 +78,7 @@
     <div class="card-body">
       <div class="border rounded p-3 bg-white">
         {% if comment.comment %}
-          {{ comment.comment|markdown|safe }}
+          {{ comment.comment|markdown }}
         {% else %}
           <span class="text-muted">{% trans "Komentář zatím nebyl vyplněn." %}</span>
         {% endif %}

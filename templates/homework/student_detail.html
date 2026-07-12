@@ -58,7 +58,7 @@
       <div class="mb-3">
         <strong>{% translate "Popis:" %}</strong>
         <div class="mt-1 border rounded p-3 bg-white">
-          {{ hwdetail.description|markdown|safe }}
+          {{ hwdetail.description|markdown }}
         </div>
       </div>
 
@@ -127,7 +127,7 @@
   </div>
         <div class="card-body">
           {% if submitted_homework.programming_language == "markdown" %}
-           {{ submitted_homework.engrossment|markdown|safe }}
+           {{ submitted_homework.engrossment|markdown }}
           {% else %}
           <textarea id="hw-code-viewer" data-code-language="{{ submitted_homework.programming_language|default:'python' }}">{{ submitted_homework.engrossment }}</textarea>
           {% endif %}
@@ -142,7 +142,7 @@
           {% if submitted_homework.notes %}
             <div class="mb-2"><strong>{% translate "Poznámky pro učitele:" %}</strong></div>
             <div class="border rounded p-3 bg-light">
-              {{ submitted_homework.notes|markdown|safe }}    
+              {{ submitted_homework.notes|markdown }}    
             </div>
           {% endif %}
         </div>
@@ -155,7 +155,7 @@
           </div>
           <div class="card-body">
             <div class="border rounded p-3 bg-white">
-              {{ submitted_homework.text_evaluation|markdown|safe }}
+              {{ submitted_homework.text_evaluation|markdown }}
             </div>
           </div>
         </div>

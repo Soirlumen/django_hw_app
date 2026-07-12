@@ -1,7 +1,7 @@
 from .setUp import BaseHWTestCase
 from django.test import override_settings, TestCase
-from hw.models import HomeworkStudentComment, Assignment, Homework, Subject
-from hw.forms import CreateHomeworkForm, MultipleFileField, MultipleFileInput,HomeworkForm, AssignemntEdit, AssignmentForm, EvaluationForm, HomeworkStudentCommentForm
+from hw.models import Subject
+from hw.forms import CreateHomeworkForm, MultipleFileField, AssignemntEdit, AssignmentForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
 from django.utils import timezone
