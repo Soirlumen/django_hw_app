@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from .shuffle import get_the_houmwrk
-from .filters import AssignmentTFilter,AssignmentSFilter#,HomeworkCommentsFilter
+from .filters import AssignmentTFilter,AssignmentSFilter
 from django.utils.translation import gettext as _
 from django.db.models import Exists, OuterRef
 from django.db.models import Count, Q

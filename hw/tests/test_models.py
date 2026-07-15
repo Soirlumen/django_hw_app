@@ -39,7 +39,7 @@ class TestAssignment(BaseHWTestCase):
         self.assignment.deadline=timezone.now() - timedelta(days=1)
         self.assignment.save()
         self.assertEqual(self.assignment.is_after_deadline, True)
-    def test_proprty_is_before_release(self):
+    def test_property_is_before_release(self):
         self.assertEqual(self.assignment.is_before_release,False)
         self.assignment.release=timezone.now() + timedelta(days=1)
         self.andrasgnt=Assignment.objects.create(
@@ -154,6 +154,7 @@ class TestHomeworkStudentComment(BaseHWTestCase):
         comment = HomeworkStudentComment(hw=self.homework, reviewer=self.assignment.teacher, comment="nejlepší co jsem kdy viděl")
         with self.assertRaises(ValidationError):
             comment.full_clean()
+            
     def test_cannot_review_teacher(self):
         comment = HomeworkStudentComment(hw=self.homework, reviewer=self.assignment.teacher, comment="paráda")
         with self.assertRaises(ValidationError):

@@ -52,10 +52,22 @@
   <li class="dropdown-item">
 {% get_available_languages as LANGUAGES %}
     {% get_language_info_list for LANGUAGES as langs %}
-{% for lang in langs %}
-    <img src="{% static 'flags/' %}{{ lang.code|upper }}.png" width="20" alt="{{ lang.code|upper }}">
-{% if not forloop.last %}|{% endif %}
-{% endfor %}
+<div class="language-selector" style="display: flex; align-items: center; gap: 8px;">
+    {% for lang in langs %}
+        <form action="{% url 'set_language' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+            <input name="language" type="hidden" value="{{ lang.code }}">
+            <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+                <img src="{% static 'flags/' %}{{ lang.code|upper }}.png" width="20" alt="{{ lang.code|upper }}" title="{{ lang.name }}">
+            </button>
+        </form>
+        
+        {% if not forloop.last %}
+            <span style="color: #ccc;">|</span>
+        {% endif %}
+    {% endfor %}
+</div>
   </li>
   <li>
     <form action="{% url 'logout' %}" method="post">

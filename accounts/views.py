@@ -6,6 +6,11 @@ from news.models import NewsPost
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
+@login_required
+def success_login_view(request):
+    return render(request, "accounts/success_login.html")
+
+
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
@@ -28,3 +33,4 @@ def profile_view(request):
 def dashboard_view(request):
     three_posts=NewsPost.objects.order_by("-date")[:3]
     return render(request, "dashboard.html",{"posts":three_posts})
+

@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% load static i18n %}
 {% load static %}
 {% block title %}
-  Chyba serveru
+  {% translate "Chyba serveru" %}
 {% endblock %}
 {% block content %}
 <h1>500</h1>
-<p>Vyskytla se chyba serveru</p>
+<p>{% translate "Vyskytla se chyba serveru" %}</p>
 {%endblock%}

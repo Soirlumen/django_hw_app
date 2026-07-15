@@ -1,7 +1,6 @@
 from django.http import HttpResponseForbidden
 from functools import wraps
 from django.shortcuts import get_object_or_404
-from hw.models import Assignment, Homework
 
 def teacher_required(view_func):
      @wraps(view_func)

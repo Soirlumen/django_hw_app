@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% block title %}
-  Přístup odepřen
+  {% translate "Přístup odepřen" %}
 {% endblock %}
 {% block content %}
 <div class="container mt-4">
@@ -14,7 +14,7 @@
         {% else %}
             {% trans "Nemáš oprávnění zobrazit tuto stránku." %}
         {% endif %}
-        ahojda
+        ahojda 
     </div>
 </div>
 {%endblock%}

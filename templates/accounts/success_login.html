@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block title %}{% trans "Přihlášení úspěšné" %}{% endblock title %}
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">{% translate "Přihlášení úspěšné" %}</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+               <p><strong>{% translate "Přihlášen jako:" %}</strong> {{ request.user.first_name }} {{ request.user.surname }}</p>
+        </div>
+    </div>
+
+    
+
+</div>
+{% endblock %}

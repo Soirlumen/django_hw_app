@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 {% block title %}
-  Stránka nenalezena
+  {% translate "Stránka nenalezena" %}
 {% endblock %}
 {% block content %}
-<h1>Stránka nenalezena</h1>
-<p>Stránku se nepodařilo nalézt</p>
+<h1>{% translate "Stránka nenalezena" %}</h1>
+<p>{% translate "Stránku se nepodařilo nalézt" %}</p>
 {%endblock%}

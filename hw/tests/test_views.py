@@ -87,10 +87,3 @@ class TestHWViewStatus403(BaseHWTestCase):
     def test_student_cannot_access_assignment_before_release_403(self):
         self.assert_get_403(self.student, "assgn_detail_student", pk=self.assignment_before_release.pk)
               
-class TestViewPOST(BaseHWTestCase):
-    def test_assignment_delete_POST(self):
-        self.client.force_login(self.teacher)
-        url=reverse("assignment_delete",kwargs={'pk':self.assignment.pk})
-        response=self.client.post(url)
-        self.assertEqual(response.status_code,302)
-        self.assertFalse(Assignment.objects.filter(pk=self.assignment.pk).exists())

@@ -109,3 +109,12 @@ class HomeworkCreateIntegrationTest(BaseHWTestCase):
           # V databázi musí stále zůstat pouze 1 původní úkol
           self.assertEqual(Homework.objects.filter(key=self.key).count(), 1)
           
+          
+          
+class TestViewPOST(BaseHWTestCase):
+    def test_assignment_delete_POST(self):
+        self.client.force_login(self.teacher)
+        url=reverse("assignment_delete",kwargs={'pk':self.assignment.pk})
+        response=self.client.post(url)
+        self.assertEqual(response.status_code,302)
+        self.assertFalse(Assignment.objects.filter(pk=self.assignment.pk).exists())

@@ -36,5 +36,4 @@ class TestFormWrong(TestCase):
             }
           form = CustomUserChangeForm(data=form_data)
           self.assertFalse(form.is_valid())
-          # když se nevyplní kolonka, vyplnila by se starou hodnotou?????
-     
+          

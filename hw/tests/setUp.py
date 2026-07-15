@@ -122,6 +122,8 @@ class BaseHWTestCase(TestCase):
         self.news_post = NewsPost.objects.create(
             announcement="pog",
                date=timezone.now(),)
+        
+        
     def assert_get_200(self, user, url_name, template_name=None, **kwargs):
         self.client.force_login(user)
         url_kwargs = {}

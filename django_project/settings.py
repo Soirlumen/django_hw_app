@@ -1,6 +1,5 @@
 from pathlib import Path
 import sys
-from django.urls import reverse_lazy
 import environ
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -138,7 +137,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-LOGIN_REDIRECT_URL = reverse_lazy("dashboard")
+LOGIN_REDIRECT_URL = "success_login"
 LOGOUT_REDIRECT_URL = "login"
 SIGNUP_REDIRECT_URL = "login"
 
