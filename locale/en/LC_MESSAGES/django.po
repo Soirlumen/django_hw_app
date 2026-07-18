@@ -347,11 +347,11 @@ msgstr "Attached files"
 
 #: .\hw\models.py:138
 msgid "Poznámky"
-msgstr ""
+msgstr "Notes"
 
 #: .\hw\models.py:138
 msgid "Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."
-msgstr ""
+msgstr "Notes on the submitted assignment. Visible only to the teacher."
 
 #: .\hw\models.py:139 .\templates\homework\teacher_detail.html:157
 #: .\templates\list\active.html:142 .\templates\list\after_deadline.html:136

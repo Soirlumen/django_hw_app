@@ -8,16 +8,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, False),
     DATABASE_URL=(str, f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-    SECRET_KEY=(str, "your-secret-key")
+    SECRET_KEY=(str, "your-secret-key"),
+    MAX_UPLOAD_FILE_SIZE_MB=(int, 2),
+    MAX_UPLOAD_FILES_NUMBER=(int, 5),
+    MAX_HOMEWORK_LENGTH=(int, 30000),
 )
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
-# DEBUG = False
 ALLOWED_HOSTS = ["*"]
-# ALLOWED_HOSTS = ["*"]
 
 env_file = BASE_DIR / '.env'
 if os.path.exists(env_file):
@@ -110,7 +111,6 @@ LANGUAGE_CODE = "cs"
 TIME_ZONE = "Europe/Prague" #kvůli deadline things
 
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 LANGUAGES = [
     ("cs", "Čeština"),
@@ -148,10 +148,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # omezení souborů
-MAX_UPLOAD_FILE_SIZE_MB =2
-MAX_UPLOAD_FILE_SIZE = MAX_UPLOAD_FILE_SIZE_MB *(1024**2) 
-MAX_UPLOAD_FILES_NUMBER = 5 
-MAX_HOMEWORK_LENGTH = 30000
+MAX_UPLOAD_FILE_SIZE_MB = env("MAX_UPLOAD_FILE_SIZE_MB")
+MAX_UPLOAD_FILE_SIZE = MAX_UPLOAD_FILE_SIZE_MB * (1024**2)  # Přepočet na bajty zůstává v Pythonu
+MAX_UPLOAD_FILES_NUMBER = env("MAX_UPLOAD_FILES_NUMBER")
+MAX_HOMEWORK_LENGTH = env("MAX_HOMEWORK_LENGTH")
 
 if 'test' in sys.argv:
     STORAGES = {

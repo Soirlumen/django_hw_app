@@ -150,7 +150,7 @@ class Homework(models.Model):
     def is_after_deadline(self)->bool:
         return timezone.now()>self.key.assignment.deadline
     class Meta:
-        verbose_name = _("Odevzdaný úkol")
+        verbose_name = _("Oydevzdaný úkol")
         verbose_name_plural = _("Odevzdané úkoly")
 
 class HomeworkStudentComment(models.Model):
