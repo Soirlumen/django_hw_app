@@ -183,6 +183,10 @@ class HomeworkStudentComment(models.Model):
     
     def is_marked(self)->bool:
         return bool(self.mark)
+    
+    @property
+    def is_commented(self)->bool:
+        return bool(self.comment)
 
     class Meta:
         constraints = [

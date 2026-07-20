@@ -148,7 +148,9 @@ class TestHomeworkStudentComment(BaseHWTestCase):
     def test_save_and_clean(self):
         comment = HomeworkStudentComment(hw=self.homework3,
                                          reviewer=self.student2,
-                                        comment="cool")
+                                        comment="cool",)
+        comment.full_clean()
+        comment.submitted = timezone.now() #nastavuje se ve view
         comment.save()
         self.assertIsNotNone(comment.submitted)
         self.assertLess((timezone.now() - comment.submitted).total_seconds(), 5)# plus par sekund nevim jak je rychlý testik
@@ -163,7 +165,12 @@ class TestHomeworkStudentComment(BaseHWTestCase):
         with self.assertRaises(ValidationError):
             comment.full_clean()
             
-
+    def test_is_commented_true(self):
+        self.assertTrue(self.studentComment.is_commented)
+        
+    def test_is_commented_false(self):
+        comment = HomeworkStudentComment(hw=self.homework, reviewer=self.assignment.teacher, comment="")
+        self.assertFalse(comment.is_commented)
 class GetTheHoumwrkTests(TestCase):
 
     def test_empty_or_single_homework_returns_empty_list(self):
