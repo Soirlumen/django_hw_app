@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django_hw_app 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 16:16+0200\n"
+"POT-Creation-Date: 2026-07-18 14:00+0200\n"
 "PO-Revision-Date: 2026-03-09 13:21+0100\n"
 "Last-Translator: škodovka <škodovka@example.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -62,7 +62,7 @@ msgstr ""
 msgid "Telefonní číslo ve správném formátu."
 msgstr ""
 
-#: .\accounts\models.py:12 .\hw\models.py:44
+#: .\accounts\models.py:12 .\hw\models.py:49
 msgid "Předměty"
 msgstr ""
 
@@ -78,16 +78,16 @@ msgstr ""
 msgid "Uživatelé"
 msgstr ""
 
-#: .\accounts\models.py:36 .\hw\models.py:106
+#: .\accounts\models.py:36 .\hw\models.py:113
 #: .\templates\homework\teacher_detail.html:156
 msgid "Student"
 msgstr ""
 
-#: .\accounts\models.py:37 .\hw\models.py:69
+#: .\accounts\models.py:37 .\hw\models.py:74
 msgid "Vyučující"
 msgstr ""
 
-#: .\accounts\models.py:42 .\hw\models.py:43 .\hw\models.py:68
+#: .\accounts\models.py:42 .\hw\models.py:48 .\hw\models.py:73
 #: .\templates\list\active.html:66 .\templates\list\active.html:125
 #: .\templates\list\after_deadline.html:65
 #: .\templates\list\after_deadline.html:121
@@ -226,85 +226,90 @@ msgstr ""
 msgid "Maximální velikost jednoho souboru je %(maxsize)s MB."
 msgstr ""
 
-#: .\hw\models.py:40
+#: .\hw\models.py:31
+#, python-format
+msgid "Maximální počet souborů je %(maxcount)s."
+msgstr ""
+
+#: .\hw\models.py:45
 msgid "Rok"
 msgstr ""
 
-#: .\hw\models.py:40
+#: .\hw\models.py:45
 msgid "Rok vyučovaného předmětu."
 msgstr ""
 
-#: .\hw\models.py:41
+#: .\hw\models.py:46
 msgid "Název předmětu"
 msgstr ""
 
-#: .\hw\models.py:41
+#: .\hw\models.py:46
 msgid "Zadejte zkratku předmětu."
 msgstr ""
 
-#: .\hw\models.py:52 .\hw\models.py:54
+#: .\hw\models.py:57 .\hw\models.py:59
 msgid "Soubor"
 msgstr ""
 
-#: .\hw\models.py:55
+#: .\hw\models.py:60
 msgid "Soubory"
 msgstr ""
 
-#: .\hw\models.py:67
+#: .\hw\models.py:72
 msgid "Titulek zadání"
 msgstr ""
 
-#: .\hw\models.py:67
+#: .\hw\models.py:72
 msgid "Stručný titulek zadání k domácího úkolu."
 msgstr ""
 
-#: .\hw\models.py:68
+#: .\hw\models.py:73
 msgid "Vyberte předmět, ke kterému úkol patří."
 msgstr ""
 
-#: .\hw\models.py:70
+#: .\hw\models.py:75
 msgid "Popis"
 msgstr ""
 
-#: .\hw\models.py:70
+#: .\hw\models.py:75
 msgid "Popište zadání domácího úkolu."
 msgstr ""
 
-#: .\hw\models.py:71
+#: .\hw\models.py:76
 msgid "Přílohy"
 msgstr ""
 
-#: .\hw\models.py:72
+#: .\hw\models.py:77
 msgid "Maximální počet bodů"
 msgstr ""
 
-#: .\hw\models.py:72
+#: .\hw\models.py:77
 msgid "Maximálni počet bodů, který lze za úkol získat."
 msgstr ""
 
-#: .\hw\models.py:73
+#: .\hw\models.py:78
 msgid "Zveřejnění"
 msgstr ""
 
-#: .\hw\models.py:73
+#: .\hw\models.py:78
 msgid "Od tohoto času bude zadání dostupné."
 msgstr ""
 
-#: .\hw\models.py:74
+#: .\hw\models.py:79
 msgid "Termín odevzdání"
 msgstr ""
 
-#: .\hw\models.py:74
+#: .\hw\models.py:79
 msgid "Po tomto termínu již nelze úkol odevzdat."
 msgstr ""
 
-#: .\hw\models.py:82
+#: .\hw\models.py:87
 #, fuzzy
 #| msgid "Deadline nemůže být dříve než release."
 msgid "Termín odevzdání nemůže být dříve než zveřejnění."
 msgstr "Deadline nemůže být dříve než vydání."
 
-#: .\hw\models.py:99 .\hw\models.py:100 .\hw\models.py:107
+#: .\hw\models.py:106 .\hw\models.py:107 .\hw\models.py:114
 #: .\templates\homework\student_detail.html:49 .\templates\list\active.html:49
 #: .\templates\list\after_deadline.html:48
 #: .\templates\list\assignment_list.html:40
@@ -312,130 +317,122 @@ msgstr "Deadline nemůže být dříve než vydání."
 msgid "Zadání"
 msgstr ""
 
-#: .\hw\models.py:114
+#: .\hw\models.py:121
 msgid "Úkol nemá přiřazený předmět."
 msgstr "Úkol nemá přiřazený předmět."
 
-#: .\hw\models.py:117
+#: .\hw\models.py:124
 msgid "Uživatel není studentem tohoto předmětu."
 msgstr "Uživatel není studentem tohoto předmětu."
 
-#: .\hw\models.py:127
+#: .\hw\models.py:134
 msgid "Přiřazení úkolu"
 msgstr ""
 
-#: .\hw\models.py:128
+#: .\hw\models.py:135
 msgid "Přiřazení úkolů"
 msgstr ""
 
-#: .\hw\models.py:132
+#: .\hw\models.py:139
 msgid "Klíč úkol-student"
 msgstr ""
 
-#: .\hw\models.py:134
+#: .\hw\models.py:141
 msgid "Programovací jazyk"
 msgstr ""
 
-#: .\hw\models.py:134
+#: .\hw\models.py:141
 msgid "Vyberte programovací jazyk, ve kterém napíšete řešení úkolu."
 msgstr ""
 
-#: .\hw\models.py:135
+#: .\hw\models.py:142
 msgid "Řešení"
 msgstr ""
 
-#: .\hw\models.py:135
+#: .\hw\models.py:142
 msgid "Napište své řešení úkolu."
 msgstr ""
 
-#: .\hw\models.py:137
+#: .\hw\models.py:144
 msgid "Přiložené soubory"
 msgstr ""
 
-#: .\hw\models.py:138
+#: .\hw\models.py:145
 msgid "Poznámky"
 msgstr ""
 
-#: .\hw\models.py:138
+#: .\hw\models.py:145
 msgid "Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."
 msgstr ""
 
-#: .\hw\models.py:139 .\templates\homework\teacher_detail.html:157
+#: .\hw\models.py:146 .\templates\homework\teacher_detail.html:157
 #: .\templates\list\active.html:142 .\templates\list\after_deadline.html:136
 #: .\templates\list\assignment_list.html:126
 #: .\templates\student_comments\teacher_list.html:55
 msgid "Odevzdáno"
 msgstr ""
 
-#: .\hw\models.py:141
+#: .\hw\models.py:148
 msgid "Počet bodů"
 msgstr ""
 
-#: .\hw\models.py:141
+#: .\hw\models.py:148
 msgid "Počet bodů přidělený vyučujícím."
 msgstr ""
 
-#: .\hw\models.py:142
+#: .\hw\models.py:149
 msgid "Slovní hodnocení"
 msgstr ""
 
-#: .\hw\models.py:153 .\templates\homework\hw_detail.html:5
-#: .\templates\homework\hw_detail.html:24
-#: .\templates\homework\hw_evaluation_update.html:23
-msgid "Odevzdaný úkol"
+#: .\hw\models.py:163
+msgid "Oydevzdaný úkol"
 msgstr ""
 
-#: .\hw\models.py:154 .\templates\homework\teacher_detail.html:110
+#: .\hw\models.py:164 .\templates\homework\teacher_detail.html:110
 msgid "Odevzdané úkoly"
 msgstr ""
 
-#: .\hw\models.py:157
+#: .\hw\models.py:167
 msgid "Úkol"
 msgstr ""
 
-#: .\hw\models.py:158
+#: .\hw\models.py:168
 msgid "Hodnotitel"
 msgstr ""
 
-#: .\hw\models.py:159 .\templates\student_comments\reviewer_form.html:6
+#: .\hw\models.py:169 .\templates\student_comments\reviewer_form.html:6
 msgid "Komentář"
 msgstr ""
 
-#: .\hw\models.py:159
+#: .\hw\models.py:169
 msgid "Napište zpětnou vazbu k úkolu."
 msgstr ""
 
-#: .\hw\models.py:160
+#: .\hw\models.py:170
 msgid "Odesláno"
 msgstr ""
 
-#: .\hw\models.py:162
+#: .\hw\models.py:172
 msgid "Označení"
 msgstr ""
 
-#: .\hw\models.py:162
+#: .\hw\models.py:172
 msgid ""
 "Označení komentáře pro lepší přehled. Například 'špatný kód', 'nefunguje', "
 "'výborné řešení' apod."
 msgstr ""
 
-#: .\hw\models.py:165
+#: .\hw\models.py:175
 #, fuzzy
 #| msgid "Reviewer nemůže být autor domácího úkolu."
 msgid "Hodnotitel nemůže být autor domácího úkolu."
 msgstr "Recenzent nemůže být autorem domácího úkolu."
 
-#: .\hw\models.py:167
-#, fuzzy
-#| msgid "Reviewer nemůže být autor zadání úkolu."
-msgid "Hodnotitel  nemůže být autor zadání úkolu."
-msgstr "Recenzent nemůže být autorem zadání úkolu."
-
-#: .\hw\models.py:188
+#: .\hw\models.py:198
 msgid "Studentský komentář"
 msgstr ""
 
-#: .\hw\models.py:189
+#: .\hw\models.py:199
 msgid "Studentské komentáře"
 msgstr ""
 
@@ -786,6 +783,11 @@ msgstr ""
 
 #: .\templates\homework\hw_create.html:90
 msgid "Odevzdat"
+msgstr ""
+
+#: .\templates\homework\hw_detail.html:5 .\templates\homework\hw_detail.html:24
+#: .\templates\homework\hw_evaluation_update.html:23
+msgid "Odevzdaný úkol"
 msgstr ""
 
 #: .\templates\homework\hw_detail.html:45
@@ -1166,6 +1168,11 @@ msgstr ""
 msgid "Nejsou tu žádná oznámení."
 msgstr ""
 
+#: .\templates\registration\login.html:4 .\templates\registration\login.html:14
+#: .\templates\registration\login.html:17
+msgid "Log In"
+msgstr "Přihlásit se"
+
 #: .\templates\registration\password_change_done.html:4
 msgid "Heslo změněno"
 msgstr ""
@@ -1315,6 +1322,11 @@ msgstr ""
 #: .\templates\student_comments\teacher_mark_form.html:101
 msgid "Oleslat hodnocení"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Reviewer nemůže být autor zadání úkolu."
+#~ msgid "Hodnotitel  nemůže být autor zadání úkolu."
+#~ msgstr "Recenzent nemůže být autorem zadání úkolu."
 
 #~ msgid ""
 #~ "Popište zadání domácího úkolu. Podporuje <a href='https://"

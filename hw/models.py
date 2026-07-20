@@ -25,6 +25,11 @@ def validate_file_size(value):
         raise ValidationError(
     _("Maximální velikost jednoho souboru je %(maxsize)s MB.")% {"maxsize": f"{settings.MAX_UPLOAD_FILE_SIZE_MB:.0f}"})
 
+def validate_max_file_count(instance):
+    if instance.pk and instance.files.count() > settings.MAX_UPLOAD_FILES_NUMBER:
+        raise ValidationError({
+            'files': _("Maximální počet souborů je %(maxcount)s.") % {"maxcount": settings.MAX_UPLOAD_FILES_NUMBER}
+        })
 
 def codefile_upload(instance, filename):
     user = getattr(instance, "_upload_user", None)
@@ -77,10 +82,14 @@ class Assignment(models.Model):
     def __str__(self):
         return self.title
     def clean(self):
-        if self.deadline < self.release:
-            raise ValidationError({
-                'deadline': _("Termín odevzdání nemůže být dříve než zveřejnění.")
-            })
+        if self.release and self.deadline:
+            if self.deadline < self.release:
+                raise ValidationError({
+                    'deadline': _("Termín odevzdání nemůže být dříve než zveřejnění.")
+                })
+
+        validate_max_file_count(self)
+
     @property
     def is_after_deadline(self)->bool:
         return timezone.now()>self.deadline
@@ -146,6 +155,9 @@ class Homework(models.Model):
         return self.files.count()
     def get_assgn_student_url(self):
         return reverse("assgn_detail_student", kwargs={"pk":self.key.assignment.pk})
+    
+    def clean(self):
+        validate_max_file_count(self)
     @property
     def is_after_deadline(self)->bool:
         return timezone.now()>self.key.assignment.deadline
@@ -166,16 +178,10 @@ class HomeworkStudentComment(models.Model):
         if self.hw.key.assignment.teacher_id==self.reviewer_id:
             raise ValidationError(_("Hodnotitel  nemůže být autor zadání úkolu."))
 
-    def save(self, *args, **kwargs):
-        # vynucuji clean v save, takže se submitted nastaví až po validaci
-        self.full_clean()
-        self.submitted = timezone.now()
-        return super().save(*args, **kwargs)
-    
     def __str__(self):
         return f"Comment: {self.reviewer} of hw {self.hw}"
     
-    def is_marked(self):
+    def is_marked(self)->bool:
         return bool(self.mark)
 
     class Meta:

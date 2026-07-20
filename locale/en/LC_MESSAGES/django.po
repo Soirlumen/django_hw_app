@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 16:16+0200\n"
+"POT-Creation-Date: 2026-07-18 14:00+0200\n"
 "PO-Revision-Date: 2026-03-11 16:05+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English\n"
@@ -61,7 +61,7 @@ msgstr "Phone"
 msgid "Telefonní číslo ve správném formátu."
 msgstr "Phone number in the correct format."
 
-#: .\accounts\models.py:12 .\hw\models.py:44
+#: .\accounts\models.py:12 .\hw\models.py:49
 msgid "Předměty"
 msgstr "Subjects"
 
@@ -77,16 +77,16 @@ msgstr "User"
 msgid "Uživatelé"
 msgstr "Users"
 
-#: .\accounts\models.py:36 .\hw\models.py:106
+#: .\accounts\models.py:36 .\hw\models.py:113
 #: .\templates\homework\teacher_detail.html:156
 msgid "Student"
 msgstr "Student"
 
-#: .\accounts\models.py:37 .\hw\models.py:69
+#: .\accounts\models.py:37 .\hw\models.py:74
 msgid "Vyučující"
 msgstr "Teacher"
 
-#: .\accounts\models.py:42 .\hw\models.py:43 .\hw\models.py:68
+#: .\accounts\models.py:42 .\hw\models.py:48 .\hw\models.py:73
 #: .\templates\list\active.html:66 .\templates\list\active.html:125
 #: .\templates\list\after_deadline.html:65
 #: .\templates\list\after_deadline.html:121
@@ -219,83 +219,89 @@ msgstr "Plain text"
 msgid "Maximální velikost jednoho souboru je %(maxsize)s MB."
 msgstr "The maximum size of a single file is %(maxsize)s MB."
 
-#: .\hw\models.py:40
+#: .\hw\models.py:31
+#, fuzzy, python-format
+#| msgid "Maximální počet bodů je %(mb)s"
+msgid "Maximální počet souborů je %(maxcount)s."
+msgstr "The maximum number of points is %(mb)s"
+
+#: .\hw\models.py:45
 msgid "Rok"
 msgstr "Year"
 
-#: .\hw\models.py:40
+#: .\hw\models.py:45
 msgid "Rok vyučovaného předmětu."
 msgstr "The academic year of the subject."
 
-#: .\hw\models.py:41
+#: .\hw\models.py:46
 msgid "Název předmětu"
 msgstr "Subject name"
 
-#: .\hw\models.py:41
+#: .\hw\models.py:46
 msgid "Zadejte zkratku předmětu."
 msgstr "Enter the subject abbreviation/shortcode."
 
-#: .\hw\models.py:52 .\hw\models.py:54
+#: .\hw\models.py:57 .\hw\models.py:59
 msgid "Soubor"
 msgstr "File"
 
-#: .\hw\models.py:55
+#: .\hw\models.py:60
 msgid "Soubory"
 msgstr "Files"
 
-#: .\hw\models.py:67
+#: .\hw\models.py:72
 msgid "Titulek zadání"
 msgstr "Assignment title"
 
-#: .\hw\models.py:67
+#: .\hw\models.py:72
 msgid "Stručný titulek zadání k domácího úkolu."
 msgstr "A short title for the homework/assignment."
 
-#: .\hw\models.py:68
+#: .\hw\models.py:73
 msgid "Vyberte předmět, ke kterému úkol patří."
 msgstr "Select the subject this assignment belongs to."
 
-#: .\hw\models.py:70
+#: .\hw\models.py:75
 msgid "Popis"
 msgstr "Description"
 
-#: .\hw\models.py:70
+#: .\hw\models.py:75
 msgid "Popište zadání domácího úkolu."
 msgstr "Describe the assignment task."
 
-#: .\hw\models.py:71
+#: .\hw\models.py:76
 msgid "Přílohy"
 msgstr "Attachments"
 
-#: .\hw\models.py:72
+#: .\hw\models.py:77
 msgid "Maximální počet bodů"
 msgstr "Maximum points"
 
-#: .\hw\models.py:72
+#: .\hw\models.py:77
 msgid "Maximálni počet bodů, který lze za úkol získat."
 msgstr "The maximum number of points that can be obtained for this assignment."
 
-#: .\hw\models.py:73
+#: .\hw\models.py:78
 msgid "Zveřejnění"
 msgstr "Release date"
 
-#: .\hw\models.py:73
+#: .\hw\models.py:78
 msgid "Od tohoto času bude zadání dostupné."
 msgstr "The assignment will be available starting from this time."
 
-#: .\hw\models.py:74
+#: .\hw\models.py:79
 msgid "Termín odevzdání"
 msgstr "Submission deadline"
 
-#: .\hw\models.py:74
+#: .\hw\models.py:79
 msgid "Po tomto termínu již nelze úkol odevzdat."
 msgstr "The assignment cannot be submitted after this deadline."
 
-#: .\hw\models.py:82
+#: .\hw\models.py:87
 msgid "Termín odevzdání nemůže být dříve než zveřejnění."
 msgstr "The submission deadline cannot be earlier than the release date."
 
-#: .\hw\models.py:99 .\hw\models.py:100 .\hw\models.py:107
+#: .\hw\models.py:106 .\hw\models.py:107 .\hw\models.py:114
 #: .\templates\homework\student_detail.html:49 .\templates\list\active.html:49
 #: .\templates\list\after_deadline.html:48
 #: .\templates\list\assignment_list.html:40
@@ -303,132 +309,126 @@ msgstr "The submission deadline cannot be earlier than the release date."
 msgid "Zadání"
 msgstr "Assignment"
 
-#: .\hw\models.py:114
+#: .\hw\models.py:121
 msgid "Úkol nemá přiřazený předmět."
 msgstr "The assignment has no subject assigned."
 
-#: .\hw\models.py:117
+#: .\hw\models.py:124
 msgid "Uživatel není studentem tohoto předmětu."
 msgstr "The user is not a student in this subject."
 
-#: .\hw\models.py:127
+#: .\hw\models.py:134
 msgid "Přiřazení úkolu"
 msgstr "Assignment assignment"
 
 # lepší: "Assignment submission" nebo "Student assignment", ale pro konzistenci "Assignment link"
-#: .\hw\models.py:128
+#: .\hw\models.py:135
 msgid "Přiřazení úkolů"
 msgstr "Assignment assignments"
 
 # "Student assignments" nebo "Assignment links"
-#: .\hw\models.py:132
+#: .\hw\models.py:139
 msgid "Klíč úkol-student"
 msgstr "Assignment-Student key"
 
-#: .\hw\models.py:134
+#: .\hw\models.py:141
 msgid "Programovací jazyk"
 msgstr "Programming language"
 
-#: .\hw\models.py:134
+#: .\hw\models.py:141
 msgid "Vyberte programovací jazyk, ve kterém napíšete řešení úkolu."
 msgstr "Select the programming language in which you will write the solution."
 
-#: .\hw\models.py:135
+#: .\hw\models.py:142
 msgid "Řešení"
 msgstr "Solution"
 
-#: .\hw\models.py:135
+#: .\hw\models.py:142
 msgid "Napište své řešení úkolu."
 msgstr "Write your solution to the assignment."
 
-#: .\hw\models.py:137
+#: .\hw\models.py:144
 msgid "Přiložené soubory"
 msgstr "Attached files"
 
-#: .\hw\models.py:138
+#: .\hw\models.py:145
 msgid "Poznámky"
 msgstr "Notes"
 
-#: .\hw\models.py:138
+#: .\hw\models.py:145
 msgid "Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."
 msgstr "Notes on the submitted assignment. Visible only to the teacher."
 
-#: .\hw\models.py:139 .\templates\homework\teacher_detail.html:157
+#: .\hw\models.py:146 .\templates\homework\teacher_detail.html:157
 #: .\templates\list\active.html:142 .\templates\list\after_deadline.html:136
 #: .\templates\list\assignment_list.html:126
 #: .\templates\student_comments\teacher_list.html:55
 msgid "Odevzdáno"
 msgstr "Submitted"
 
-#: .\hw\models.py:141
+#: .\hw\models.py:148
 msgid "Počet bodů"
 msgstr "Points awarded"
 
-#: .\hw\models.py:141
+#: .\hw\models.py:148
 msgid "Počet bodů přidělený vyučujícím."
 msgstr "Points awarded by the teacher."
 
-#: .\hw\models.py:142
+#: .\hw\models.py:149
 msgid "Slovní hodnocení"
 msgstr "Verbal assessment"
 
 # nebo "Written feedback" – podle kontextu; "Verbal assessment" je běžné v české škole pro slovní hodnocení
-#: .\hw\models.py:153 .\templates\homework\hw_detail.html:5
-#: .\templates\homework\hw_detail.html:24
-#: .\templates\homework\hw_evaluation_update.html:23
-msgid "Odevzdaný úkol"
+#: .\hw\models.py:163
+#, fuzzy
+#| msgid "Odevzdaný úkol"
+msgid "Oydevzdaný úkol"
 msgstr "Submitted assignment"
 
-#: .\hw\models.py:154 .\templates\homework\teacher_detail.html:110
+#: .\hw\models.py:164 .\templates\homework\teacher_detail.html:110
 msgid "Odevzdané úkoly"
 msgstr "Submitted assignments"
 
-#: .\hw\models.py:157
+#: .\hw\models.py:167
 msgid "Úkol"
 msgstr "Assignment"
 
-#: .\hw\models.py:158
+#: .\hw\models.py:168
 msgid "Hodnotitel"
 msgstr "Grader"
 
 # nebo "Evaluator" – grader je velmi běžné v LMS
-#: .\hw\models.py:159 .\templates\student_comments\reviewer_form.html:6
+#: .\hw\models.py:169 .\templates\student_comments\reviewer_form.html:6
 msgid "Komentář"
 msgstr "Comment"
 
-#: .\hw\models.py:159
+#: .\hw\models.py:169
 msgid "Napište zpětnou vazbu k úkolu."
 msgstr "Write feedback for the assignment."
 
-#: .\hw\models.py:160
+#: .\hw\models.py:170
 msgid "Odesláno"
 msgstr "Submitted"
 
-#: .\hw\models.py:162
+#: .\hw\models.py:172
 msgid "Označení"
 msgstr ""
 
-#: .\hw\models.py:162
+#: .\hw\models.py:172
 msgid ""
 "Označení komentáře pro lepší přehled. Například 'špatný kód', 'nefunguje', "
 "'výborné řešení' apod."
 msgstr ""
 
-#: .\hw\models.py:165
+#: .\hw\models.py:175
 msgid "Hodnotitel nemůže být autor domácího úkolu."
 msgstr "The grader cannot be the author of the assignment."
 
-#: .\hw\models.py:167
-#, fuzzy
-#| msgid "Hodnotitel nemůže být autor zadání úkolu."
-msgid "Hodnotitel  nemůže být autor zadání úkolu."
-msgstr "The grader cannot be the author of the assignment description."
-
-#: .\hw\models.py:188
+#: .\hw\models.py:198
 msgid "Studentský komentář"
 msgstr "Student comment"
 
-#: .\hw\models.py:189
+#: .\hw\models.py:199
 msgid "Studentské komentáře"
 msgstr "Student comments"
 
@@ -807,6 +807,12 @@ msgstr "You can't add solution after deadline..."
 #: .\templates\homework\hw_create.html:90
 msgid "Odevzdat"
 msgstr "Submit"
+
+# nebo "Written feedback" – podle kontextu; "Verbal assessment" je běžné v české škole pro slovní hodnocení
+#: .\templates\homework\hw_detail.html:5 .\templates\homework\hw_detail.html:24
+#: .\templates\homework\hw_evaluation_update.html:23
+msgid "Odevzdaný úkol"
+msgstr "Submitted assignment"
 
 #: .\templates\homework\hw_detail.html:45
 #: .\templates\homework\hw_evaluation_update.html:40
@@ -1199,6 +1205,11 @@ msgstr "New announcement"
 msgid "Nejsou tu žádná oznámení."
 msgstr "No announcement yet..."
 
+#: .\templates\registration\login.html:4 .\templates\registration\login.html:14
+#: .\templates\registration\login.html:17
+msgid "Log In"
+msgstr ""
+
 #: .\templates\registration\password_change_done.html:4
 msgid "Heslo změněno"
 msgstr "Password changed"
@@ -1373,6 +1384,11 @@ msgstr "Teacher"
 #| msgid "Odeslat hodnocení"
 msgid "Oleslat hodnocení"
 msgstr "Submit evaluation"
+
+#, fuzzy
+#~| msgid "Hodnotitel nemůže být autor zadání úkolu."
+#~ msgid "Hodnotitel  nemůže být autor zadání úkolu."
+#~ msgstr "The grader cannot be the author of the assignment description."
 
 #~ msgid "Detail úkolu"
 #~ msgstr "Assignment details"

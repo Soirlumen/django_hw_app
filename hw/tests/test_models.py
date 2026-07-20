@@ -7,6 +7,7 @@ import os
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
+from hw.shuffle import get_the_houmwrk
 
 class TestSubject(TestCase):
     def setUp(self):
@@ -59,9 +60,10 @@ class TestAssignment(BaseHWTestCase):
         self.assertIsInstance(self.assignment.get_url(), str)
         expected_url = f'/cs/hw/assignmentt/{self.assignment.pk}/'
         self.assertEqual(self.assignment.get_url(), expected_url)
+    def test_clean_validate_max_file_count(self):
+        pass
 
 @override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
-
 class TestCodeFile(BaseHWTestCase):
     def test_to_str(self):
         self.assertIn("test_code",str(self.codefile))
@@ -69,7 +71,8 @@ class TestCodeFile(BaseHWTestCase):
         big_file = SimpleUploadedFile("big_file.py", b"x" * (settings.MAX_UPLOAD_FILE_SIZE + 1))
         codefile = CodeFile(file=big_file)
         with self.assertRaises(ValidationError):
-            codefile.full_clean()
+            codefile.full_clean()      
+    
     def test_get_file_path_property(self):
         actual_path = self.codefile.get_file_path
         self.assertIsInstance(actual_path, str)
@@ -159,3 +162,62 @@ class TestHomeworkStudentComment(BaseHWTestCase):
         comment = HomeworkStudentComment(hw=self.homework, reviewer=self.assignment.teacher, comment="paráda")
         with self.assertRaises(ValidationError):
             comment.full_clean()
+            
+
+class GetTheHoumwrkTests(TestCase):
+
+    def test_empty_or_single_homework_returns_empty_list(self):
+        """Pokud je odevzdaných úkolů méně než 2, má funkce vrátit prázdný seznam."""
+        self.assertEqual(get_the_houmwrk([], k=1), [])
+        self.assertEqual(get_the_houmwrk(["hw1"], k=1), [])
+
+    def test_k_less_than_one_returns_empty_list(self):
+        """Pokud je k menší než 1, funkce nic nepřiřadí a vrátí prázdný seznam."""
+        self.assertEqual(get_the_houmwrk(["hw1", "hw2", "hw3"], k=0), [])
+        self.assertEqual(get_the_houmwrk(["hw1", "hw2", "hw3"], k=-1), [])
+
+    def test_k_greater_than_max_raises_value_error(self):
+        """Pokud je k větší než n-1, musí funkce vyhodit ValueError."""
+        with self.assertRaises(ValueError):
+            get_the_houmwrk(["hw1", "hw2", "hw3"], k=3)  # n=3, max k je 2
+
+    def test_reviewer_never_reviews_themselves(self):
+        """Ověření, že v žádné dvojici nefiguruje stejný úkol jako hodnotitel i hodnocený."""
+        homeworks = [f"hw_{i}" for i in range(5)]
+        pairs = get_the_houmwrk(homeworks, k=2)
+        
+        self.assertEqual(len(pairs), 5)
+        for reviewer, to_review in pairs:
+            # Nikdo nesmí hodnotit sám sebe
+            self.assertNotIn(reviewer, to_review)
+            # Každý musí dostat přesně k úkolů
+            self.assertEqual(len(to_review), 2)
+
+    def test_deterministic_shuffling_with_seed(self):
+        """Pokud zadáme stejný seed, výstup musí být vždy identický."""
+        homeworks = ["A", "B", "C", "D", "E"]
+        
+        res1 = get_the_houmwrk(homeworks, k=2, seed=42)
+        res2 = get_the_houmwrk(homeworks, k=2, seed=42)
+        res3 = get_the_houmwrk(homeworks, k=2, seed=7)
+        
+        self.assertEqual(res1, res2)
+        self.assertNotEqual(res1, res3)  # Jiný seed by měl udělat jiný mix
+
+    def test_cyclical_assignment_correctness(self):
+        """Ověření, že algoritmus správně posouvá indexy cyklicky dokola."""
+        homeworks = ["A", "B", "C"]
+        # Použijeme seed, u kterého víme, jak dopadne shuffle, nebo otestujeme 
+        # pouze vlastnost cykličnosti: prvek na indexu i + 1 (modulo n) musí být první na řadě.
+        pairs = get_the_houmwrk(homeworks, k=2, seed=123)
+        
+        # Extrahujeme zamíchané pořadí z výsledku
+        shuffled_order = [reviewer for reviewer, _ in pairs]
+        
+        for i, (reviewer, to_review) in enumerate(pairs):
+            # První přiřazený úkol musí být ten hned za ním v zamíchaném poli
+            expected_first = shuffled_order[(i + 1) % 3]
+            expected_second = shuffled_order[(i + 2) % 3]
+            
+            self.assertEqual(to_review[0], expected_first)
+            self.assertEqual(to_review[1], expected_second)

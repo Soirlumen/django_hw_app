@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import CustomUserCreationForm
 from news.models import NewsPost
-
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
@@ -10,6 +10,11 @@ from django.contrib.auth.decorators import login_required
 def success_login_view(request):
     return render(request, "accounts/success_login.html")
 
+class CustomLoginView(LoginView):
+    template_name = "registration/login.html"
+    redirect_authenticated_user = True
+    def get_success_url(self):
+        return reverse_lazy("success_login")
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm

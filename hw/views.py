@@ -89,6 +89,7 @@ def hw_list_after_deadline_view(request):
 
 
 @teacher_required
+@own_required(Assignment,"teacher")
 def assgn_detail_teacher(request, pk):
     assignment=get_object_or_404(Assignment,pk=pk)
     homeworks = Homework.objects.filter(key__assignment=assignment)
@@ -137,26 +138,46 @@ def assgn_edit_view(request,pk):
 @student_required
 def assgn_detail_stud(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
+
+    if not request.user.student_subjects.filter(
+        pk=assignment.subject_id
+    ).exists():
+        raise PermissionDenied(
+            _("Nemáte přístup k tomuto předmětu.")
+        )
+
     if assignment.is_before_release:
-        raise PermissionDenied("Toto zadání ještě nebylo zveřejněno.")
+        raise PermissionDenied(
+            _("Toto zadání ještě nebylo zveřejněno.")
+        )
+
     key, created = Key.objects.get_or_create(
         student=request.user,
-        assignment=assignment
+        assignment=assignment,
     )
-    submitted_homework = Homework.objects.filter(key=key).first()
-    already_submitted = submitted_homework is not None
+
+    submitted_homework = Homework.objects.filter(
+        key=key
+    ).first()
+
     comments = None
     if submitted_homework:
-        comments = HomeworkStudentComment.objects.filter(hw=submitted_homework)
+        comments = HomeworkStudentComment.objects.filter(
+            hw=submitted_homework
+        )
 
-    context={
-            "hwdetail": assignment,
-            "already_submitted": already_submitted,
-            "submitted_homework": submitted_homework,
-            "comments":comments,
-            }
-    return render(request,"homework/student_detail.html",context)
+    context = {
+        "hwdetail": assignment,
+        "already_submitted": submitted_homework is not None,
+        "submitted_homework": submitted_homework,
+        "comments": comments,
+    }
 
+    return render(
+        request,
+        "homework/student_detail.html",
+        context,
+    )
     
 @teacher_required
 def assignment_create_view(request):
@@ -171,7 +192,9 @@ def assignment_create_view(request):
             assignment = form.save(commit=False)
 
             if assignment.subject not in request.user.teacher_subjects:
-                return PermissionDenied("Nelze přidávat úkoly do tohoto předmětu!!")
+                raise PermissionDenied(
+                    _("Nelze přidávat úkoly do tohoto předmětu!!")
+                )
 
             assignment.teacher = request.user
             assignment.save()
@@ -195,6 +218,7 @@ def assignment_create_view(request):
 
     return render(request, "homework/ass_create.html", {"form": form})
 
+
 @student_required
 def hw_create_view(request):
     assgn_id = request.GET.get("assgn_id")
@@ -204,9 +228,13 @@ def hw_create_view(request):
     assignment = get_object_or_404(Assignment, pk=assgn_id)
 
     if assignment.subject not in request.user.student_subjects:
-        return PermissionDenied("Nemáš přístup k tomuto předmětu.")
+        raise PermissionDenied(
+            _("Nemáš přístup k tomuto předmětu.")
+        )
     if assignment.is_before_release:
-        return PermissionDenied("Nelze přidat úkol k nezveřejněnému zadání.")
+        raise PermissionDenied(
+            _("Nelze přidat úkol k nezveřejněnému zadání.")
+        )
 
     key, created = Key.objects.get_or_create(student=request.user, assignment=assignment)
     hw = Homework.objects.filter(key=key).first()
@@ -301,7 +329,9 @@ def hw_detail_view(request, pk):
     is_student = request.user == homework.key.student
     is_subject_teacher = request.user.is_teacher and homework.key.assignment.subject in request.user.teacher_subjects
     if not (is_student or is_subject_teacher):
-        return PermissionDenied("Nemáš přístup k tomuto domácímu úkolu.")
+        raise PermissionDenied(
+            _("Nemáš přístup k tomuto domácímu úkolu.")
+        )
     context={"hw": homework,
              "assignment": homework.key.assignment,
              "comments":comments,
@@ -400,32 +430,50 @@ def reviewer_list_view(request):
     })
 
 
-@own_required(HomeworkStudentComment,"reviewer")
+@student_required
+@own_required(HomeworkStudentComment, "reviewer")
 def reviewer_form_view(request, pk):
     review = get_object_or_404(
-        HomeworkStudentComment.objects.select_related("hw__key__assignment"),
+        HomeworkStudentComment.objects.select_related(
+            "hw__key__assignment"
+        ),
         pk=pk,
-        reviewer=request.user,  
+        reviewer=request.user,
     )
+
     if request.method == "POST":
-        form = HomeworkStudentCommentForm(request.POST, instance=review)
+        form = HomeworkStudentCommentForm(
+            request.POST,
+            instance=review,
+        )
+
         if form.is_valid():
             form.instance.submitted = timezone.now()
             form.save()
-            messages.success(request, _("Komentář uložen."))
-            return redirect("reviewer_form", pk=review.pk)
-        else:
-            messages.error(request, _("Formulář obsahuje chyby."))
+
+            messages.success(
+                request,
+                _("Komentář uložen."),
+            )
+
+            return redirect(
+                "reviewer_form",
+                pk=review.pk,
+            )
     else:
         form = HomeworkStudentCommentForm(instance=review)
 
-    return render(request, "student_comments/reviewer_form.html", {
-        "comment_obj": review,
-        "hw": review.hw,
-        "assignment": review.hw.key.assignment,
-        "form": form,
-    })
-
+    return render(
+        request,
+        "student_comments/reviewer_form.html",
+        {
+            "comment_obj": review,
+            "hw": review.hw,
+            "assignment": review.hw.key.assignment,
+            "form": form,
+        },
+    )
+    
 @login_required
 def comment_feedback_detail_view(request, pk):
     review = get_object_or_404(
@@ -445,6 +493,12 @@ def comment_feedback_detail_view(request, pk):
         "mark": review.mark,
     })
     
+
+@teacher_required
+@own_required(
+    HomeworkStudentComment,
+    "hw__key__assignment__teacher",
+)
 def teacher_comment_mark_view(request, pk):
     review = get_object_or_404(HomeworkStudentComment, pk=pk)
     if request.method == "POST":

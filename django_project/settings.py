@@ -5,6 +5,10 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env_file = BASE_DIR / '.env'
+if os.path.exists(env_file):
+    environ.Env.read_env(str(env_file))
+
 env = environ.Env(
     DEBUG=(bool, False),
     DATABASE_URL=(str, f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
@@ -19,10 +23,6 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = ["*"]
-
-env_file = BASE_DIR / '.env'
-if os.path.exists(env_file):
-    environ.Env.read_env(str(env_file))
 
 # Application definition
 
@@ -137,7 +137,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-LOGIN_REDIRECT_URL = "success_login"
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
 SIGNUP_REDIRECT_URL = "login"
 

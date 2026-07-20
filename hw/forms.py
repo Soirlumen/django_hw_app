@@ -74,7 +74,7 @@ class CreateHomeworkForm(forms.ModelForm):
         
         engrossment = (cleaned_data or {}).get("engrossment") or getattr(self, "engrossment", "")
         if len(engrossment) > 30000:
-            raise ValidationError({"engrossment": _("Řešení je příliš dlouhé. Maximální délka je 150000 znaků.")})
+            raise ValidationError({"engrossment": _("Řešení je příliš dlouhé. Maximální délka je 30 000 znaků.")})
         return cleaned_data
 
     class Meta:
@@ -139,21 +139,18 @@ class AssignmentForm(forms.ModelForm):
             self.fields["subject"].queryset = self.user.teacher_subjects
             self.fields["description"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)
             self.fields["subject"].error_messages['invalid_choice'] = _("Na tomto předmětu nejsi veden jako učitel.")
-        
-    def clean_release_deadline(self):
-        release = self.cleaned_data.get("release")
-        deadline = self.cleaned_data.get("deadline")
-        if release and deadline and deadline < release:
-            raise ValidationError({"release":_("Termín odevzdání nemůže být dříve než zveřejnění")})
-        return release, deadline
+
     def clean(self):
         cleaned_data = super().clean()
+        release = cleaned_data.get("release")
+        deadline = cleaned_data.get("deadline")
         new_files = cleaned_data.get("filesimput", [])
+        if release and deadline and deadline < release:
+            self.add_error("release", _("Termín odevzdání nemůže být dříve než zveřejnění."))
 
         if len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
-            raise ValidationError(
-               _("Můžeš přiložit maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER}
-            )
+            self.add_error("filesimput", _("Můžeš přiložit maximálně %(mnf)s souborů.") % {"mnf": settings.MAX_UPLOAD_FILES_NUMBER})
+
         if not self.user:
             raise ValidationError(_("Chybí autor zadání."))
 
