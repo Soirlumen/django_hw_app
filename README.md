@@ -1,7 +1,7 @@
 ## Setup
 ```bash
 py -m venv .venv
-.\.venv\Scripts\Activate.ps1 # pro windows
+.venv\Scripts\Activate.ps1 # pro windows
 pip install -r requirements.txt
 py manage.py migrate
 ```
