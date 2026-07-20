@@ -14,13 +14,6 @@
 
 {% block content %}
 <div class="container mt-4" style="max-width: 900px">
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
@@ -119,7 +112,7 @@
     <div>
       <strong>{% translate "Tvůj odevzdaný úkol" %}</strong> v programovacím jazyce <strong>{{ submitted_homework.programming_language|default:"-" }}</strong>
     </div>
-    {% if submitted_homework.score %}
+    {% if submitted_homework.is_evaluated %}
       <span class="badge bg-success">
         {% blocktranslate with score=submitted_homework.score max_score=hwdetail.max_score %}Skóre: {{ score }} / {{ max_score }}{% endblocktranslate %}
       </span>

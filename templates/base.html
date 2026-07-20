@@ -1,112 +1,278 @@
 {% load static %}
 {% load bootstrap_icons %}
 {% load i18n %}
-<html>
-<head>
-    <title>{% block title %}{% endblock title %}</title>
-    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}" >
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    {% block extra_css %}{% endblock %}
-</head>
-<body>
-<div class="container">
-<header class="p-3 mb-3 border-bottom">
-<div class="container">
-<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-<a class="navbar-brand" href="{% url 'dashboard' %}">Poodle</a>
 
-<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-lg-0 align-items-center gap-2">
-  {% if user.is_authenticated %}
-    {% if user.is_teacher %}
-      <li class="nav-item">
-        <a href="{% url 'ass_create' %}" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2">
-          {% bs_icon 'plus-lg' size='1em' %}
-          <span>{% trans "Nové zadání"%}</span>
-        </a>
-      </li>
-    {% endif %}
-
-    {% if user.is_superuser %}
-      <li class="nav-item">
-        <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2">
-          {% bs_icon 'shield-lock' size='1em' %}
-          <span>{% trans "Admin"%}</span>
-        </a>
-      </li>
-    {% endif %}
-</ul>
-
-<div class="dropdown text-end">
-<a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-{{ user }}
-</a>
-<ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-  <li>
-    <a class="dropdown-item" href="{% url 'password_change' %}">{% trans "Change password"%}</a>
-  </li>
-  <li>
-    <a class="dropdown-item" href="{% url 'profile' %}">{% trans "Profil"%}</a>
-  </li>
-  <li class="dropdown-item">
+{% get_current_language as LANGUAGE_CODE %}
 {% get_available_languages as LANGUAGES %}
-    {% get_language_info_list for LANGUAGES as langs %}
-<div class="language-selector" style="display: flex; align-items: center; gap: 8px;">
-    {% for lang in langs %}
-        <form action="{% url 'set_language' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input name="next" type="hidden" value="{{ request.get_full_path }}">
-            <input name="language" type="hidden" value="{{ lang.code }}">
-            <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
-                <img src="{% static 'flags/' %}{{ lang.code|upper }}.png" width="20" alt="{{ lang.code|upper }}" title="{{ lang.name }}">
-            </button>
-        </form>
-        
-        {% if not forloop.last %}
-            <span style="color: #ccc;">|</span>
+{% get_language_info_list for LANGUAGES as languages %}
+{% static "flags/" as flags_base %}
+
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    {% block title %}Poodle{% endblock title %}
+  </title>
+
+  <link
+    rel="shortcut icon"
+    type="image/png"
+    href="{% static 'images/favicon.png' %}"
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  {% block extra_css %}{% endblock extra_css %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<header class="mb-3 border-bottom">
+  <div class="container">
+    <nav
+      class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3 py-3"
+      aria-label="{% translate 'Hlavní navigace' %}"
+    >
+
+      {% if user.is_authenticated %}
+        <a
+          class="navbar-brand me-lg-2"
+          href="{% url 'dashboard' %}"
+        >
+          Poodle
+        </a>
+      {% else %}
+        <a
+          class="navbar-brand me-lg-2"
+          href="{% url 'login' %}"
+        >
+          Poodle
+        </a>
+      {% endif %}
+
+      <ul
+        class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-lg-0
+               justify-content-center align-items-center gap-2"
+      >
+        {% if user.is_authenticated %}
+
+          {% if user.is_teacher %}
+            <li class="nav-item">
+              <a
+                href="{% url 'ass_create' %}"
+                class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
+              >
+                {% bs_icon "plus-lg" size="1em" %}
+                <span>{% translate "Nové zadání" %}</span>
+              </a>
+            </li>
+          {% endif %}
+
+          {% if user.is_superuser %}
+            <li class="nav-item">
+              <a
+                href="{% url 'admin:index' %}"
+                class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2"
+              >
+                {% bs_icon "shield-lock" size="1em" %}
+                <span>{% translate "Administrace" %}</span>
+              </a>
+            </li>
+          {% endif %}
+
         {% endif %}
-    {% endfor %}
-</div>
-  </li>
-  <li>
-    <form action="{% url 'logout' %}" method="post">
+      </ul>
+
+      <div class="d-flex align-items-center gap-3">
+
+        {# Přepínač jazyků je dostupný přihlášeným i odhlášeným uživatelům. #}
+<div
+  class="d-flex align-items-center gap-1"
+  aria-label="{% translate 'Výběr jazyka' %}"
+>
+  {% for language in languages %}
+    <form
+      action="{% url 'set_language' %}"
+      method="post"
+      class="mb-0"
+    >
       {% csrf_token %}
-      <button class="dropdown-item" type="submit">Log out</button>
+
+      <input
+        type="hidden"
+        name="next"
+        value="{{ request.get_full_path }}"
+      >
+
+      <input
+        type="hidden"
+        name="language"
+        value="{{ language.code }}"
+      >
+
+      <button
+        type="submit"
+        class="btn btn-sm p-1 {% if language.code == LANGUAGE_CODE %}border border-primary{% else %}border{% endif %}"
+        title="{{ language.name_local }}"
+        aria-label="{% blocktranslate trimmed with language_name=language.name_local %}Přepnout jazyk na {{ language_name }}{% endblocktranslate %}"
+        {% if language.code == LANGUAGE_CODE %}
+          aria-current="true"
+        {% endif %}
+      >
+        <img
+          src="{{ flags_base }}{{ language.code|upper }}.png"
+          width="22"
+          height="15"
+          alt="{{ language.code|upper }}"
+        >
+      </button>
     </form>
-  </li>
-</ul>
+  {% endfor %}
 </div>
 
-{% else %}
-</ul>
-<div class="text-end">
-    <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Log In</a>
-    {# <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a> #}
-</div>
-{% endif %}
-</div>
-</div>
+        {% if user.is_authenticated %}
+
+          <div class="dropdown text-end">
+            <a
+              href="#"
+              class="d-block link-dark text-decoration-none dropdown-toggle"
+              id="user-dropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {{ user }}
+            </a>
+
+            <ul
+              class="dropdown-menu dropdown-menu-end text-small"
+              aria-labelledby="user-dropdown"
+            >
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="{% url 'profile' %}"
+                >
+                  {% translate "Profil" %}
+                </a>
+              </li>
+
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="{% url 'password_change' %}"
+                >
+                  {% translate "Změnit heslo" %}
+                </a>
+              </li>
+
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <form
+                  action="{% url 'logout' %}"
+                  method="post"
+                  class="mb-0"
+                >
+                  {% csrf_token %}
+
+                  <button
+                    class="dropdown-item"
+                    type="submit"
+                  >
+                    {% translate "Odhlásit se" %}
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </div>
+
+        {% else %}
+
+          <a
+            href="{% url 'login' %}"
+            class="btn btn-outline-primary"
+          >
+            {% translate "Přihlásit se" %}
+          </a>
+
+        {% endif %}
+      </div>
+
+    </nav>
+  </div>
 </header>
 
-<main>
-{% block content %}
-{% endblock content %}
+<main class="flex-grow-1">
+
+  {# Zprávy se díky tomu nemusí opakovat v každé jednotlivé šabloně. #}
+  {% if messages %}
+    <div class="container mt-3" style="max-width: 900px;">
+      {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="{% translate 'Zavřít' %}"
+          ></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% block content %}
+  {% endblock content %}
+
 </main>
 
-<footer class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-<p class="fs-5 ms-2">© Soirlumen 2025-2026</p>
-<div class="d-flex gap-3 me-2">
-    <a target="_blank" href="https://github.com/Soirlumen/django_hw_app" class="text-reset">
-      {% bs_icon "github" size="1.5em" %}
-    </a>
-</div>
+<footer class="container mt-auto">
+  <div
+    class="d-flex flex-column flex-sm-row justify-content-between
+           align-items-center gap-3 py-4 my-4 border-top"
+  >
+    <p class="fs-5 mb-0">
+      © Soirlumen 2025–2026
+    </p>
+
+    <div class="d-flex gap-3">
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://github.com/Soirlumen/django_hw_app"
+        class="text-reset"
+        aria-label="GitHub"
+      >
+        {% bs_icon "github" size="1.5em" %}
+      </a>
+    </div>
+  </div>
 </footer>
 
-</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-{% block extra_js %}{% endblock %}
+{% block extra_js %}{% endblock extra_js %}
 
 </body>
 </html>

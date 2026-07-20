@@ -11,13 +11,6 @@
 
 {% block content %}
 <div class="container mt-4" style="max-width: 900px;">
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
@@ -86,7 +79,7 @@
       <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
         <strong>{% trans "Hodnocení" %}</strong>
 
-        {% if hw.text_evaluation or hw.score %}
+        {% if hw.text_evaluation or hw.is_evaluated %}
           <div class="d-flex flex-wrap gap-2">
             <a href="{% url 'evaluate_edit' hw.pk %}" class="btn btn-sm btn-outline-primary">
               {% trans "Upravit hodnocení" %}
@@ -103,8 +96,8 @@
       </div>
 
       <div class="card-body">
-        {% if hw.text_evaluation or hw.score %}
-          {% if hw.score %}
+        {% if hw.text_evaluation or hw.is_evaluated %}
+          {% if hw.is_evaluated %}
             <div class="mb-3">
               <span class="badge bg-secondary">{%trans "Skóre:"%} {{ hw.score }} / {{ hw.key.assignment.max_score }}</span>
             </div>

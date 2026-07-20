@@ -11,14 +11,6 @@
 {% block content %}
 <div class="container mt-4" style="max-width: 1000px;">
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mb-3" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-
 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
   <div>
     <h2 class="mb-0">{{ assignment.title }}</h2>

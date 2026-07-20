@@ -137,33 +137,36 @@ class Key(models.Model):
         verbose_name_plural = _("Přiřazení úkolů")
 
 class Homework(models.Model):
-    ## část pro studenta
-    key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False,verbose_name=_("Klíč úkol-student"))
-    programming_language = models.CharField(max_length=32,choices=LANGUAGE_CHOICES, default="python", 
-                                            verbose_name=_("Programovací jazyk"), help_text=_("Vyberte programovací jazyk, ve kterém napíšete řešení úkolu."),)
-    engrossment = models.TextField(verbose_name=_("Řešení"),help_text=_("Napište své řešení úkolu."),max_length=30000)  # solution ale hustští
-    #files=models.ManyToManyField(CodeFile,blank=True, null=True)
-    files=models.ManyToManyField(CodeFile,blank=True, verbose_name=_("Přiložené soubory"),)
-    notes = models.TextField(blank=True, default="",verbose_name=_("Poznámky"),help_text=_("Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."),max_length=30000)
-    submitted = models.DateTimeField(null=True, blank=True,verbose_name=_("Odevzdáno"),)
-    ## část pro učitele
-    score = models.PositiveSmallIntegerField(null=True, blank=True,verbose_name=_("Počet bodů"), help_text=_("Počet bodů přidělený vyučujícím."),)
-    text_evaluation = models.TextField(null=True, blank=True,verbose_name=_("Slovní hodnocení"))
+    key = models.OneToOneField(Key, on_delete=models.CASCADE, null=False, verbose_name=_("Klíč úkol-student"))
+    programming_language = models.CharField(max_length=32, choices=LANGUAGE_CHOICES, default="python", verbose_name=_("Programovací jazyk"), help_text=_("Vyberte programovací jazyk, ve kterém napíšete řešení úkolu."))
+    engrossment = models.TextField(blank=True,default="",verbose_name=_("Řešení"), help_text=_("Napište své řešení úkolu."), max_length=settings.MAX_HOMEWORK_LENGTH)
+    files = models.ManyToManyField(CodeFile, blank=True, verbose_name=_("Přiložené soubory"))
+    notes = models.TextField(blank=True, default="", verbose_name=_("Poznámky"), help_text=_("Poznámky k odevzdanému úkolu. Viditelné pouze pro učitele."),max_length=settings.MAX_HOMEWORK_LENGTH,)
+    submitted = models.DateTimeField(null=True, blank=True, verbose_name=_("Odevzdáno"))
+    score = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name=_("Počet bodů"), help_text=_("Počet bodů přidělený vyučujícím."))
+    text_evaluation = models.TextField(null=True, blank=True, verbose_name=_("Slovní hodnocení"))
+
     def __str__(self):
         return f"homework-{self.key}"
-    def total_files(self)->int:
+
+    def total_files(self) -> int:
         return self.files.count()
+
     def get_assgn_student_url(self):
-        return reverse("assgn_detail_student", kwargs={"pk":self.key.assignment.pk})
-    
-    def clean(self):
-        validate_max_file_count(self)
+        return reverse("assgn_detail_student",kwargs={"pk": self.key.assignment.pk})
+
     @property
-    def is_after_deadline(self)->bool:
-        return timezone.now()>self.key.assignment.deadline
+    def is_after_deadline(self) -> bool:
+        return timezone.now() >= self.key.assignment.deadline
+
+    @property
+    def is_evaluated(self) -> bool:
+        return self.score is not None or bool(self.text_evaluation)
+
     class Meta:
-        verbose_name = _("Oydevzdaný úkol")
+        verbose_name = _("Odevzdaný úkol")
         verbose_name_plural = _("Odevzdané úkoly")
+
 
 class HomeworkStudentComment(models.Model):
     hw = models.ForeignKey(Homework, on_delete=models.CASCADE,verbose_name=_("Úkol"),)

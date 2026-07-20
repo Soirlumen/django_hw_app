@@ -10,14 +10,6 @@
 
 <div class="container mt-4" style="max-width: 900px;">
 
-{% if messages %}
-{% for message in messages %}
-<div class="alert alert-{{ message.tags }} mb-3" role="alert">
-  {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
   <div>
     <h2 class="mb-1">{{ hw.key.assignment }}</h2>

@@ -125,17 +125,25 @@ class TestHomework(BaseHWTestCase):
     def test_to_str(self):
         str_hw="homework-Daniela Hušhuš-Domácí úkol 1"
         self.assertEqual(str(self.homework), str_hw)
+        
     def test_total_files(self):
         self.assertEqual(self.homework.total_files(), 1)
+
     def test_get_assgn_student_url(self):
         expected_url = f'/cs/hw/assignments/{self.assignment.pk}/'
         self.assertIsInstance(expected_url, str)
         self.assertEqual(self.homework.get_assgn_student_url(), expected_url)
-    def test_is_after_deadline(self):
-        self.assertEqual(self.assignment.is_after_deadline, False)
-        self.assignment.deadline=timezone.now() - timedelta(days=1)
-        self.assignment.save()
-        self.assertEqual(self.assignment.is_after_deadline, True)
+
+    def test_is_after_deadline_false(self):
+        self.assignment.deadline = timezone.now() + timedelta(days=1)
+        self.assignment.save(update_fields=["deadline"])
+        self.assertFalse(self.homework.is_after_deadline)
+
+    def test_is_after_deadline_true(self):
+        self.assignment.deadline = timezone.now() - timedelta(days=1)
+        self.assignment.save(update_fields=["deadline"])
+
+        self.assertTrue(self.homework.is_after_deadline)
     
 class TestHomeworkStudentComment(BaseHWTestCase):
     def test_to_str(self):

@@ -9,7 +9,7 @@ def teacher_required(view_func):
      @wraps(view_func)
      def _wrapped_view(request,*args,**kwargs):
           if not request.user.is_teacher:
-               raise PermissionError(
+               raise PermissionDenied(
                     _("K této stránce mají přístup pouze učitelé.")
                )
           return view_func(request,*args,**kwargs)
@@ -22,7 +22,7 @@ def student_required(view_func):
      def _wrapped_view(request,*args,**kwargs):
           if not request.user.is_student:
                
-               return PermissionDenied(
+               raise PermissionDenied(
                     _("K této stránce mají přístup pouze studenti.")
                )
           return view_func(request,*args,**kwargs)

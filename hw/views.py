@@ -104,6 +104,7 @@ def assgn_detail_teacher(request, pk):
 @own_required(Assignment,'teacher')
 def assgn_edit_view(request,pk):
     assignment=get_object_or_404(Assignment,pk=pk)
+
     if request.method=="POST":
         form=AssignemntEdit(request.POST,request.FILES,instance=assignment)
         if form.is_valid():
@@ -126,7 +127,7 @@ def assgn_edit_view(request,pk):
                 obj_f.full_clean()
                 obj_f.save()
                 edit_as.files.add(obj_f)
-                messages.success(request, _("Úkol byl úspěšně upraven."))
+            messages.success(request, _("Úkol byl úspěšně upraven."))
             return redirect(assignment.get_url())
         messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
     else:
@@ -257,7 +258,6 @@ def hw_create_view(request):
                 obj_f = CodeFile(file=f)
                 obj_f._upload_user = request.user
                 obj_f._upload_assignment = assignment
-                obj_f.full_clean()
                 obj_f.save()
                 hwform.files.add(obj_f)
 
@@ -313,15 +313,31 @@ def hw_update_view(request, pk):
     context = {"form": form, "hw": hw}
     return render(request, "homework/hw_update.html", context)
 
-@own_required(Assignment,'teacher')
+@own_required(Assignment, "teacher")
 def assgn_delete_view(request, pk):
-    assgn = get_object_or_404(Assignment, pk=pk)
-    if request.method == "POST":
-        assgn.delete()
-        return redirect("list_active")
-    context={"assgn": assgn,}
-    return render(request,"homework/ass_delete_confirm.html",context)
+    assignment = get_object_or_404(Assignment, pk=pk)
 
+    if request.method == "POST":
+        files = list(assignment.files.all())
+
+        homework_files = list(
+            CodeFile.objects.filter(
+                homework__key__assignment=assignment
+            ).distinct()
+        )
+
+        assignment.delete()
+
+        for codefile in files + homework_files:
+            delete_file_if_unused(codefile)
+
+        return redirect("list_active")
+
+    return render(
+        request,
+        "homework/ass_delete_confirm.html",
+        {"assgn": assignment},
+    )
 @login_required
 def hw_detail_view(request, pk):
     homework = get_object_or_404(Homework, pk=pk)
@@ -494,26 +510,27 @@ def comment_feedback_detail_view(request, pk):
     })
     
 
-@teacher_required
-@own_required(
-    HomeworkStudentComment,
-    "hw__key__assignment__teacher",
-)
 def teacher_comment_mark_view(request, pk):
     review = get_object_or_404(HomeworkStudentComment, pk=pk)
+
     if request.method == "POST":
         form = CommentTeacherMarkForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
             messages.success(request, _("Označení uloženo."))
             return redirect("comment_feedback_detail", pk=review.pk)
-        else:
-            messages.error(request, _("Formulář obsahuje chyby."))
-    return render(request, "student_comments/teacher_mark_form.html", {
-        "comment": review,
-        "hw":review.hw,
-        "form": CommentTeacherMarkForm(instance=review),
-    })
+    else:
+        form = CommentTeacherMarkForm(instance=review)
+
+    return render(
+        request,
+        "student_comments/teacher_mark_form.html",
+        {
+            "comment": review,
+            "hw": review.hw,
+            "form": form,
+        },
+    )
 
 @teacher_required
 def teacher_comments_list_view(request):

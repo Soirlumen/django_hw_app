@@ -49,76 +49,106 @@ class MultipleFileField(forms.FileField):
                 )
         return files
 
-#vytvoření úkolu
-class CreateHomeworkForm(forms.ModelForm):
-    filesimput = MultipleFileField(
-        help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
-    "number": settings.MAX_UPLOAD_FILES_NUMBER,
-    "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
-},
-        required=False,
-        label=_("Přiložit soubory")
+class HomeworkBaseForm(forms.ModelForm):
+    filesimput = MultipleFileField( required=False, label=_("Přiložit soubory"),
+        help_text=_(
+            "Můžete přiložit více souborů najednou. "
+            "Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {"number": settings.MAX_UPLOAD_FILES_NUMBER,"maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,},
     )
     def __init__(self, *args, **kwargs):
-        self.assignment = kwargs.pop("assignment", None)
-        self.user= kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        if self.user:
-            self.fields["programming_language"].error_messages['invalid_choice'] = _("Neplatný programovací jazyk.")
-    def clean(self):
-        cleaned_data = super().clean()
-        if self.assignment and timezone.now() > self.assignment.deadline:
-            raise ValidationError(_("Nemůžeš odevzdat úkol po termínu odevzdání!"))
-        if not self.user:
-            raise ValidationError(_("Chybí autor úkolu."))
-        
-        engrossment = (cleaned_data or {}).get("engrossment") or getattr(self, "engrossment", "")
-        if len(engrossment) > 30000:
-            raise ValidationError({"engrossment": _("Řešení je příliš dlouhé. Maximální délka je 30 000 znaků.")})
-        return cleaned_data
+
+        self.fields["programming_language"].error_messages["invalid_choice"] = _("Neplatný programovací jazyk.")
+
+    def validate_solution_presence( self, cleaned_data,final_file_count: int,) -> None:
+        """Ověří, že odevzdání obsahuje text nebo alespoň jeden soubor."""
+        engrossment = cleaned_data.get("engrossment") or ""
+        if not engrossment.strip() and final_file_count == 0:
+            raise ValidationError(
+                _("Vyplňte text řešení nebo přiložte alespoň jeden soubor.")
+            )
 
     class Meta:
         model = Homework
-        fields = ("programming_language", "engrossment","notes")
+        fields = ("programming_language","engrossment","notes",)
         widgets = {
-            "engrossment": CodeMirrorWidget(attrs={'maxlength': '30000'}),
-            "notes": forms.Textarea(attrs={'maxlength': '30000'}),
+            "engrossment": CodeMirrorWidget(attrs={"maxlength": str(settings.MAX_HOMEWORK_LENGTH)}
+            ),
+            "notes": forms.Textarea(
+                attrs={"maxlength": str(settings.MAX_HOMEWORK_LENGTH),"rows": 5,}
+            ),
         }
 
-# úprava úkolu  
-class HomeworkForm(forms.ModelForm):
-    filesimput= MultipleFileField(help_text=_("Můžete přiložit více souborů najednou. Maximálně %(number)s souborů, každý nejvýše %(maxsize)s MB.") % {
-    "number": settings.MAX_UPLOAD_FILES_NUMBER,
-    "maxsize": settings.MAX_UPLOAD_FILE_SIZE_MB,
-} ,required=False, label=_("Přiložit soubory"))
-    
+#vytvoření úkolu
+class CreateHomeworkForm(HomeworkBaseForm):
+    def __init__(self, *args, **kwargs):
+        self.assignment = kwargs.pop("assignment", None)
+        self.user = kwargs.pop("user", None)
+
+        super().__init__(*args, **kwargs)
+
     def clean(self):
         cleaned_data = super().clean()
-        deadline = self.instance.key.assignment.deadline
+        if self.assignment is None:
+            raise ValidationError(
+                _("Chybí zadání, ke kterému má být řešení odevzdáno.")
+            )
 
-        if timezone.now() > deadline:
-            raise ValidationError(_("Nemůžeš odevzdat úkol po termínu odevzdání!"))
-        engrossment = (cleaned_data or {}).get("engrossment") or getattr(self, "engrossment", "")
-        if len(engrossment) > 30000:
-            raise ValidationError({"engrossment": _("Řešení je příliš dlouhé. Maximální délka je 150000 znaků.")})
+        if self.user is None:
+            raise ValidationError(
+                _("Chybí autor odevzdávaného řešení.")
+            )
 
-        new_files = cleaned_data.get("filesimput", [])
-        current_files_count = self.instance.total_files() if self.instance.pk else 0
-        #nepřerkočit max nahraných souborů
-        if current_files_count + len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
-            raise ValidationError(_(
-                "Celkem může být u zadání maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER})
-            
+        now = timezone.now()
+
+        if now < self.assignment.release:
+            raise ValidationError(
+                _("Zadání ještě nebylo zveřejněno.")
+            )
+
+        if now >= self.assignment.deadline:
+            raise ValidationError(
+                _("Úkol již nelze odevzdat, protože vypršel termín.")
+            )
+
+        new_files = cleaned_data.get("filesimput") or []
+        # zkontrolujeme přítomnost textu nebo souboru.
+        if "filesimput" not in self.errors:
+            self.validate_solution_presence( cleaned_data, final_file_count=len(new_files))
         return cleaned_data
- 
-    class Meta:
-        model = Homework
-        fields = ("programming_language","engrossment","notes")
-        widgets= {
-            "engrossment": CodeMirrorWidget(attrs={'maxlength': '30000'}),
-            "notes": forms.Textarea(attrs={'maxlength': '30000'}),
-        }
-          
+    
+# úprava úkolu  
+class HomeworkForm(HomeworkBaseForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.instance.pk:
+            raise ValidationError(
+                _("Nelze upravit neexistující odevzdání.")
+            )
+        deadline = self.instance.key.assignment.deadline
+        if timezone.now() >= deadline:
+            raise ValidationError(
+                _("Úkol již nelze upravit, protože vypršel termín.")
+            )
+        new_files = cleaned_data.get("filesimput") or []
+        requested_removed_ids = self.data.getlist("remove_files")
+        current_files = self.instance.files.all()
+
+        # Započítají se pouze soubory, které opravdu patří k upravovanému odevzdání
+        removed_files_count = current_files.filter( pk__in=requested_removed_ids).count()
+        remaining_files_count = ( current_files.count() - removed_files_count)
+        final_file_count = remaining_files_count + len(new_files)
+        if final_file_count > settings.MAX_UPLOAD_FILES_NUMBER:
+            self.add_error(
+                "filesimput",
+                _("Celkem může být k odevzdání přiloženo maximálně %(max_count)s souborů.") % {
+                    "max_count": settings.MAX_UPLOAD_FILES_NUMBER,
+                },
+            )
+        if "filesimput" not in self.errors:
+            self.validate_solution_presence(cleaned_data, final_file_count=final_file_count)
+        return cleaned_data
+    
 #vytvoření zadání úkolu
 class AssignmentForm(forms.ModelForm):
     max_size=settings.MAX_UPLOAD_FILE_SIZE/(1024**2)
@@ -179,16 +209,26 @@ class AssignemntEdit(forms.ModelForm):
         self.fields["description"].help_text = format_html( _("Podporuje <a href='{url}' target='_blank'>Markdown syntaxi</a>."),url="https://www.daringfireball.net/projects/markdown/syntax",)        
     def clean(self):
         cleaned_data = super().clean()
+        original_release = self.instance.release
+        new_release = cleaned_data.get("release")
+        now = timezone.now()
         new_files = cleaned_data.get("filesimput", [])
         current_files_count = self.instance.total_files() if self.instance.pk else 0
         #nepřerkočit max nahraných souborů
         if current_files_count + len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
             raise ValidationError(_(
                 "Celkem může být u odevzdání maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER})
-        release=self.instance.release
-        if timezone.now() > release:
-            raise ValidationError(_("Nelze editovat zadání, jestliže je již aktivní."))
-        return cleaned_data
+        
+        if original_release <= now:
+            raise ValidationError(
+                _("Již zveřejněné zadání nelze upravovat.")
+        )
+
+        if new_release and new_release <= now:
+            self.add_error(
+                "release",
+                _("Nový čas zveřejnění musí být v budoucnosti.")
+            )
     class Meta:
         model=Assignment
         fields=("title","description","release","deadline", "max_score")
