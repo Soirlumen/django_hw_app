@@ -1,6 +1,4 @@
 from .setUp import BaseHWTestCase
-from django.urls import reverse
-from hw.models import Assignment
 from django.test import modify_settings
 
 class TestHWViewStatus200(BaseHWTestCase):
@@ -73,17 +71,20 @@ class TestHWViewStatus200(BaseHWTestCase):
 class TestHWViewStatus403(BaseHWTestCase):
 
     def test_list_before_release_403_student(self):
-        self.assert_get_403(self.student, "list_before_release")
+        self.assert_get_403(self.student, "list_before_release",template_name="403.html")
 
     def test_assignment_teacher_detail_403_student(self):
-        self.assert_get_403(self.student, "assgn_detail_teacher", pk=self.assignment.pk)
+        self.assert_get_403(self.student, "assgn_detail_teacher", pk=self.assignment.pk,template_name="403.html")
 
     def test_assignment_create_403_student(self):
-        self.assert_get_403(self.student, "ass_create")
+        self.assert_get_403(self.student, "ass_create",template_name="403.html")
 
     def test_assignment_edit_403_student(self):
-        self.assert_get_403(self.student, "assgn_edit", pk=self.assignment.pk)
+        self.assert_get_403(self.student, "assgn_edit", pk=self.assignment.pk,template_name="403.html")
         
     def test_student_cannot_access_assignment_before_release_403(self):
-        self.assert_get_403(self.student, "assgn_detail_student", pk=self.assignment_before_release.pk)
+        self.assert_get_403(self.student, "assgn_detail_student", pk=self.assignment_before_release.pk, template_name="403.html")
               
+class TeshHWViewStatus404(BaseHWTestCase):
+    def test_random_page_404(self):
+        self.assert_get_404(self.student, "assgn_detail_student", pk=6969)

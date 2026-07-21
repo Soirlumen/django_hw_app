@@ -104,7 +104,10 @@ def assgn_detail_teacher(request, pk):
 @own_required(Assignment,'teacher')
 def assgn_edit_view(request,pk):
     assignment=get_object_or_404(Assignment,pk=pk)
-
+    if not assignment.is_before_release:
+        raise PermissionDenied(
+            _("Nemůžete upravit zadání po zveřejnění.")
+        )
     if request.method=="POST":
         form=AssignemntEdit(request.POST,request.FILES,instance=assignment)
         if form.is_valid():

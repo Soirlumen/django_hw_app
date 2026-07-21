@@ -101,6 +101,7 @@ class Assignment(models.Model):
         return HomeworkStudentComment.objects.filter(hw__key__assignment=self).exists()
     def total_files(self)->int:
         return self.files.count()
+
     class Meta:
         ordering = [
             "release",

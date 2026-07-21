@@ -135,23 +135,19 @@ class BaseHWTestCase(TestCase):
         if template_name:
                 self.assertTemplateUsed(response, template_name)
                 
-    def assert_get_403(self, user, url_name, **kwargs):
-        """
-        Pomocná metoda ověřující, že uživatel dostane korektní HTTP status 403.
-        """
+    def assert_get_403(self, user, url_name,template_name=None, **kwargs):
         self.client.force_login(user)
         url = reverse(url_name, kwargs=kwargs)
         
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 403)
-    def assert_get_404(self, user, url_name, **kwargs):
-        """
-        Pomocná metoda ověřující, že uživatel dostane korektní HTTP status 404.
-        """
+        if template_name:
+                self.assertTemplateUsed(response, template_name)
+    def assert_get_404(self, user, url_name,template_name=None, **kwargs):
         self.client.force_login(user)
         url = reverse(url_name, kwargs=kwargs)
-        
         response = self.client.get(url)
-        
         self.assertEqual(response.status_code, 404)
+        if template_name:
+                self.assertTemplateUsed(response, template_name)

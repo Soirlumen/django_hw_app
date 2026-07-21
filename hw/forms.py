@@ -84,7 +84,6 @@ class CreateHomeworkForm(HomeworkBaseForm):
     def __init__(self, *args, **kwargs):
         self.assignment = kwargs.pop("assignment", None)
         self.user = kwargs.pop("user", None)
-
         super().__init__(*args, **kwargs)
 
     def clean(self):
@@ -93,19 +92,15 @@ class CreateHomeworkForm(HomeworkBaseForm):
             raise ValidationError(
                 _("Chybí zadání, ke kterému má být řešení odevzdáno.")
             )
-
         if self.user is None:
             raise ValidationError(
                 _("Chybí autor odevzdávaného řešení.")
             )
-
         now = timezone.now()
-
         if now < self.assignment.release:
             raise ValidationError(
                 _("Zadání ještě nebylo zveřejněno.")
             )
-
         if now >= self.assignment.deadline:
             raise ValidationError(
                 _("Úkol již nelze odevzdat, protože vypršel termín.")
@@ -212,13 +207,21 @@ class AssignemntEdit(forms.ModelForm):
         original_release = self.instance.release
         new_release = cleaned_data.get("release")
         now = timezone.now()
-        new_files = cleaned_data.get("filesimput", [])
-        current_files_count = self.instance.total_files() if self.instance.pk else 0
         #nepřerkočit max nahraných souborů
-        if current_files_count + len(new_files) > settings.MAX_UPLOAD_FILES_NUMBER:
-            raise ValidationError(_(
-                "Celkem může být u odevzdání maximálně %(mnf)s souborů.")%{"mnf":settings.MAX_UPLOAD_FILES_NUMBER})
-        
+        new_files = cleaned_data.get("filesimput",[])
+        requested_removed_ids = self.data.getlist("remove_files")
+        current_files = self.instance.files.all()
+
+        removed_files_count = current_files.filter( pk__in=requested_removed_ids).count()
+        remaining_files_count = ( current_files.count() - removed_files_count)
+        final_file_count = remaining_files_count + len(new_files)
+        if final_file_count > settings.MAX_UPLOAD_FILES_NUMBER:
+            self.add_error(
+                "filesimput",
+                _("Celkem může být k odevzdání přiloženo maximálně %(max_count)s souborů.") % {
+                    "max_count": settings.MAX_UPLOAD_FILES_NUMBER,
+                },
+            )
         if original_release <= now:
             raise ValidationError(
                 _("Již zveřejněné zadání nelze upravovat.")

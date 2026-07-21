@@ -13,21 +13,21 @@
             </div>
         {% endif %}
 
-        <ul class="nav nav-tabs mb-4">
+        <ul class="nav nav-pills mb-4 gap-1">
             {% if user.is_teacher %}
                 <li class="nav-item">
-                    <a class="nav-link {% if current_status == 'before_release' %}active{% endif %}" href="{% url 'list_before_release' %}">
+                    <a class="nav-link {% if current_status == 'before_release' %}active{% else %}bg-light text-dark border{% endif %}" href="{% url 'list_before_release' %}">
                         {% trans "Před zveřejněním" %}
                     </a>
                 </li>
             {% endif %}
             <li class="nav-item">
-                <a class="nav-link {% if current_status == 'active' %}active{% endif %}" href="{% url 'list_active' %}">
+                <a class="nav-link {% if current_status == 'active' %}active{% else %}bg-light text-dark border{% endif %}" href="{% url 'list_active' %}">
                     {% trans "Aktivní úkoly" %}
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if current_status == 'after_deadline' %}active{% endif %}" href="{% url 'list_after_deadline' %}">
+                <a class="nav-link {% if current_status == 'after_deadline' %}active{% else %}bg-light text-dark border{% endif %}" href="{% url 'list_after_deadline' %}">
                     {% trans "Po termínu" %}
                 </a>
             </li>

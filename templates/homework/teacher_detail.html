@@ -49,26 +49,20 @@
       <strong>{% translate "Detail zadání" %}</strong>
 
       <div class="d-flex flex-wrap gap-2">
-        <a
-          href="{% url 'assignment_delete' assignment.pk %}"
-          class="btn btn-sm btn-danger"
-        >
+        <a href="{% url 'assignment_delete' assignment.pk %}"
+          class="btn btn-sm btn-danger">
           {% translate "Smazat zadání" %}
         </a>
 
         {% if is_before_release %}
-          <a
-            href="{% url 'assgn_edit' assignment.pk %}"
-            class="btn btn-sm btn-warning"
-          >
+          <a  href="{% url 'assgn_edit' assignment.pk %}"
+            class="btn btn-sm btn-warning">
             {% translate "Upravit zadání" %}
           </a>
         {% endif %}
 
-        <a
-          href="{% url 'list_active' %}"
-          class="btn btn-sm btn-outline-secondary"
-        >
+        <a href="{% url 'list_active' %}"
+          class="btn btn-sm btn-outline-secondary">
           {% translate "Zpět na seznam" %}
         </a>
       </div>
@@ -147,30 +141,20 @@
               </span>
 
             {% elif is_after_deadline %}
-              <form
-                method="post"
+              <form  method="post"
                 action="{% url 'assgn_make_comments' assignment.pk %}"
-                class="d-flex align-items-center gap-2 mb-0"
-              >
+                class="d-flex align-items-center gap-2 mb-0">
                 {% csrf_token %}
 
                 <div class="input-group input-group-sm" style="width: 150px;">
-                  <label
-                    class="input-group-text"
-                    for="review-count"
-                  >
+                  <label class="input-group-text"
+                    for="review-count">
                     {% translate "Počet" %}
                   </label>
 
-                  <input
-                    id="review-count"
-                    type="number"
-                    name="k"
-                    min="1"
-                    max="{{ homeworks|length|add:'-1' }}"
-                    class="form-control"
-                    required
-                  >
+                  <input id="review-count" type="number"
+                    name="k" min="1" max="{{ homeworks|length|add:'-1' }}"
+                    class="form-control" required>
                 </div>
 
                 <button type="submit" class="btn btn-sm btn-success">
@@ -240,10 +224,8 @@
                     </td>
 
                     <td class="text-end">
-                      <a
-                        href="{% url 'hw_detail' hw.pk %}"
-                        class="btn btn-sm btn-outline-primary"
-                      >
+                      <a href="{% url 'hw_detail' hw.pk %}"
+                        class="btn btn-sm btn-outline-primary">
                         {% translate "Zobrazit řešení" %}
                       </a>
                     </td>
@@ -263,10 +245,8 @@
   {% endif %}
 
   <div class="mb-4">
-    <a
-      href="{% url 'list_active' %}"
-      class="btn btn-outline-secondary"
-    >
+    <a href="{% url 'list_active' %}"
+      class="btn btn-outline-secondary">
       {% translate "Zpět na seznam" %}
     </a>
   </div>
