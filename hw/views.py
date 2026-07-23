@@ -166,10 +166,10 @@ def assgn_detail_stud(request, pk):
 
     comments = None
     if submitted_homework:
-        comments = HomeworkStudentComment.objects.filter(
-            hw=submitted_homework
+        comments = (
+            HomeworkStudentComment.objects.filter(hw=submitted_homework).exclude(comment="")
+            .exclude(comment__isnull=True).order_by("id")
         )
-
     context = {
         "hwdetail": assignment,
         "already_submitted": submitted_homework is not None,

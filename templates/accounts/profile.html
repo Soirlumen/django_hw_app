@@ -1,60 +1,153 @@
 {% extends "base.html" %}
-{% load static i18n %}
-{% block title %}{% trans "Profil uživatele" %}{% endblock title %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+  {% trans "Profil uživatele" %}
+{% endblock title %}
+
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4" style="max-width: 900px;">
 
-    <h2 class="mb-4">{% translate "Profil uživatele" %}</h2>
+  <h1 class="h2 mb-4">
+    {% trans "Profil uživatele" %}
+  </h1>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <p><strong>{% translate "Uživatelské jméno:" %}</strong> {{ request.user.username }}</p>
-            <p><strong>{% translate "Jméno:" %}</strong> {{ request.user.first_name }}</p>
-            <p><strong>{% translate "Příjmení:" %}</strong> {{ request.user.surname }}</p>
-            <p><strong>{% translate "Email:" %}</strong> {{ request.user.email }}</p>
-            <p><strong>{% translate "Telefon:" %}</strong> {{ request.user.tel }}</p>
-        </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      <strong>{% trans "Osobní údaje" %}</strong>
     </div>
 
-    {% if is_teacher %}
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            {% translate "Učitelský profil" %}
-        </div>
-        <div class="card-body">
-            {% if teacher_subjects %}
-                <p><strong>{% translate "Vyučované předměty:" %}</strong></p>
-                <ul>
-                    {% for subject in teacher_subjects %}
-                        <li>{{ subject }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>{% translate "Nemáš přiřazené žádné předměty." %}</p>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
+    <div class="card-body">
 
-    {% if is_student %}
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">
-            {% translate "Studentský profil" %}
+      <p>
+        <strong>{% trans "Uživatelské jméno:" %}</strong>
+        {{ request.user.username }}
+      </p>
+
+      <p>
+        <strong>{% trans "Jméno:" %}</strong>
+        {{ request.user.first_name|default:"–" }}
+      </p>
+
+      <p>
+        <strong>{% trans "Příjmení:" %}</strong>
+        {{ request.user.surname|default:"–" }}
+      </p>
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div>
+          <strong>{% trans "E-mail:" %}</strong>
+          {{ request.user.email|default:"–" }}
         </div>
-        <div class="card-body">
-            {% if student_subjects %}
-                <p><strong>{% translate "Zapsané předměty:" %}</strong></p>
-                <ul>
-                    {% for subject in student_subjects %}
-                        <li>{{ subject }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>{% translate "Nemáš zapsané žádné předměty." %}</p>
-            {% endif %}
+
+        <a
+          href="{% url 'profile' %}?edit=email"
+          class="btn btn-sm btn-outline-secondary"
+        >
+          {% trans "Upravit" %}
+        </a>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          <strong>{% trans "Telefon:" %}</strong>
+          {{ request.user.tel|default:"–" }}
         </div>
+
+        <a
+          href="{% url 'profile' %}?edit=tel"
+          class="btn btn-sm btn-outline-secondary"
+        >
+          {% trans "Upravit" %}
+        </a>
+      </div>
+
+      {% if form %}
+        <hr class="my-4">
+
+        <h2 class="h5 mb-3">
+          {% if edit_mode == "email" %}
+            {% trans "Změna e-mailu" %}
+          {% elif edit_mode == "tel" %}
+            {% trans "Změna telefonního čísla" %}
+          {% endif %}
+        </h2>
+
+        <form method="post">
+          {% csrf_token %}
+
+          {{ form|crispy }}
+
+          <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">
+              {% trans "Uložit" %}
+            </button>
+
+            <a
+              href="{% url 'profile' %}"
+              class="btn btn-outline-secondary"
+            >
+              {% trans "Zrušit" %}
+            </a>
+          </div>
+        </form>
+      {% endif %}
+
     </div>
-    {% endif %}
+  </div>
+
+  {% if is_teacher %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header">
+        <strong>{% trans "Učitelský profil" %}</strong>
+      </div>
+
+      <div class="card-body">
+        {% if teacher_subjects %}
+          <p>
+            <strong>{% trans "Vyučované předměty:" %}</strong>
+          </p>
+
+          <ul class="mb-0">
+            {% for subject in teacher_subjects %}
+              <li>{{ subject }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted mb-0">
+            {% trans "Nemáš přiřazené žádné předměty." %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if is_student %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header">
+        <strong>{% trans "Studentský profil" %}</strong>
+      </div>
+
+      <div class="card-body">
+        {% if student_subjects %}
+          <p>
+            <strong>{% trans "Zapsané předměty:" %}</strong>
+          </p>
+
+          <ul class="mb-0">
+            {% for subject in student_subjects %}
+              <li>{{ subject }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted mb-0">
+            {% trans "Nemáš zapsané žádné předměty." %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 
 </div>
-{% endblock %}
+{% endblock content %}

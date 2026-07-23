@@ -179,45 +179,48 @@
       </div>
     {% endif %}
 
-    {% if comments %}
+     {% if comments %}
       <div class="card shadow-sm mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <strong>{% translate "Komentáře od spolužáků" %}</strong>
-          <span class="badge bg-primary">
-            {% blocktranslate with count=comments|length %}Celkem: {{ count }}{% endblocktranslate %}
+        <div class="card-header d-flex justify-content-between align-items-center gap-2">
+          <strong>
+            {% translate "Komentáře od spolužáků" %}
+          </strong>
+
+          <span class="badge bg-secondary">
+            {% translate "Celkem:" %} {{ comments|length }}
           </span>
         </div>
-        <div class="card-body">
-          <ul class="list-group">
-            {% for c in comments %}
-              <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                  {% blocktranslate with num=forloop.counter %}Komentář #{{ num }}{% endblocktranslate %}
-                  <div class="text-muted small">
-                    {% if c.comment %}
-                      {% translate "Vyplněno" %}
-                    {% else %}
-                      {% translate "Čeká na vyplnění" %}
-                    {% endif %}
-                  </div>
-                </div>
 
-                <div class="d-flex align-items-center gap-2">
-                  {% if c.comment %}
-                    <span class="badge bg-success">✓</span>
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'comment_feedback_detail' c.pk %}">
-                      {% translate "Zobrazit" %}
-                    </a>
-                  {% else %}
-                    <span class="badge bg-secondary">⏳</span>
-                    <a class="btn btn-sm btn-outline-secondary disabled" href="{% url 'comment_feedback_detail' c.pk %}">
-                      {% translate "Nebylo ještě vyplněno" %}
-                    </a>
-                  {% endif %}
-                </div>
-              </li>
-            {% endfor %}
-          </ul>
+        <div class="card-body">
+          {% for comment in comments %}
+            <div
+              class="{% if not forloop.last %}border-bottom pb-3 mb-3{% endif %}"
+            >
+              <div class="small fw-semibold text-muted mb-2">
+                {% blocktranslate trimmed with number=forloop.counter %}
+                  Komentář č. {{ number }}
+                {% endblocktranslate %}
+              </div>
+
+              <div>
+                {{ comment.comment|markdown }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% elif assignment.is_comments_generated %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <strong>
+            {% translate "Komentáře od spolužáků" %}
+          </strong>
+        </div>
+
+        <div class="card-body">
+          <p class="text-muted mb-0">
+            {% translate "Zatím nebyl odevzdán žádný komentář k vašemu řešení." %}
+          </p>
         </div>
       </div>
     {% endif %}

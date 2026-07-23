@@ -13,7 +13,9 @@
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
-      <h2 class="mb-1">{{ assignment.title }}</h2>
+      <h2 class="mb-1">
+        {{ assignment.title }}
+      </h2>
 
       <div class="text-muted">
         {{ assignment.subject }} • {{ assignment.teacher }}
@@ -46,23 +48,31 @@
   {# Detail zadání #}
   <div class="card shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-      <strong>{% translate "Detail zadání" %}</strong>
+      <strong>
+        {% translate "Detail zadání" %}
+      </strong>
 
       <div class="d-flex flex-wrap gap-2">
-        <a href="{% url 'assignment_delete' assignment.pk %}"
-          class="btn btn-sm btn-danger">
+        <a
+          href="{% url 'assignment_delete' assignment.pk %}"
+          class="btn btn-sm btn-danger"
+        >
           {% translate "Smazat zadání" %}
         </a>
 
         {% if is_before_release %}
-          <a  href="{% url 'assgn_edit' assignment.pk %}"
-            class="btn btn-sm btn-warning">
+          <a
+            href="{% url 'assgn_edit' assignment.pk %}"
+            class="btn btn-sm btn-warning"
+          >
             {% translate "Upravit zadání" %}
           </a>
         {% endif %}
 
-        <a href="{% url 'list_active' %}"
-          class="btn btn-sm btn-outline-secondary">
+        <a
+          href="{% url 'list_active' %}"
+          class="btn btn-sm btn-outline-secondary"
+        >
           {% translate "Zpět na seznam" %}
         </a>
       </div>
@@ -131,54 +141,138 @@
   {% if not is_before_release %}
     <div class="card shadow-sm mb-4">
       <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <strong>{% translate "Odevzdané úkoly" %}</strong>
+        <strong>
+          {% translate "Odevzdané úkoly" %}
+        </strong>
 
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-          {% if homeworks %}
-            {% if assignment.is_comments_generated %}
-              <span class="badge bg-success">
-                {% translate "Vzájemné hodnocení již bylo zahájeno." %}
-              </span>
-
-            {% elif is_after_deadline %}
-              <form  method="post"
-                action="{% url 'assgn_make_comments' assignment.pk %}"
-                class="d-flex align-items-center gap-2 mb-0">
-                {% csrf_token %}
-
-                <div class="input-group input-group-sm" style="width: 150px;">
-                  <label class="input-group-text"
-                    for="review-count">
-                    {% translate "Počet hodnocených úkolů pro studenta:" %}
-                  </label>
-
-                  <input id="review-count" type="number"
-                    name="k" min="1" max="{{ homeworks|length|add:'-1' }}"
-                    class="form-control" required>
-                </div>
-
-                <button type="submit" class="btn btn-sm btn-success">
-                  {% translate "Zahájit vzájemné hodnocení úkolů mezi studenty" %}
-                </button>
-              </form>
-
-            {% else %}
-              <span class="text-muted small">
-                {% translate "Vzájemné hodnocení lze vygenerovat až po termínu odevzdání." %}
-              </span>
-            {% endif %}
-
-            <span class="badge bg-primary">
-              {% blocktranslate trimmed with count=homeworks|length %}
-                Celkem: {{ count }}
-              {% endblocktranslate %}
-            </span>
-          {% endif %}
-        </div>
+        {% if homeworks %}
+          <span class="badge bg-primary">
+            {% blocktranslate trimmed with count=homeworks|length %}
+              Celkem: {{ count }}
+            {% endblocktranslate %}
+          </span>
+        {% endif %}
       </div>
 
       <div class="card-body">
+
         {% if homeworks %}
+
+          {# Ovládání vzájemného hodnocení #}
+          <div class="border rounded p-3 mb-4 bg-light">
+            {% if assignment.is_comments_generated %}
+
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span class="badge bg-success">
+                  {% translate "Vzájemné hodnocení již bylo zahájeno" %}
+                </span>
+
+                <button
+                  type="button"
+                  class="btn btn-sm btn-link text-muted text-decoration-none p-0"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#peer-review-help"
+                  aria-expanded="false"
+                  aria-controls="peer-review-help"
+                >
+                  {% translate "Jak hodnocení funguje?" %}
+                </button>
+              </div>
+
+            {% elif is_after_deadline %}
+
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                  <div class="fw-semibold">
+                    {% translate "Zahájení vzájemného hodnocení" %}
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-link text-muted text-decoration-none p-0"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#peer-review-help"
+                    aria-expanded="false"
+                    aria-controls="peer-review-help"
+                  >
+                    {% translate "Klikněte pro nápovědu" %}
+                  </button>
+                </div>
+
+                <form
+                  method="post"
+                  action="{% url 'assgn_make_comments' assignment.pk %}"
+                  class="d-flex flex-wrap align-items-end gap-2 mb-0"
+                >
+                  {% csrf_token %}
+
+                  <div>
+                    <label
+                      for="review-count"
+                      class="form-label small mb-1"
+                    >
+                      {% translate "Počet úkolů na studenta" %}
+                    </label>
+
+                    <input
+                      id="review-count"
+                      type="number"
+                      name="k"
+                      min="1"
+                      max="{{ homeworks|length|add:'-1' }}"
+                      class="form-control form-control-sm"
+                      style="width: 90px;"
+                      required
+                    >
+                  </div>
+
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-success"
+                  >
+                    {% translate "Zahájit hodnocení" %}
+                  </button>
+                </form>
+              </div>
+
+            {% else %}
+
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span class="text-muted small">
+                  {% translate "Vzájemné hodnocení lze zahájit až po termínu odevzdání." %}
+                </span>
+
+                <button
+                  type="button"
+                  class="btn btn-sm btn-link text-muted text-decoration-none p-0"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#peer-review-help"
+                  aria-expanded="false"
+                  aria-controls="peer-review-help"
+                >
+                  {% translate "Jak hodnocení funguje?" %}
+                </button>
+              </div>
+
+            {% endif %}
+
+            <div class="collapse" id="peer-review-help">
+              <div class="pt-3 mt-3 border-top small text-muted">
+                <p class="mb-2">
+                  {% translate "Zadané číslo určuje, kolik cizích odevzdaných řešení bude přiděleno každému studentovi k anonymnímu hodnocení." %}
+                </p>
+
+                <p class="mb-2">
+                  {% translate "Každý student obdrží stejný počet řešení a nikdy nebude hodnotit vlastní práci." %}
+                </p>
+
+                <p class="mb-0">
+                  {% translate "Po zahájení již nelze rozdělení hodnocení z této stránky vygenerovat znovu." %}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light">
@@ -224,8 +318,10 @@
                     </td>
 
                     <td class="text-end">
-                      <a href="{% url 'hw_detail' hw.pk %}"
-                        class="btn btn-sm btn-outline-primary">
+                      <a
+                        href="{% url 'hw_detail' hw.pk %}"
+                        class="btn btn-sm btn-outline-primary"
+                      >
                         {% translate "Zobrazit řešení" %}
                       </a>
                     </td>
@@ -236,17 +332,21 @@
           </div>
 
         {% else %}
+
           <div class="alert alert-primary mb-0" role="alert">
             {% translate "Zatím nikdo neodevzdal úkol." %}
           </div>
+
         {% endif %}
       </div>
     </div>
   {% endif %}
 
   <div class="mb-4">
-    <a href="{% url 'list_active' %}"
-      class="btn btn-outline-secondary">
+    <a
+      href="{% url 'list_active' %}"
+      class="btn btn-outline-secondary"
+    >
       {% translate "Zpět na seznam" %}
     </a>
   </div>

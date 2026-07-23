@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Úkoly k okomentování" %}{% endblock %}
+{% block title %}
+  {% translate "Úkoly k okomentování" %}
+{% endblock title %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 1000px;">
 
-  <h2 class="mb-4">{% trans "Přidělené komentáře" %}</h2>
+  <h1 class="h2 mb-4">
+    {% translate "Přidělené komentáře" %}
+  </h1>
 
   {% if comments %}
 
@@ -15,32 +19,43 @@
     {% for group in assignment_list %}
       <div class="card shadow-sm mb-4">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div>
-            <strong><a href="{% url 'assgn_detail_student' group.grouper.pk %}">{{ group.grouper.title }}</a></strong>
-          </div>
-          {% with done=0 %}
-          {% for c in group.list %}
-            {% if c.comment %}{% widthratio 1 1 1 %}{% endif %}
-          {% endfor %}
-          {% endwith %}
+        <div class="card-header d-flex justify-content-between align-items-center gap-3">
+          <strong>
+            <a
+              href="{% url 'assgn_detail_student' group.grouper.pk %}"
+              class="text-decoration-none"
+            >
+              {{ group.grouper.title }}
+            </a>
+          </strong>
+
+          <span class="badge bg-secondary">
+            <span class="badge bg-secondary">
+              {% trans "Celkem:" %} {{ group.list|length }}
+            </span>
+          </span>
         </div>
 
         <ul class="list-group list-group-flush">
-          {% for c in group.list %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+          {% for comment in group.list %}
+            <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
 
-              <a href="{% url 'reviewer_form' c.pk %}" class="text-decoration-none">
-                {% blocktrans with counter=forloop.counter %}Komentář č. {{ counter }}{% endblocktrans %}
+              <a
+                href="{% url 'reviewer_form' comment.pk %}"
+                class="text-decoration-none"
+              >
+                {% blocktranslate trimmed with counter=forloop.counter %}
+                  Komentář č. {{ counter }}
+                {% endblocktranslate %}
               </a>
 
-              {% if c.comment %}
+              {% if comment.comment %}
                 <span class="badge bg-success">
-                  {% trans "✓ Hotovo" %}
+                  {% translate "✓ Hotovo" %}
                 </span>
               {% else %}
                 <span class="badge bg-secondary">
-                  {% trans "⏳ Čeká" %}
+                  {% translate "⏳ Čeká" %}
                 </span>
               {% endif %}
 
@@ -52,10 +67,10 @@
     {% endfor %}
 
   {% else %}
-    <div class="alert alert-info">
-      {% trans "Nemáš přidělené žádné komentáře." %}
+    <div class="alert alert-info" role="alert">
+      {% translate "Nemáš přidělené žádné komentáře." %}
     </div>
   {% endif %}
 
 </div>
-{% endblock %}
+{% endblock content %}
