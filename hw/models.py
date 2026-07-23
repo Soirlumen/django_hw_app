@@ -8,10 +8,13 @@ from django.conf import settings
 import os
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
+from django.core.validators import FileExtensionValidator
+from .validators import ALLOWED_EXTENSIONS
 
 YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
     YEAR_CHOICES.append((r, r))
+    
 LANGUAGE_CHOICES = (
     ("python", "Python"),
     ("text/x-c++src", "C++"),
@@ -20,6 +23,7 @@ LANGUAGE_CHOICES = (
     ("markdown", "Markdown"),
     ("null", _("Prostý text")),
 )
+
 def validate_file_size(value):
     if value.size > settings.MAX_UPLOAD_FILE_SIZE:
         raise ValidationError(
@@ -51,10 +55,9 @@ class Subject(models.Model):
         return str(self.name).upper()+"-"+ str(self.year)
 
 class CodeFile(models.Model):
-    file = models.FileField(
-        upload_to=codefile_upload,
-        validators=[validate_file_size],
-        verbose_name=_("Soubor"),)
+    file = models.FileField(upload_to=codefile_upload, 
+                            validators=[validate_file_size,FileExtensionValidator(allowed_extensions=ALLOWED_EXTENSIONS)], 
+                            verbose_name=_("Soubor"),)
     class Meta:
         verbose_name = _("Soubor")
         verbose_name_plural = _("Soubory")
@@ -201,3 +204,5 @@ class HomeworkStudentComment(models.Model):
         ]
         verbose_name = _("Studentský komentář")
         verbose_name_plural = _("Studentské komentáře")
+        
+

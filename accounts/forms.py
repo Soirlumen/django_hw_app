@@ -2,7 +2,6 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser
 from django.utils.translation import gettext_lazy as _
 
-
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = CustomUser
@@ -40,3 +39,4 @@ class CustomUserChangeForm(UserChangeForm):
             "surname": _("Zadejte své příjmení."),
             "tel": _("Zadejte telefonní číslo."),
         }
+        

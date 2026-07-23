@@ -1,5 +1,5 @@
 from django import forms
-
+from django.conf import settings
 
 class CodeMirrorWidget(forms.Textarea):
     def __init__(self, attrs=None):
@@ -7,11 +7,12 @@ class CodeMirrorWidget(forms.Textarea):
             "class": "codemirror-source",
             "data-codemirror": "editor",
             "rows": 20,
+            "maxlength": settings.MAX_HOMEWORK_LENGTH,
         }
         if attrs:
             default_attrs.update(attrs)
         super().__init__(attrs=default_attrs)
-
+        
     class Media:
         css = {
             "all": (

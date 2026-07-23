@@ -137,7 +137,7 @@
           {% if homeworks %}
             {% if assignment.is_comments_generated %}
               <span class="badge bg-success">
-                {% translate "Komentáře již byly vygenerovány" %}
+                {% translate "Vzájemné hodnocení již bylo zahájeno." %}
               </span>
 
             {% elif is_after_deadline %}
@@ -149,7 +149,7 @@
                 <div class="input-group input-group-sm" style="width: 150px;">
                   <label class="input-group-text"
                     for="review-count">
-                    {% translate "Počet" %}
+                    {% translate "Počet hodnocených úkolů pro studenta:" %}
                   </label>
 
                   <input id="review-count" type="number"
@@ -158,13 +158,13 @@
                 </div>
 
                 <button type="submit" class="btn btn-sm btn-success">
-                  {% translate "Vygenerovat komentáře" %}
+                  {% translate "Zahájit vzájemné hodnocení úkolů mezi studenty" %}
                 </button>
               </form>
 
             {% else %}
               <span class="text-muted small">
-                {% translate "Komentáře lze vygenerovat až po termínu odevzdání." %}
+                {% translate "Vzájemné hodnocení lze vygenerovat až po termínu odevzdání." %}
               </span>
             {% endif %}
 

@@ -62,13 +62,25 @@
                                     {% for a in filter_t.qs %}
                                         <tr>
                                             <td>
-                                                <a href="{% url 'assgn_detail_teacher' pk=a.pk %}">
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_teacher' pk=a.pk %}">
                                                     {{ a.title }}
                                                 </a>
                                             </td>
-                                            <td>{{ a.deadline }}</td>
-                                            <td>{{ a.subject }}</td>
-                                            <td>{{ a.teacher }}</td>
+                                            <td>
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_teacher' pk=a.pk %}">
+                                                    {{ a.deadline }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_teacher' pk=a.pk %}">
+                                                    {{ a.subject }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_teacher' pk=a.pk %}">
+                                                    {{ a.teacher }}
+                                                </a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -113,20 +125,35 @@
                                 <tbody>
                                     {% for assgn in filter_s.qs %}
                                         <tr>
+                                         <tr>
                                             <td>
-                                                <a href="{% url 'assgn_detail_student' pk=assgn.pk %}">
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_student' pk=assgn.pk %}">
                                                     {{ assgn.title }}
                                                 </a>
                                             </td>
-                                            <td>{{ assgn.deadline }}</td>
-                                            <td>{{ assgn.subject }}</td>
-                                            <td>{{ assgn.teacher }}</td>
                                             <td>
-                                                {% if assgn.is_submitted %}
-                                                    <span class="text-success">✅ {% trans "Odevzdáno" %}</span>
-                                                {% else %}
-                                                    <span class="text-danger">❌ {% trans "Neodevzdáno" %}</span>
-                                                {% endif %}
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_student' pk=assgn.pk %}">
+                                                    {{ assgn.deadline }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_student' pk=assgn.pk %}">
+                                                    {{ assgn.subject }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_student' pk=assgn.pk %}">
+                                                    {{ assgn.teacher }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="text-decoration-none text-dark d-block" href="{% url 'assgn_detail_student' pk=assgn.pk %}">
+                                                    {% if assgn.is_submitted %}
+                                                        <span class="text-success">✅ {% trans "Odevzdáno" %}</span>
+                                                    {% else %}
+                                                        <span class="text-danger">❌ {% trans "Neodevzdáno" %}</span>
+                                                    {% endif %}
+                                                </a>
                                             </td>
                                         </tr>
                                     {% endfor %}

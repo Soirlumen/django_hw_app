@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const languageSelect = document.getElementById("id_programming_language");
 
+  const maxLength = textarea.getAttribute("maxlength");
+
   const editor = CodeMirror.fromTextArea(textarea, {
     lineNumbers: true,
     mode: languageSelect ? languageSelect.value : "python",
@@ -30,6 +32,24 @@ document.addEventListener("DOMContentLoaded", function () {
       "Enter": "newlineAndIndentContinueMarkdownList"
     }
   });
+
+  if (maxLength) {
+    editor.on("beforeChange", function(cm, change) {
+      if (!change.update) return;
+
+      const oldValue = cm.getValue();
+
+      const newValue =
+        oldValue.substring(0, cm.indexFromPos(change.from)) +
+        change.text.join("\n") +
+        oldValue.substring(cm.indexFromPos(change.to));
+
+      if (newValue.length > Number(maxLength)) {
+        change.cancel();
+      }
+    });
+  }
+
 
   if (languageSelect) {
     languageSelect.addEventListener("change", function () {

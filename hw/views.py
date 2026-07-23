@@ -6,6 +6,7 @@ from .forms import (CreateHomeworkForm,
                     HomeworkStudentCommentForm,
                     AssignemntEdit,
                     CommentTeacherMarkForm,
+                    SubjectCreateForm
                     )
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -88,8 +89,7 @@ def hw_list_after_deadline_view(request):
     return render(request, "list/assignment_list.html", context)
 
 
-@teacher_required
-@own_required(Assignment,"teacher")
+@own_required(Assignment,'teacher')
 def assgn_detail_teacher(request, pk):
     assignment=get_object_or_404(Assignment,pk=pk)
     homeworks = Homework.objects.filter(key__assignment=assignment)
@@ -184,6 +184,7 @@ def assgn_detail_stud(request, pk):
     )
     
 @teacher_required
+
 def assignment_create_view(request):
     if request.method == "POST":
         form = AssignmentForm(
@@ -450,6 +451,7 @@ def reviewer_list_view(request):
 
 
 @student_required
+
 @own_required(HomeworkStudentComment, "reviewer")
 def reviewer_form_view(request, pk):
     review = get_object_or_404(
@@ -511,7 +513,8 @@ def comment_feedback_detail_view(request, pk):
         "language":review.hw.programming_language,
         "mark": review.mark,
     })
-    
+
+@teacher_required    
 
 def teacher_comment_mark_view(request, pk):
     review = get_object_or_404(HomeworkStudentComment, pk=pk)
@@ -578,3 +581,21 @@ def teacher_comments_list_view(request):
         "comments": reviews,
         "pending_count": pending_count,
     })
+    
+def subject_create_view(request):
+    if not request.user.is_superuser:
+        raise HttpResponseBadRequest("Předmět může vytvořit pouze administrator.")
+    if request.method=="POST":
+        f=SubjectCreateForm(request.POST)
+        if f.is_valid():
+            f.save()
+            messages.success(request,_("Předmět byl úspěšně vytvořen."))
+            return redirect("dashboard")
+        else:
+            messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
+            print(f.errors)
+            print(f.non_field_errors())
+    else:
+          f = SubjectCreateForm()
+    return render(request, "homework/create_subject.html", {"form": f})        
+            

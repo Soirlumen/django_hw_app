@@ -52,4 +52,3 @@ def own_required(model, owner_field):
           return _wrapped_view
      return decorator
           
-          

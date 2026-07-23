@@ -1,6 +1,7 @@
 from django import forms
-from .models import Homework, Assignment, HomeworkStudentComment
+from .models import Homework, Assignment, HomeworkStudentComment,Subject
 from django.core.exceptions import ValidationError
+from .validators import validate_file_type
 from django.utils import timezone
 from django.utils.html import format_html
 from .widgets import CodeMirrorWidget
@@ -32,7 +33,6 @@ class MultipleFileField(forms.FileField):
         max_files=settings.MAX_UPLOAD_FILES_NUMBER
         if not data:
             return []
-
         if isinstance(data, (list, tuple)):
             files = [single_file_clean(d, initial) for d in data]
         else:
@@ -41,11 +41,23 @@ class MultipleFileField(forms.FileField):
             raise ValidationError(
                 _("Najednou můžeš nahrát maximálně %(mf)s souborů.")%{"mf":max_files}
             )
-
         for f in files:
             if f.size > max_size:
                 raise ValidationError(
                     _("Soubor %(file)s je příliš velký. Maximum je %(msm)s MB.")%{"file":str(f),"msm":f"{max_size_mb:.0f}"}
+                )
+                
+        try:
+            validate_file_type(f)
+        except ValidationError as e:
+            raise ValidationError(
+                    _("Soubor %(file)s má nepovolený typ: %(err)s") % 
+                    {"file": str(f), 
+                        "err": e.message}
+                )
+        except Exception:
+                raise ValidationError(
+                    _("Soubor %(file)s nelze zpracovat nebo má neplatný formát.") % {"file": str(f)}
                 )
         return files
 
@@ -185,7 +197,7 @@ class AssignmentForm(forms.ModelForm):
         model = Assignment
         fields = ("title", "subject", "description", "release", "deadline", "max_score")
         widgets = {
-            "description": forms.Textarea(attrs={'maxlength': '30000'}),
+            "description": forms.Textarea(attrs={'maxlength': settings.MAX_HOMEWORK_LENGTH}),
             }
         
 class AssignemntEdit(forms.ModelForm):
@@ -236,7 +248,7 @@ class AssignemntEdit(forms.ModelForm):
         model=Assignment
         fields=("title","description","release","deadline", "max_score")
         widgets = {
-            "description": forms.Textarea(attrs={'maxlength': '50000'}),
+            "description": forms.Textarea(attrs={'maxlength': settings.MAX_HOMEWORK_LENGTH}),
             }
 
 #vyplnění hodnocení od učitele
@@ -270,7 +282,10 @@ class HomeworkStudentCommentForm(forms.ModelForm):
         model=HomeworkStudentComment
         fields=("comment",)
         widgets = {
-            "comment": forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": _("Napiš zpětnou vazbu...")}),
+            "comment": forms.Textarea(attrs={"class": "form-control", 
+                                             "rows": 6, 
+                                             "placeholder": _("Napiš zpětnou vazbu..."),
+                                             "maxlength":settings.MAX_HOMEWORK_LENGTH}),
         }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -285,3 +300,8 @@ class CommentTeacherMarkForm(forms.ModelForm):
     class Meta:
         model=HomeworkStudentComment
         fields=["mark"]
+        
+class SubjectCreateForm(forms.ModelForm):
+    class Meta:
+        model=Subject
+        fields=["year","name"]

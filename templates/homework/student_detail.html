@@ -51,7 +51,7 @@
       <div class="mb-3">
         <strong>{% translate "Popis:" %}</strong>
         <div class="mt-1 border rounded p-3 bg-white">
-          {{ hwdetail.description|markdown|safe }}
+          {{ hwdetail.description|markdown }}
         </div>
       </div>
 
@@ -87,122 +87,149 @@
     </div>
   </div>
 
-  {% if already_submitted %}
-    <div class="alert alert-success d-flex flex-wrap justify-content-between align-items-center gap-2" role="alert">
-      <div>
-        <strong>{% translate "Odevzdáno:" %}</strong> {{ submitted_homework.submitted }}
-      </div>
-
-      {% if submitted_homework %}
-        {% if hwdetail.is_after_deadline %}
-          <a href="#" class="btn btn-sm btn-outline-primary disabled">
-            {% translate "Již nelze upravit" %}
-          </a>
-        {% else %}
-          <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-sm btn-outline-primary">
-            {% translate "Upravit odevzdání" %}
-          </a>
-        {% endif %}
-      {% endif %}
-    </div>
-
-    {% if submitted_homework %}
-      <div class="card shadow-sm mb-4">
-  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+ {% if already_submitted %}
+  <div class="alert alert-success d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4" role="alert">
     <div>
-      <strong>{% translate "Tvůj odevzdaný úkol" %}</strong> v programovacím jazyce <strong>{{ submitted_homework.programming_language|default:"-" }}</strong>
+      <strong>{% translate "Odevzdáno:" %}</strong> {{ submitted_homework.submitted }}
     </div>
-    {% if submitted_homework.is_evaluated %}
-      <span class="badge bg-success">
-        {% blocktranslate with score=submitted_homework.score max_score=hwdetail.max_score %}Skóre: {{ score }} / {{ max_score }}{% endblocktranslate %}
-      </span>
+
+    {% if hwdetail.is_after_deadline %}
+      <a href="#" class="btn btn-sm btn-outline-primary disabled">
+        {% translate "Již nelze upravit" %}
+      </a>
+    {% else %}
+      <a href="{% url 'homework_update' submitted_homework.pk %}" class="btn btn-sm btn-outline-primary">
+        {% translate "Upravit odevzdání" %}
+      </a>
     {% endif %}
   </div>
-        <div class="card-body">
-          {% if submitted_homework.programming_language == "markdown" %}
-           {{ submitted_homework.engrossment|markdown|safe }}
-          {% else %}
-          <textarea id="hw-code-viewer" data-code-language="{{ submitted_homework.programming_language|default:'python' }}">{{ submitted_homework.engrossment }}</textarea>
-          {% endif %}
-          {% if submitted_homework.files.exists %}
-            <div class="mb-2"><strong>{% translate "Přiložené soubory:" %}</strong></div>
-            <ul>
-              {% for f in submitted_homework.files.all %}
-                <li><div class="mb-3"><a href="{{ f.get_file_path }}" download>{{ f }}</a></div></li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-          {% if submitted_homework.notes %}
-            <div class="mb-2"><strong>{% translate "Poznámky pro učitele:" %}</strong></div>
-            <div class="border rounded p-3 bg-light">
-              {{ submitted_homework.notes|markdown|safe }}    
-            </div>
-          {% endif %}
+
+  {% if submitted_homework %}
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <div class="fw-semibold">
+            {% translate "Tvůj odevzdaný úkol" %}
+          </div>
+          <small class="text-muted">
+            {{ submitted_homework.programming_language|default:"-" }}
+          </small>
         </div>
+
+        {% if submitted_homework.is_evaluated %}
+          <div class="border rounded px-3 py-2 bg-light text-center">
+            <div class="small text-muted">
+              {% translate "Skóre" %}
+            </div>
+            <div class="fw-bold fs-4 text-success lh-1">
+              {{ submitted_homework.score }}
+              <span class="text-secondary fs-6">/ {{ hwdetail.max_score }}</span>
+            </div>
+          </div>
+        {% endif %}
       </div>
 
-      {% if submitted_homework.text_evaluation %}
-        <div class="card shadow-sm mb-4">
-          <div class="card-header">
-            <strong>{% translate "Hodnocení od učitele" %}</strong>
+      <div class="card-body">
+
+        {% if submitted_homework.programming_language == "markdown" %}
+          {{ submitted_homework.engrossment|markdown }}
+        {% else %}
+          <textarea id="hw-code-viewer"
+                    data-code-language="{{ submitted_homework.programming_language|default:'python' }}">{{ submitted_homework.engrossment }}</textarea>
+        {% endif %}
+
+        {% if submitted_homework.files.exists %}
+          <div class="mb-2">
+            <strong>{% translate "Přiložené soubory:" %}</strong>
           </div>
-          <div class="card-body">
-            <div class="border rounded p-3 bg-white">
-              {{ submitted_homework.text_evaluation|markdown|safe }}
-            </div>
+          <ul>
+            {% for f in submitted_homework.files.all %}
+              <li>
+                <div class="mb-3">
+                  <a href="{{ f.get_file_path }}" download>{{ f }}</a>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if submitted_homework.notes %}
+          <div class="mb-2">
+            <strong>{% translate "Poznámky pro učitele:" %}</strong>
+          </div>
+          <div class="border rounded p-3 bg-light">
+            {{ submitted_homework.notes|markdown }}
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    {% if submitted_homework.text_evaluation %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <strong>{% translate "Hodnocení od učitele" %}</strong>
+        </div>
+        <div class="card-body">
+          <div class="border rounded p-3 bg-white">
+            {{ submitted_homework.text_evaluation|markdown }}
           </div>
         </div>
-      {% endif %}
-
-      {% if comments %}
-        <div class="card shadow-sm mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>{% translate "Komentáře od spolužáků" %}</strong>
-            <span class="badge bg-primary">
-              {% blocktranslate with count=comments|length %}Celkem: {{ count }}{% endblocktranslate %}
-            </span>
-          </div>
-          <div class="card-body">
-            <ul class="list-group">
-              {% for c in comments %}
-                <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
-                  <div>
-                    {% blocktranslate with num=forloop.counter %}Komentář #{{ num }}{% endblocktranslate %}
-                    <div class="text-muted small">
-                      {% if c.comment %}
-                        {% translate "Vyplněno" %}
-                      {% else %}
-                        {% translate "Čeká na vyplnění" %}
-                      {% endif %}
-                    </div>
-                  </div>
-
-                  <div class="d-flex align-items-center gap-2">
-                    {% if c.comment %}
-                      <span class="badge bg-success">✓</span><a class="btn btn-sm btn-outline-primary" href="{% url 'comment_feedback_detail' c.pk %}">
-                      {% translate "Zobrazit" %}
-                    </a>
-                    {% else %}
-                      <span class="badge bg-secondary">⏳</span><a class="btn btn-sm btn-outline-secondary disabled" href="{% url 'comment_feedback_detail' c.pk %}">
-                      {% translate "Nebylo ještě vyplněno" %}
-                    </a>
-                    {% endif %}
-
-                  </div>
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-      {% endif %}
-
-      <div class="d-flex flex-wrap gap-2 mb-4">
-        <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
-          {% translate "Zpět na seznam" %}
-        </a>
       </div>
     {% endif %}
+
+    {% if comments %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>{% translate "Komentáře od spolužáků" %}</strong>
+          <span class="badge bg-primary">
+            {% blocktranslate with count=comments|length %}Celkem: {{ count }}{% endblocktranslate %}
+          </span>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for c in comments %}
+              <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                  {% blocktranslate with num=forloop.counter %}Komentář #{{ num }}{% endblocktranslate %}
+                  <div class="text-muted small">
+                    {% if c.comment %}
+                      {% translate "Vyplněno" %}
+                    {% else %}
+                      {% translate "Čeká na vyplnění" %}
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  {% if c.comment %}
+                    <span class="badge bg-success">✓</span>
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'comment_feedback_detail' c.pk %}">
+                      {% translate "Zobrazit" %}
+                    </a>
+                  {% else %}
+                    <span class="badge bg-secondary">⏳</span>
+                    <a class="btn btn-sm btn-outline-secondary disabled" href="{% url 'comment_feedback_detail' c.pk %}">
+                      {% translate "Nebylo ještě vyplněno" %}
+                    </a>
+                  {% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <a href="{% url 'list_active' %}" class="btn btn-outline-secondary">
+        {% translate "Zpět na seznam" %}
+      </a>
+    </div>
+
   {% endif %}
+{% endif %}
 </div>
 {% endblock content %}
 

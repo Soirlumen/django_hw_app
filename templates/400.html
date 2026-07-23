@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load i18n %}
 {% load static %}
 {% block title %}
-  {% translate "Chyba serveru" %}
+  {% translate "Bad request" %}
 {% endblock %}
 {% block content %}
 <div class="container mt-4">
     <div class="alert alert-danger">
-        <h3>{% trans "Chyba serveru" %}</h3>
+        <h3>{% trans "Bad request :(" %}</h3>
 
         {% if exception %}
             {{ exception }}
         {% else %}
-            {% trans "Vyskytla se chyba serveru" %}
+            {% trans "Something went wrong" %}
         {% endif %}
     </div>
 </div>

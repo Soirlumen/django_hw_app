@@ -4,6 +4,15 @@
   {% translate "Stránka nenalezena" %}
 {% endblock %}
 {% block content %}
-<h1>{% translate "Stránka nenalezena" %}</h1>
-<p>{% translate "Stránku se nepodařilo nalézt" %}</p>
+<div class="container mt-4">
+    <div class="alert alert-danger">
+        <h3>{% translate "Stránka nenalezena" %}</h3>
+
+        {% if exception %}
+            {{ exception }}
+        {% else %}
+            {% translate "Stránku se nepodařilo nalézt" %}
+        {% endif %}
+    </div>
+</div>
 {%endblock%}
