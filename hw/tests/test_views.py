@@ -1,4 +1,6 @@
 from .setUp import BaseHWTestCase
+from datetime import timedelta
+from django.utils import timezone
 from django.test import modify_settings
 
 class TestHWViewStatus200(BaseHWTestCase):
@@ -30,6 +32,9 @@ class TestHWViewStatus200(BaseHWTestCase):
         self.assert_get_200(self.teacher, "assignment_delete", pk=self.assignment.pk, template_name="homework/ass_delete_confirm.html")
 
     def test_assignenment_edit_200(self):
+        self.assignment.release=timezone.now() + timedelta(days=1)
+        self.assignment.deadline=timezone.now() + timedelta(days=2)
+        self.assignment.save(update_fields=["release", "deadline"])
         self.assert_get_200(self.teacher, "assgn_edit",template_name="homework/as_update.html", pk=self.assignment.pk)
 
     def test_homework_update_200(self):

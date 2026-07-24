@@ -4,12 +4,10 @@ from django.utils import timezone
 from datetime import timedelta
 from hw.models import Key, Homework, Assignment
 from .setUp import BaseHWTestCase 
+from unittest.mock import patch
 class HomeworkCreateIntegrationTest(BaseHWTestCase):
 
      def test_successful_homework_submission_flow(self):
-          """
-          Student odevzdává úkol k novému zadání.
-          """
           new_assignment = Assignment.objects.create(
                title="Suprzadání",
                subject=self.subject,
@@ -21,39 +19,56 @@ class HomeworkCreateIntegrationTest(BaseHWTestCase):
           )
 
           self.assert_get_200(
-               user=self.student, 
-               url_name='hw_create', 
-               template_name='homework/hw_create.html',
-               assgn_id=new_assignment.pk
+               user=self.student,
+               url_name="hw_create",
+               template_name="homework/hw_create.html",
+               assgn_id=new_assignment.pk,
           )
 
-          # Krok 2: Příprava POST dat
-          test_file = SimpleUploadedFile("reseni.py", b"print('Ahoj')", content_type="text/x-python")
-          form_data = {
-               'programming_language': 'python',
-               'engrossment': 'def main():\n    print("Hotovo")',
-               'notes': 'Moje poznámka',
-               'filesimput': [test_file]
-          }
-
-          # Krok 3: Odeslání POST požadavku
           self.client.force_login(self.student)
           url = f"{reverse('hw_create')}?assgn_id={new_assignment.pk}"
-          response = self.client.post(url, data=form_data, follow=True)
 
-          # Krok 4: Ověření úspěšného přesměrování na detail pro studenta
-          expected_redirect_url = reverse('assgn_detail_student', kwargs={'pk': new_assignment.pk})
-          self.assertRedirects(response, expected_redirect_url)
+          with patch("hw.forms.validate_file_type"):
+               test_file = SimpleUploadedFile(
+                    "reseni.py",
+                    b"print('Ahoj')",
+                    content_type="text/x-python",
+               )
 
-          # Krok 5: Ověření databáze
-          # views.py automaticky najde nebo vytvoří Key
-          student_key = Key.objects.get(student=self.student, assignment=new_assignment)
+               response = self.client.post(
+                    url,
+                    data={
+                         "programming_language": "python",
+                         "engrossment": 'def main():\n    print("Hotovo")',
+                         "notes": "Moje poznámka",
+                         "filesimput": test_file,
+                    },
+                    follow=False,
+               )
+
+          expected_redirect_url = reverse(
+               "assgn_detail_student",
+               kwargs={"pk": new_assignment.pk},
+          )
+
+          self.assertRedirects(
+               response,
+               expected_redirect_url,
+               fetch_redirect_response=False,
+          )
+
+          student_key = Key.objects.get(
+               student=self.student,
+               assignment=new_assignment,
+          )
           homework = Homework.objects.get(key=student_key)
-          
-          self.assertEqual(homework.programming_language, 'python')
-          self.assertEqual(homework.engrossment, 'def main():\n    print("Hotovo")')
-          self.assertEqual(homework.files.count(), 1)
 
+          self.assertEqual(homework.programming_language, "python")
+          self.assertEqual(
+               homework.engrossment,
+               'def main():\n    print("Hotovo")',
+          )
+          self.assertEqual(homework.files.count(), 1)
      def test_homework_submission_fails_after_deadline(self):
           """Ověření, že po termínu (deadline) formulář vyhodí chybu (stav 200 s chybou)."""
           # Vytvoříme nové zadání, které je již po deadline

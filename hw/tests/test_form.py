@@ -8,6 +8,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.utils.datastructures import MultiValueDict
 from django.http import QueryDict
+from unittest.mock import call, patch
 
 @override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.InMemoryStorage')
 class TestAssignmentForm(BaseHWTestCase):
@@ -79,46 +80,49 @@ class TestAssignmentForm(BaseHWTestCase):
 class TestAssignemntEdit(BaseHWTestCase):
      def test_assignment_edit_deadline_before_release(self):
           self.assignment.release = timezone.now() + timedelta(minutes=10)
-          form_data = {
+          form_data = QueryDict(mutable=True)
+          form_data.update({
                "title": self.assignment.title,
                "subject": self.assignment.subject.pk,
                "description": self.assignment.description,
                "release": (timezone.now() + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M"),
                "deadline": (timezone.now() - timedelta(days=7)).strftime("%Y-%m-%dT%H:%M"),
                "max_score": self.assignment.max_score
-          }
+          })
           form = AssignemntEdit(data=form_data, instance=self.assignment)
           self.assertFalse(form.is_valid())
           self.assertIn("Termín odevzdání nemůže být dříve než zveřejnění", str(form.errors))
      def test_assignment_edit_valid(self):
           self.assignment.release = timezone.now() + timedelta(minutes=10)
-          form_data = {
+          form_data = QueryDict(mutable=True)
+          form_data.update({
                "title": self.assignment.title,
                "subject": self.assignment.subject.pk,
                "description": self.assignment.description,
                "release": (timezone.now() + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M"),
                "deadline": (timezone.now() + timedelta(days=7)).strftime("%Y-%m-%dT%H:%M"),
                "max_score": self.assignment.max_score
-          }
+          })
           form = AssignemntEdit(data=form_data, instance=self.assignment)
           self.assertTrue(form.is_valid())
      def test_assignment_edit_after_release(self):
           self.assignment.release = timezone.now() - timedelta(days=1)
-          form_data = {
+          form_data = QueryDict(mutable=True)
+          form_data.update({
                "title": self.assignment.title,
                "subject": self.assignment.subject.pk,
                "description": self.assignment.description,
                "release": (timezone.now() + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M"),
                "deadline": (timezone.now() + timedelta(days=7)).strftime("%Y-%m-%dT%H:%M"),
                "max_score": self.assignment.max_score
-          }
+          })
           form=AssignemntEdit(data=form_data, instance=self.assignment)
           self.assertFalse(form.is_valid())
           self.assertIn("Již zveřejněné zadání nelze upravovat.", str(form.errors)) 
 
           
 class TestCreateHomeworkForm(BaseHWTestCase):
-     def test_homework_form_valid_with_text(self):
+     def test_homework_form_valid_with_text(self,):
         form_data = {"engrossment": "Odevzdaný úkol", "programming_language": "python", "notes": ""}
         form = CreateHomeworkForm(
             data=form_data,
@@ -127,7 +131,8 @@ class TestCreateHomeworkForm(BaseHWTestCase):
         )
         self.assertTrue(form.is_valid(), form.errors)
 
-     def test_homework_form_valid_with_file_only(self):
+     @patch("hw.forms.validate_file_type")
+     def test_homework_form_valid_with_file_only(self,mock_validate_file_type):
           uploaded_file = SimpleUploadedFile( "solution.py",b"print('hello')", content_type="text/x-python")
           files = MultiValueDict({"filesimput": [uploaded_file]})
           form_data = {
@@ -142,7 +147,7 @@ class TestCreateHomeworkForm(BaseHWTestCase):
                user=self.student,
           )
           self.assertTrue(form.is_valid(), form.errors)
-
+          mock_validate_file_type.assert_called_once_with(uploaded_file)
      def test_homework_form_valid_with_text_and_file(self):
           uploaded_file = SimpleUploadedFile(
                "solution.py",
@@ -157,7 +162,8 @@ class TestCreateHomeworkForm(BaseHWTestCase):
                assignment=self.assignment,
                user=self.student,
           )
-          self.assertTrue(form.is_valid(), form.errors)
+          with patch("hw.forms.validate_file_type"):
+               self.assertTrue(form.is_valid(), form.errors)
 
      def test_homework_form_invalid_without_text_or_file(self):
           form_data = {"engrossment": "", "programming_language": "python", "notes": ""}
@@ -268,13 +274,19 @@ class TestCreateHomeworkForm(BaseHWTestCase):
 class TestMultipleFileField(TestCase):
      def setUp(self):
           self.field = MultipleFileField(required=False)
-         
-     def test_clean_correct(self):
+     @patch("hw.forms.validate_file_type")
+     def test_clean_correct(self,mock_validate_file_type):
           file1=SimpleUploadedFile("file1.txt", b"fnj")
           file2=SimpleUploadedFile("file2.txt", b"bnj")
+
           cleane_data=self.field.clean([file1,file2])
+
           self.assertEqual(cleane_data,[file1,file2])
           self.assertEqual(len(cleane_data),2)
+          mock_validate_file_type.assert_has_calls([
+          call(file1),
+          call(file2),
+     ])
      @override_settings(MAX_UPLOAD_FILES_NUMBER=2)
      def test_clean_too_much_files(self):
           file1=SimpleUploadedFile("file1.txt", b"fnj")

@@ -47,18 +47,18 @@ class MultipleFileField(forms.FileField):
                     _("Soubor %(file)s je příliš velký. Maximum je %(msm)s MB.")%{"file":str(f),"msm":f"{max_size_mb:.0f}"}
                 )
                 
-        try:
-            validate_file_type(f)
-        except ValidationError as e:
-            raise ValidationError(
-                    _("Soubor %(file)s má nepovolený typ: %(err)s") % 
-                    {"file": str(f), 
-                        "err": e.message}
-                )
-        except Exception:
+            try:
+                validate_file_type(f)
+            except ValidationError as e:
                 raise ValidationError(
-                    _("Soubor %(file)s nelze zpracovat nebo má neplatný formát.") % {"file": str(f)}
-                )
+                        _("Soubor %(file)s má nepovolený typ: %(err)s") % 
+                        {"file": str(f), 
+                            "err": e.message}
+                    )
+            except Exception:
+                    raise ValidationError(
+                        _("Soubor %(file)s nelze zpracovat nebo má neplatný formát.") % {"file": str(f)}
+                    )
         return files
 
 class HomeworkBaseForm(forms.ModelForm):
