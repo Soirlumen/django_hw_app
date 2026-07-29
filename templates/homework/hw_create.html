@@ -76,7 +76,6 @@
       {% else %}
        <form method="post" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
-  {{ form.non_field_errors }}
   {{ form|crispy }}
   <div class="d-flex gap-3 mt-3 align-items-center">
     <button type="submit" class="btn btn-success">
