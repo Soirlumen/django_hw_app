@@ -89,7 +89,8 @@ def hw_list_after_deadline_view(request):
     return render(request, "list/assignment_list.html", context)
 
 
-@own_required(Assignment,'teacher')
+#@own_required(Assignment,'teacher')
+@teacher_required
 def assgn_detail_teacher(request, pk):
     assignment=get_object_or_404(Assignment,pk=pk)
     homeworks = Homework.objects.filter(key__assignment=assignment)
