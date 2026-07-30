@@ -10,6 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.core.validators import FileExtensionValidator
 from .validators import ALLOWED_EXTENSIONS
+import hashlib
+import hmac
 
 YEAR_CHOICES = []
 for r in range(1950, (datetime.datetime.now().year + 1)):
@@ -38,11 +40,15 @@ def validate_max_file_count(instance):
 def codefile_upload(instance, filename):
     user = getattr(instance, "_upload_user", None)
     assignment = getattr(instance, "_upload_assignment", None)
-
-    username = slugify(user.username) if user else "unknown-user"
     assignment_name = slugify(assignment.title) if assignment else "unknown-assignment"
+    # anonymizovane ukládání souborů :)
+    if user and assignment:
+        hash = hmac.new(str(settings.SECRET_KEY).encode("utf-8"),
+            f"{user.pk}:{assignment.pk}".encode("utf-8"), hashlib.sha256).hexdigest()[:16]
+    else:
+        hash = "unknown-user"
 
-    return os.path.join(username, assignment_name, filename)
+    return os.path.join(hash, assignment_name, filename)
 
 class Subject(models.Model):
     year = models.IntegerField(
@@ -55,7 +61,7 @@ class Subject(models.Model):
         return str(self.name).upper()+"-"+ str(self.year)
 
 class CodeFile(models.Model):
-    file = models.FileField(upload_to=codefile_upload, 
+    file = models.FileField(max_length=256,upload_to=codefile_upload, 
                             validators=[validate_file_size,FileExtensionValidator(allowed_extensions=ALLOWED_EXTENSIONS)], 
                             verbose_name=_("Soubor"),)
     class Meta:
