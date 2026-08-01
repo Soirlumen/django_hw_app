@@ -515,8 +515,7 @@ def comment_feedback_detail_view(request, pk):
         "mark": review.mark,
     })
 
-@teacher_required    
-
+@own_required(HomeworkStudentComment, "hw__key__assignment__teacher")    
 def teacher_comment_mark_view(request, pk):
     review = get_object_or_404(HomeworkStudentComment, pk=pk)
 
@@ -542,9 +541,6 @@ def teacher_comment_mark_view(request, pk):
 @teacher_required
 def teacher_comments_list_view(request):
     """Přehled všech peer-review řazený od nejnovějšího deadline."""
-    
-    # 1. Nejdříve vytáhneme recenzenty s počty pro jednotlivá zadání
-    # Chceme vědět: Pro toto assignment_id a tohoto reviewer_id -> kolik je celkem a kolik hotových?
     stats = (
         HomeworkStudentComment.objects
         .filter(hw__key__assignment__teacher=request.user)
