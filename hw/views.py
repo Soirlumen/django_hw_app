@@ -270,8 +270,6 @@ def hw_create_view(request):
             return redirect("assgn_detail_student", pk=assignment.pk)
         else:
             messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
-            print(form.errors)
-            print(form.non_field_errors())
     else:
         form = CreateHomeworkForm(assignment=assignment, user=request.user)
 
@@ -343,6 +341,7 @@ def assgn_delete_view(request, pk):
         "homework/ass_delete_confirm.html",
         {"assgn": assignment},
     )
+    
 @login_required
 def hw_detail_view(request, pk):
     homework = get_object_or_404(Homework, pk=pk)
@@ -523,8 +522,7 @@ def comment_feedback_detail_view(request, pk):
         "mark": review.mark,
     })
 
-@teacher_required    
-
+@own_required(HomeworkStudentComment, "hw__key__assignment__teacher")    
 def teacher_comment_mark_view(request, pk):
     review = get_object_or_404(HomeworkStudentComment, pk=pk)
 
@@ -593,7 +591,7 @@ def teacher_comments_list_view(request):
 @login_required    
 def subject_create_view(request):
     if not request.user.is_superuser:
-        raise HttpResponseBadRequest("Předmět může vytvořit pouze administrator.")
+        raise PermissionDenied("Předmět může vytvořit pouze administrator.")
     if request.method=="POST":
         f=SubjectCreateForm(request.POST)
         if f.is_valid():
@@ -602,8 +600,6 @@ def subject_create_view(request):
             return redirect("dashboard")
         else:
             messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
-            print(f.errors)
-            print(f.non_field_errors())
     else:
           f = SubjectCreateForm()
     return render(request, "homework/create_subject.html", {"form": f})        
