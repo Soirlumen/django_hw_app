@@ -9,7 +9,7 @@ import os
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.core.validators import FileExtensionValidator
-from .validators import ALLOWED_EXTENSIONS
+from .validators import ALLOWED_EXTENSIONS, validate_file_type
 import hashlib
 import hmac
 
@@ -40,10 +40,11 @@ def validate_max_file_count(instance):
 def codefile_upload(instance, filename):
     user = getattr(instance, "_upload_user", None)
     assignment = getattr(instance, "_upload_assignment", None)
+    hash_key=settings.FILE_UPLOAD_HASH_KEY
     assignment_name = slugify(assignment.title) if assignment else "unknown-assignment"
     # anonymizovane ukládání souborů :)
     if user and assignment:
-        hash = hmac.new(str(settings.SECRET_KEY).encode("utf-8"),
+        hash = hmac.new(str(hash_key).encode("utf-8"),
             f"{user.pk}:{assignment.pk}".encode("utf-8"), hashlib.sha256).hexdigest()[:16]
     else:
         hash = "unknown-user"
@@ -62,7 +63,7 @@ class Subject(models.Model):
 
 class CodeFile(models.Model):
     file = models.FileField(max_length=256,upload_to=codefile_upload, 
-                            validators=[validate_file_size,FileExtensionValidator(allowed_extensions=ALLOWED_EXTENSIONS)], 
+                            validators=[validate_file_size,FileExtensionValidator(allowed_extensions=ALLOWED_EXTENSIONS),validate_file_type], 
                             verbose_name=_("Soubor"),)
     class Meta:
         verbose_name = _("Soubor")
@@ -76,6 +77,7 @@ class CodeFile(models.Model):
         if self.file:
             self.file.delete(save=False)
         super().delete(*args, **kwargs)
+    
     
 class Assignment(models.Model):
     title = models.CharField(max_length=200, verbose_name=_("Titulek zadání"),help_text=_("Stručný titulek zadání k domácího úkolu."),)
@@ -135,10 +137,6 @@ class Key(models.Model):
         if not subj.subject_type.filter(user=self.student, role="student").exists():
             raise ValidationError(_("Uživatel není studentem tohoto předmětu."))
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super().save(*args, **kwargs)
-
     class Meta:
         constraints = [
             UniqueConstraint(fields=["student", "assignment"], name="student_assgn")
@@ -167,7 +165,7 @@ class Homework(models.Model):
 
     @property
     def is_after_deadline(self) -> bool:
-        return timezone.now() >= self.key.assignment.deadline
+        return timezone.now() > self.key.assignment.deadline
 
     @property
     def is_evaluated(self) -> bool:

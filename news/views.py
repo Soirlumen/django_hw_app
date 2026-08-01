@@ -29,8 +29,6 @@ def create_post_view(request):
                return redirect("news-post")
           else:
             messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
-            print(form.errors)
-            print(form.non_field_errors())
      else:
           form = CreateEditPost()
      return render(request, "newspost/create_post.html", {"form": form})        
@@ -50,8 +48,6 @@ def edit_post_view(request,pk):
                return redirect("news-post")
           else:
             messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
-            print(form.errors)
-            print(form.non_field_errors())
      else:
           form = CreateEditPost(instance=post)
      return render(request, "newspost/edit_post.html", {"form": form, "post":post})        

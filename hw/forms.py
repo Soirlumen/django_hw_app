@@ -265,6 +265,13 @@ class EvaluationForm(forms.ModelForm):
             raise ValidationError(_("max score je %(maxscore)s")%{"maxscore":maxscore})
         return score
     
+    def clean(self):
+        self.cleaned_data=super().clean()
+        if not self.instance.key.assignment.is_after_deadline:
+            raise ValidationError(
+                _("Před termínem odevzdání nelze opravovat úkoly.yes")
+            )
+    
     # aby mohl učitel zadat maximálně max_score bodů
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

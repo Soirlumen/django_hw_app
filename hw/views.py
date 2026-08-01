@@ -263,22 +263,20 @@ def hw_create_view(request):
                 obj_f = CodeFile(file=f)
                 obj_f._upload_user = request.user
                 obj_f._upload_assignment = assignment
+                obj_f.full_clean()
                 obj_f.save()
                 hwform.files.add(obj_f)
 
             return redirect("assgn_detail_student", pk=assignment.pk)
         else:
             messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
-            print(form.errors)
-            print(form.non_field_errors())
     else:
         form = CreateHomeworkForm(assignment=assignment, user=request.user)
 
-    is_after_deadline = timezone.now() > assignment.deadline
     context = {
         "form": form,
         "hwdetail": assignment,
-        "is_after_deadline": is_after_deadline,
+        "is_after_deadline": assignment.is_after_deadline,
     }
     return render(request, "homework/hw_create.html", context)
 
@@ -343,6 +341,7 @@ def assgn_delete_view(request, pk):
         "homework/ass_delete_confirm.html",
         {"assgn": assignment},
     )
+    
 @login_required
 def hw_detail_view(request, pk):
     homework = get_object_or_404(Homework, pk=pk)
@@ -366,6 +365,10 @@ def delete_file_if_unused(codefile):
 @own_required(Homework,'key__assignment__teacher')
 def edit_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
+    if not hw.is_after_deadline:
+        raise PermissionDenied(
+            _("Před termínem odevzdání nelze opravovat úkoly.")
+        )
     if request.method == "POST":
         form = EvaluationForm(request.POST,instance=hw)
         if form.is_valid():
@@ -380,6 +383,10 @@ def edit_evaluation_view(request, pk):
 @own_required(Homework,'key__assignment__teacher')
 def delete_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
+    if not hw.is_after_deadline:
+        raise PermissionDenied(
+            _("K této stránce nemáte přístup.")
+        )
     if request.method == "POST":
         hw.score = None
         hw.text_evaluation = None
@@ -578,10 +585,10 @@ def teacher_comments_list_view(request):
         "comments": reviews,
         "pending_count": pending_count,
     })
-    
+@login_required    
 def subject_create_view(request):
     if not request.user.is_superuser:
-        raise HttpResponseBadRequest("Předmět může vytvořit pouze administrator.")
+        raise PermissionDenied("Předmět může vytvořit pouze administrator.")
     if request.method=="POST":
         f=SubjectCreateForm(request.POST)
         if f.is_valid():
@@ -590,8 +597,6 @@ def subject_create_view(request):
             return redirect("dashboard")
         else:
             messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
-            print(f.errors)
-            print(f.non_field_errors())
     else:
           f = SubjectCreateForm()
     return render(request, "homework/create_subject.html", {"form": f})        

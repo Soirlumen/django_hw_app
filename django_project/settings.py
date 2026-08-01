@@ -16,10 +16,11 @@ env = environ.Env(
     MAX_UPLOAD_FILE_SIZE_MB=(int, 2),
     MAX_UPLOAD_FILES_NUMBER=(int, 5),
     MAX_HOMEWORK_LENGTH=(int, 30000),
+    FILE_UPLOAD_HASH_KEY=(str, "vymys131a-js3m-si-v1astni-sup3rk1ic"),
 )
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
-
+FILE_UPLOAD_HASH_KEY=env("FILE_UPLOAD_HASH_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = ["*"]
