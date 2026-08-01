@@ -72,7 +72,7 @@
     <div class="card-body">
       {% if is_after_deadline %}
         <p><em>{% trans "Po deadline nelze přidávat řešení úkolu..."%}</em></p>
-        <button class="btn btn-success mt-2" disabled>Odevzdat</button>
+        <button class="btn btn-success mt-2" disabled>{% trans "Odevzdat" %}</button>
       {% else %}
        <form method="post" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
