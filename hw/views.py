@@ -263,6 +263,7 @@ def hw_create_view(request):
                 obj_f = CodeFile(file=f)
                 obj_f._upload_user = request.user
                 obj_f._upload_assignment = assignment
+                obj_f.full_clean()
                 obj_f.save()
                 hwform.files.add(obj_f)
 
@@ -274,11 +275,10 @@ def hw_create_view(request):
     else:
         form = CreateHomeworkForm(assignment=assignment, user=request.user)
 
-    is_after_deadline = timezone.now() > assignment.deadline
     context = {
         "form": form,
         "hwdetail": assignment,
-        "is_after_deadline": is_after_deadline,
+        "is_after_deadline": assignment.is_after_deadline,
     }
     return render(request, "homework/hw_create.html", context)
 
@@ -366,6 +366,10 @@ def delete_file_if_unused(codefile):
 @own_required(Homework,'key__assignment__teacher')
 def edit_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
+    if not hw.is_after_deadline:
+        raise PermissionDenied(
+            _("Před termínem odevzdání nelze opravovat úkoly.")
+        )
     if request.method == "POST":
         form = EvaluationForm(request.POST,instance=hw)
         if form.is_valid():
@@ -380,6 +384,10 @@ def edit_evaluation_view(request, pk):
 @own_required(Homework,'key__assignment__teacher')
 def delete_evaluation_view(request, pk):
     hw = get_object_or_404(Homework, pk=pk)
+    if not hw.is_after_deadline:
+        raise PermissionDenied(
+            _("K této stránce nemáte přístup.")
+        )
     if request.method == "POST":
         hw.score = None
         hw.text_evaluation = None
@@ -582,7 +590,7 @@ def teacher_comments_list_view(request):
         "comments": reviews,
         "pending_count": pending_count,
     })
-    
+@login_required    
 def subject_create_view(request):
     if not request.user.is_superuser:
         raise HttpResponseBadRequest("Předmět může vytvořit pouze administrator.")

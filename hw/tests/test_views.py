@@ -50,9 +50,13 @@ class TestHWViewStatus200(BaseHWTestCase):
         self.assert_get_200(self.teacher, "hw_detail", template_name="homework/hw_detail.html", pk=self.homework.pk)
 
     def test_evaluation_edit_200(self):
+        self.assignment.deadline=timezone.now()- timedelta(seconds=3)
+        self.assignment.save(update_fields=[ "deadline"])
         self.assert_get_200(self.teacher, "evaluate_edit", template_name="homework/hw_evaluation_update.html", pk=self.homework.pk)
 
     def test_evaluation_delete_200(self):
+        self.assignment.deadline=timezone.now()- timedelta(seconds=3)
+        self.assignment.save(update_fields=["deadline"])
         self.assert_get_200(self.teacher,"evaluate_delete", template_name="homework/hw_evaluation_delete_confirm.html",pk=self.homework.pk)
 
     def test_student_comment_list_200(self):
@@ -69,6 +73,12 @@ class TestHWViewStatus200(BaseHWTestCase):
 
     def test_teacher_comments_list_200(self):
         self.assert_get_200(self.teacher, "teacher_comment_list", template_name="student_comments/teacher_list.html")
+        
+    def test_teacher_comment_mark_200(self):
+        self.assert_get_200(self.teacher, "teacher_comment_mark", template_name="student_comments/teacher_mark_form.html", pk=self.studentComment.pk)
+
+    def test_subject_create_200_superuser(self):
+        self.assert_get_200(self.superuser, "create_subject", template_name="homework/create_subject.html")
         
 @modify_settings(MIDDLEWARE={
     'remove': 'django.middleware.clickjacking.XFrameOptionsMiddleware',
