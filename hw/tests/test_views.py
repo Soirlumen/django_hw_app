@@ -100,6 +100,17 @@ class TestHWViewStatus403(BaseHWTestCase):
     def test_student_cannot_access_assignment_before_release_403(self):
         self.assert_get_403(self.student, "assgn_detail_student", pk=self.assignment_before_release.pk, template_name="403.html")
               
-class TeshHWViewStatus404(BaseHWTestCase):
+    def test_assignment_edit_after_release_403(self):
+        self.assert_get_403(self.teacher, "assgn_edit", pk=self.assignment.pk, template_name="403.html")
+        
+    def test_subject_create_403_non_superuser(self):
+        self.assert_get_403(self.teacher, "create_subject", template_name="403.html")
+        
+
+class TestHWViewStatus404(BaseHWTestCase):
     def test_random_page_404(self):
         self.assert_get_404(self.student, "assgn_detail_student", pk=6969)
+    
+    def test_comment_feedback_detail_404_somebody_else(self):
+        self.assert_get_404(self.student2, "comment_feedback_detail", pk=self.studentComment.pk)
+

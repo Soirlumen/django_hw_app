@@ -601,6 +601,6 @@ def subject_create_view(request):
         else:
             messages.warning(request, _("Formulář se nepodařilo odeslat. Zkontroluj prosím vyplněná pole."))
     else:
-          f = SubjectCreateForm()
+          f = SubjectCreateForm()       
     return render(request, "homework/create_subject.html", {"form": f})        
             

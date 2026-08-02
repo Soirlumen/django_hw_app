@@ -2,6 +2,7 @@
 ```bash
 py -m venv .venv
 .venv\Scripts\Activate.ps1 # pro windows
+source .venv/bin/activate # pro linux
 pip install -r requirements.txt
 py manage.py makemigrations
 py manage.py migrate

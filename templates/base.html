@@ -85,6 +85,16 @@
 
           {% if user.is_superuser %}
             <li class="nav-item">
+    <a
+      href="{% url 'create_subject' %}"
+      class="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2"
+    >
+      {% bs_icon "folder-plus" size="1em" %}
+      <span>{% translate "Nový předmět" %}</span>
+    </a>
+  </li>
+
+            <li class="nav-item">
               <a
                 href="{% url 'admin:index' %}"
                 class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2"
