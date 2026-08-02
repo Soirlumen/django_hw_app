@@ -88,8 +88,6 @@ def hw_list_after_deadline_view(request):
     }
     return render(request, "list/assignment_list.html", context)
 
-
-#@own_required(Assignment,'teacher')
 @teacher_required
 def assgn_detail_teacher(request, pk):
     assignment=get_object_or_404(Assignment,pk=pk)
@@ -229,7 +227,9 @@ def assignment_create_view(request):
 def hw_create_view(request):
     assgn_id = request.GET.get("assgn_id")
     if not assgn_id:
-        return HttpResponseBadRequest("Chybí ID úkolu!!")
+        return HttpResponseBadRequest(
+            _("Chybí ID úkolu!!")
+        )
 
     assignment = get_object_or_404(Assignment, pk=assgn_id)
 
@@ -459,49 +459,44 @@ def reviewer_list_view(request):
 
 
 @student_required
-
 @own_required(HomeworkStudentComment, "reviewer")
 def reviewer_form_view(request, pk):
     review = get_object_or_404(
         HomeworkStudentComment.objects.select_related(
-            "hw__key__assignment"
-        ),
-        pk=pk,
-        reviewer=request.user,
-    )
+            "hw__key__assignment"),pk=pk, reviewer=request.user)
 
     if request.method == "POST":
-        form = HomeworkStudentCommentForm(
-            request.POST,
-            instance=review,
-        )
+        form = HomeworkStudentCommentForm(request.POST, instance=review)
 
         if form.is_valid():
             form.instance.submitted = timezone.now()
             form.save()
 
-            messages.success(
-                request,
+            messages.success(request,
                 _("Komentář uložen."),
             )
 
-            return redirect(
-                "reviewer_form",
-                pk=review.pk,
-            )
+            return redirect("reviewer_form", pk=review.pk)
     else:
         form = HomeworkStudentCommentForm(instance=review)
-
+    hw = review.hw
+    assignment = hw.key.assignment
+    hw_files = [(str(file), file.get_file_path) for file in hw.files.all()]
     return render(
-        request,
-        "student_comments/reviewer_form.html",
-        {
-            "comment_obj": review,
-            "hw": review.hw,
-            "assignment": review.hw.key.assignment,
-            "form": form,
-        },
-    )
+        request, "student_comments/reviewer_form.html",
+            {
+                "assignment_title": assignment.title,
+                "assignment_deadline": assignment.deadline,
+                "assignment_pk": assignment.pk,
+
+                "hw_engrossment": hw.engrossment,
+                "hw_programming_language": hw.programming_language,
+                "hw_files": hw_files,
+
+                "comment_text": review.comment,
+                "form": form,
+            }
+                )
     
 @login_required
 def comment_feedback_detail_view(request, pk):
@@ -548,9 +543,6 @@ def teacher_comment_mark_view(request, pk):
 @teacher_required
 def teacher_comments_list_view(request):
     """Přehled všech peer-review řazený od nejnovějšího deadline."""
-    
-    # 1. Nejdříve vytáhneme recenzenty s počty pro jednotlivá zadání
-    # Chceme vědět: Pro toto assignment_id a tohoto reviewer_id -> kolik je celkem a kolik hotových?
     stats = (
         HomeworkStudentComment.objects
         .filter(hw__key__assignment__teacher=request.user)
@@ -591,7 +583,8 @@ def teacher_comments_list_view(request):
 @login_required    
 def subject_create_view(request):
     if not request.user.is_superuser:
-        raise PermissionDenied("Předmět může vytvořit pouze administrator.")
+        raise PermissionDenied(
+            _("Předmět může vytvořit pouze administrator."))
     if request.method=="POST":
         f=SubjectCreateForm(request.POST)
         if f.is_valid():

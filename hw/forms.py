@@ -269,7 +269,7 @@ class EvaluationForm(forms.ModelForm):
         self.cleaned_data=super().clean()
         if not self.instance.key.assignment.is_after_deadline:
             raise ValidationError(
-                _("Před termínem odevzdání nelze opravovat úkoly.yes")
+                _("Před termínem odevzdání nelze opravovat úkoly.")
             )
     
     # aby mohl učitel zadat maximálně max_score bodů
