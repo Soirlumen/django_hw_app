@@ -11,6 +11,7 @@ py manage.py migrate
 ## Načtení testovacích dat
 ```bash
 py manage.py loaddata fixtures/databaze.json --exclude contenttypes --exclude auth.Permission --exclude admin --exclude sessions
+python manage.py collectstatic --clear --noinput
 ```
 
 ## Spuštění serveru
